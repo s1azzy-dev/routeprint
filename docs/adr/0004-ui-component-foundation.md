@@ -1,8 +1,10 @@
 # ADR 0004: UI Component Foundation
 
-## Status
-
-Accepted
+- Status: Accepted
+- Decided: 2026-07-07
+- Normalized to implementation: 2026-07-07
+- Scope: shadcn/ui primitives, Tailwind styling, lucide icons, and
+  Routeprint-owned frontend component wrappers.
 
 ## Decision
 
