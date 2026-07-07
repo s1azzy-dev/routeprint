@@ -17,14 +17,16 @@ not replace `routeprint-sdd-intake-gate`.
 
 Prefer this order and stop as soon as the task is oriented:
 
-1. `git status -sb --untracked-files=all`
-2. `git branch --show-current`
-3. `git log -1 --oneline`
-4. `git diff --stat` and `git diff --name-status` only when unstaged changes
+1. `make agent-state` when a compact branch/status/diff-name snapshot is
+   enough.
+2. `git status -sb --untracked-files=all`
+3. `git branch --show-current`
+4. `git log -1 --oneline`
+5. `git diff --stat` and `git diff --name-status` only when unstaged changes
    exist.
-5. `git diff --cached --stat` and `git diff --cached --name-status` only when
+6. `git diff --cached --stat` and `git diff --cached --name-status` only when
    staged changes exist.
-6. `gh pr view --json number,title,url,isDraft,headRefName,baseRefName` only
+7. `gh pr view --json number,title,url,isDraft,headRefName,baseRefName` only
    when a PR matters and the branch appears pushed or tracking a remote.
 
 Do not run broad history commands, full diffs, or GitHub checks unless the user

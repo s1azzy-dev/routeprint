@@ -10,6 +10,7 @@ end
 RSpec.describe OpenSpecConfiguration do
   let(:root) { Pathname(__dir__).join("../..").expand_path }
   let(:config) { YAML.safe_load(root.join("openspec/config.yaml").read) }
+  let(:tool_config) { JSON.parse(root.join("config/openspec/config.json").read) }
 
   it "pins Node and OpenSpec versions" do
     package = JSON.parse(root.join("package.json").read)
@@ -47,5 +48,17 @@ RSpec.describe OpenSpecConfiguration do
     expect(makefile).to include("openspec-install:", "openspec-validate:")
     expect(makefile).to include("bin/openspec validate --all --strict")
     expect(workflow).to include("make openspec-validate")
+  end
+
+  it "tracks the OpenSpec command delivery profile" do
+    expect(tool_config.fetch("profile")).to eq("custom")
+    expect(tool_config.fetch("delivery")).to eq("commands")
+    expect(tool_config.fetch("workflows")).to contain_exactly(
+      "propose",
+      "explore",
+      "apply",
+      "sync",
+      "archive"
+    )
   end
 end

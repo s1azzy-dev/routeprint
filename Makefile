@@ -10,7 +10,7 @@ AGENT_LOG_LIMIT ?= 20
 AGENT_DOCKER_LOG_LINES ?= 200
 AGENT_DOCKER_SERVICE ?= web
 
-.PHONY: setup openspec-install openspec-update openspec-validate frontend-install frontend-format frontend-lint frontend-typecheck frontend-test frontend-build frontend-audit frontend-verify frontend-outdated agent-search agent-diff-stat agent-diff-names agent-log agent-docker-logs agent-rtk agent-rtk-gain agent-rtk-gain-daily agent-rtk-gain-history agent-rtk-session agent-rtk-discover agent-host-search agent-host-diff-stat agent-host-diff-names agent-host-log agent-host-docker-logs agent-host-rtk-gain agent-host-rtk-session agent-host-rtk-discover agent-container-rtk agent-container-rtk-gain agent-container-rtk-gain-daily agent-container-rtk-gain-history agent-frontend-format agent-frontend-lint agent-frontend-typecheck agent-frontend-test agent-rubocop agent-rspec agent-test agent-verify-fast install-hooks up down logs shell bash bundle lint rubocop rubocop-autocorrect test security verify verify-fast ci migration doctor bundle-outdated maplibre-outdated outdated
+.PHONY: setup openspec-install openspec-update openspec-validate frontend-install frontend-format frontend-lint frontend-typecheck frontend-test frontend-build frontend-audit frontend-verify frontend-outdated agent-state agent-search agent-diff-stat agent-diff-names agent-log agent-docker-logs agent-rtk agent-rtk-gain agent-rtk-gain-daily agent-rtk-gain-history agent-rtk-session agent-rtk-discover agent-host-state agent-host-search agent-host-diff-stat agent-host-diff-names agent-host-log agent-host-docker-logs agent-host-rtk-gain agent-host-rtk-session agent-host-rtk-discover agent-container-rtk agent-container-rtk-gain agent-container-rtk-gain-daily agent-container-rtk-gain-history agent-frontend-format agent-frontend-lint agent-frontend-typecheck agent-frontend-test agent-rubocop agent-rspec agent-test agent-verify-fast install-hooks up down logs shell bash bundle lint rubocop rubocop-autocorrect test security verify verify-fast ci migration doctor bundle-outdated maplibre-outdated outdated
 
 setup: openspec-install
 	$(COMPOSE) up --build -d
@@ -50,8 +50,22 @@ frontend-audit:
 frontend-verify:
 	$(APP) bin/npm run frontend:verify
 
-# RTK-backed agent commands keep app/runtime work inside the web container while
-# filtering noisy tool output before it reaches the agent context.
+# Agent commands keep app/runtime work inside the web container where needed and
+# keep routine workspace/tool feedback compact before it reaches the context.
+agent-state: agent-host-state
+
+agent-host-state:
+	@printf 'Branch: '
+	@git branch --show-current
+	@printf 'Last commit: '
+	@git log -1 --oneline
+	@printf 'Working tree:\n'
+	@git status -sb --untracked-files=all
+	@printf 'Unstaged changes:\n'
+	@git diff --name-status
+	@printf 'Staged changes:\n'
+	@git diff --cached --name-status
+
 agent-search: agent-host-search
 
 agent-host-search:
