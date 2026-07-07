@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+ENV["RUBOCOP_CACHE_ROOT"] ||= File.expand_path("../tmp/rubocop", __dir__)
+
+# Explicit RuboCop config increases performance slightly while avoiding config confusion.
+ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
+
+format_requested = ARGV.any? do |arg|
+  arg == "-f" || arg == "--format" || arg.start_with?("--format=")
+end
+ARGV.unshift("--format", "simple") unless format_requested
+
+load Gem.bin_path("rubocop", "rubocop")
