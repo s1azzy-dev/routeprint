@@ -1,8 +1,10 @@
 # ADR 0002: Business Frontend Architecture
 
-## Status
-
-Accepted
+- Status: Accepted
+- Decided: 2026-07-07
+- Normalized to implementation: 2026-07-07
+- Scope: Rails/Inertia page delivery and the app-owned React, TypeScript, Vite,
+  Tailwind frontend boundary.
 
 ## Decision
 

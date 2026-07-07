@@ -1,8 +1,10 @@
 # ADR 0003: Import Architecture
 
-## Status
-
-Accepted
+- Status: Accepted
+- Decided: 2026-07-07
+- Normalized to implementation: 2026-07-07
+- Scope: Import provenance, preview/apply, idempotency, payload privacy, and
+  source-specific parser boundaries.
 
 ## Decision
 
