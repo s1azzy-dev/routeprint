@@ -20,3 +20,5 @@
   for sensitive logging filters and secret-like examples.
 - Added the generated OpenSpec command delivery config under
   `config/openspec/config.json`.
+- Started the authentication foundation change with ADR 0005 and OpenSpec
+  artifacts for staged Wildwaters auth transfer.
