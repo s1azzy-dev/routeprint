@@ -1,0 +1,4 @@
+interface:
+  display_name: "Routeprint Workspace State"
+  short_description: "Snapshot branch, diff, PR, and reusable checks"
+  default_prompt: "Use $routeprint-workspace-state to summarize the current Routeprint branch, diff, PR, and reusable verification state."

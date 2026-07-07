@@ -1,0 +1,8 @@
+app/assets/builds/
+coverage/
+node_modules/
+public/vite*/
+tmp/
+vendor/
+Gemfile.lock
+package-lock.json
