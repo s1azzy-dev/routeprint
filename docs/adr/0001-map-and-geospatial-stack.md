@@ -1,8 +1,10 @@
 # ADR 0001: Map And Geospatial Stack
 
-## Status
-
-Accepted
+- Status: Accepted
+- Decided: 2026-07-07
+- Normalized to implementation: 2026-07-07
+- Scope: MapLibre browser rendering, PostGIS spatial storage and filtering, and
+  Rails JSON/GeoJSON map data delivery.
 
 ## Context
 

@@ -11,3 +11,5 @@
   and project-local skills links.
 - Added compact-output tooling regression coverage, Routeprint frontend test
   helpers, and a fuller map/geospatial ADR.
+- Added ADR metadata headers, a linked ADR index, and README SDD Level 0-3
+  guidance.

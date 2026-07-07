@@ -24,7 +24,7 @@ travel data under your control.
 | Bootstrap completion plan and evidence | [`docs/INITIALIZATION_PLAN.md`](docs/INITIALIZATION_PLAN.md) |
 | Current feature specifications and active changes | [`openspec/`](openspec/) |
 | Prioritized unimplemented work | [`docs/TODO.md`](docs/TODO.md) |
-| Architecture decisions | [`docs/adr/`](docs/adr/) |
+| Architecture decisions | [`docs/adr/README.md`](docs/adr/README.md) |
 | Frontend design workflow | [`docs/frontend/DESIGN_GUIDE.md`](docs/frontend/DESIGN_GUIDE.md) |
 | Change history | [`CHANGES.md`](CHANGES.md) |
 
@@ -84,13 +84,17 @@ behavior should be added later through SDD/OpenSpec slices.
 
 ## Spec-Driven Changes
 
-Use `$routeprint-spec-driven-change` to choose the workflow:
+Every repository task starts with the SDD gate in
+[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md): classify the task, state the
+OpenSpec/ADR need, choose the command environment, and pick the verification
+path before implementation work.
 
 | Level | Typical work | Artifacts |
 | --- | --- | --- |
-| 1 | Copy, visual polish, narrow bug or refactor | None; use the normal project loop |
-| 2 | Meaningful feature or uncertain behavior | OpenSpec proposal, specs, design, and tasks |
-| 3 | Durable cross-cutting architecture change | Level 2 plus a focused ADR |
+| 0 | Documentation, process, comments, formatting, harness-only maintenance | No OpenSpec or ADR; edit the source of truth and run the docs/style gate |
+| 1 | Copy, visual polish, narrow bug or contract-preserving refactor | No OpenSpec or ADR; use the normal project loop |
+| 2 | Meaningful feature, interacting mechanisms, or uncertain behavior | OpenSpec proposal, specs, design, and tasks |
+| 3 | Level 2 plus a durable cross-cutting architecture decision | Level 2 plus a focused ADR |
 
 Level 2 and 3 flow:
 
@@ -100,8 +104,9 @@ explore -> confirm -> propose -> review -> apply -> verify -> archive
 
 OpenSpec records current observable behavior and pending behavior changes. ADRs
 record durable technology choices, system boundaries, execution and persistence
-models, and design-system foundations. Future work that has not become a
-change lives in `docs/TODO.md`.
+models, and design-system foundations. The ADR index lives in
+[`docs/adr/README.md`](docs/adr/README.md). Future work that has not become a
+change lives in [`docs/TODO.md`](docs/TODO.md).
 
 New or changed behavior uses the Level 2 or 3 delta flow. RSpec, project
 skills, permissions, and Make verification remain implementation proof.
