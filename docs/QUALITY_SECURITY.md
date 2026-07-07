@@ -48,6 +48,8 @@ Secrets and logging:
 - Never log passwords, reset tokens, signed blob tokens, secrets, or raw
   credentials.
 - Filter sensitive parameters and headers.
+- Do not add realistic secret, token, credential, or booking-reference examples
+  to docs, fixtures, tests, logs, or harness instructions.
 - Treat Inertia props as a public response surface: keep them page-specific and
   exclude credentials, raw session material, reset tokens, policy internals,
   and unnecessary user attributes.

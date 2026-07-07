@@ -13,3 +13,10 @@
   helpers, and a fuller map/geospatial ADR.
 - Added ADR metadata headers, a linked ADR index, and README SDD Level 0-3
   guidance.
+- Added project skill-routing guidance, compact OpenSpec skill adapters,
+  lazy-loaded OpenSpec workflow references, and tooling regression coverage for
+  the Routeprint agent harness.
+- Added a compact `make agent-state` workspace snapshot and mechanical checks
+  for sensitive logging filters and secret-like examples.
+- Added the generated OpenSpec command delivery config under
+  `config/openspec/config.json`.

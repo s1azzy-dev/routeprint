@@ -191,7 +191,7 @@ the host toolchain and then fall back to the container after a failure.
 
 | Environment | Allowed command shape | Use for |
 | --- | --- | --- |
-| Host shell | `make agent-host-search`, `make agent-host-diff-*`, `make agent-host-log`, `make agent-host-docker-logs`, `make agent-host-rtk-*`, `rtk rg`, `rtk git ...`, `rtk docker ...`, raw `rg`, `sed`, git, file reads, `apply_patch`, documented host-only `make` targets | Repository inspection, editing, git inspection, Docker orchestration, project-local OpenSpec wrappers, and token-efficient output filtering |
+| Host shell | `make agent-state`, `make agent-host-search`, `make agent-host-diff-*`, `make agent-host-log`, `make agent-host-docker-logs`, `make agent-host-rtk-*`, `rtk rg`, `rtk git ...`, `rtk docker ...`, raw `rg`, `sed`, git, file reads, `apply_patch`, documented host-only `make` targets | Repository inspection, editing, git inspection, Docker orchestration, project-local OpenSpec wrappers, and token-efficient output filtering |
 | Web container | `make ...` targets backed by `APP := docker compose run --rm web`; RTK-backed `make agent-*` targets; targeted `docker compose run --rm web ...` when no Make target fits | Rails, Ruby, Bundler, RSpec, RuboCop, Brakeman, bundler-audit, frontend install/build/test/audit, app dependency freshness, migrations, consoles, and import tasks |
 
 Host-side runtime commands are not the discovery path. Do not run raw `bundle`,
@@ -218,6 +218,7 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Start app stack | `make up` | Host Docker orchestration |
 | Stop app stack | `make down` | Host Docker orchestration |
 | View web container logs | `make logs` | Host Docker orchestration |
+| Compact workspace snapshot | `make agent-state` | Host git inspection |
 | Check toolchain | `make doctor` | Mixed: host wrapper/Docker checks plus container Rails checks |
 | Install Node/OpenSpec dependencies | `make openspec-install` | Host OpenSpec wrapper |
 | Refresh generated OpenSpec adapters | `make openspec-update` | Host OpenSpec wrapper |
@@ -255,6 +256,9 @@ formatting, or line-level proof matters.
 
 Host-side repository inspection:
 
+- Use `make agent-state` before repeated branch/status/diff orientation. It
+  prints branch, last commit, compact status, unstaged file names, and staged
+  file names without full patch output.
 - Use `make agent-host-search Q='pattern' SCOPE='path ...'` or `rtk rg ...`
   for broad discovery and noisy cross-repository searches. Do not run
   `rtk init` automatically; if host RTK prints a no-hook advisory, ignore it
