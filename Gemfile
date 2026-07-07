@@ -12,7 +12,7 @@ gem "activerecord-postgis-adapter"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build the application-owned frontend with Vite.
-gem "vite_rails", "3.11.0"
+gem "vite_rails", "3.11.1"
 # Deliver React pages through Rails routes and controllers.
 gem "inertia_rails", "3.21.2"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
