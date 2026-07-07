@@ -35,6 +35,7 @@ code and RSpec.
 - [ADR 0002: Business Frontend Architecture](0002-business-frontend-architecture.md)
 - [ADR 0003: Import Architecture](0003-import-architecture.md)
 - [ADR 0004: UI Component Foundation](0004-ui-component-foundation.md)
+- [ADR 0005: Authentication Foundation](0005-authentication-foundation.md)
 
 ## Header Format
 
