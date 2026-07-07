@@ -1,0 +1,4 @@
+interface:
+  display_name: "Routeprint Spec-Driven Change"
+  short_description: "Choose and run the right Routeprint SDD flow"
+  default_prompt: "Use $routeprint-spec-driven-change to classify and guide this Routeprint task."

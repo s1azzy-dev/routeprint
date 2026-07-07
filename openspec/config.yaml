@@ -1,0 +1,37 @@
+schema: spec-driven
+
+context: |
+  Routeprint is a Rails/PostGIS monolith with RSpec and a repository-owned
+  Codex harness. Before creating or changing artifacts:
+  - Read AGENTS.md and classify the task with docs/DEVELOPMENT.md.
+  - Load only task-specific context selected by docs/CONTEXT_MAP.md.
+  - Preserve product and architecture boundaries from docs/FOUNDATIONS.md.
+  - Apply docs/QUALITY_SECURITY.md for security and test risk.
+  - Apply docs/frontend/DESIGN_GUIDE.md for application-owned frontend UI.
+  - Use docs/TODO.md only to select unimplemented work, never as a specification.
+  - Use matching project skills from .agents/skills for domain-specific work.
+  - Treat current code, RSpec, and Make verification as implementation proof.
+  OpenSpec owns feature intent and behavior. ADRs under docs/adr own only
+  durable, cross-cutting architecture decisions.
+
+rules:
+  proposal:
+    - State the expected outcome, task level (2 or 3), scope, and non-goals.
+    - List assumptions, unresolved questions, affected capabilities, and risks requiring special verification.
+    - State whether a durable architectural decision requires an ADR and why.
+    - Keep implementation details in design.md.
+  specs:
+    - Specify observable behavior, not implementation structure.
+    - Use SHALL or MUST requirements with GIVEN, WHEN, and THEN scenarios; omit GIVEN only when no precondition matters.
+    - Include expected failure scenarios, authorization scenarios for protected or user-owned resources, and retry scenarios for asynchronous or external operations.
+    - Make every scenario directly mappable to an RSpec example without introducing Cucumber.
+  design:
+    - Reference existing repository patterns and source-of-truth documents instead of duplicating them.
+    - Compare credible alternatives and explain the selected trade-offs.
+    - Cover data, authorization/privacy, migration, idempotency/retries, PostGIS/performance, operations, observability, and rollback when the change touches them.
+    - State whether an ADR is created or intentionally unnecessary.
+  tasks:
+    - Break behavior work into small red-test, minimal-code, green-test increments.
+    - Name the narrow specs and the applicable docs/DEVELOPMENT.md verification command.
+    - Update approved OpenSpec artifacts before continuing when implementation learning changes intent, requirements, or design.
+    - Include CHANGES.md and owning documentation updates when required by the harness.

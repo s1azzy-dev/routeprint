@@ -1,0 +1,16 @@
+[tracking]
+enabled = true
+history_days = 90
+database_path = "/app/tmp/rtk/history.db"
+
+[tee]
+enabled = true
+mode = "failures"
+max_files = 20
+directory = "/app/tmp/rtk/tee"
+
+[telemetry]
+enabled = false
+
+[hooks]
+exclude_commands = []

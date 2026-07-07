@@ -1,0 +1,23 @@
+# Allow Codex to run the project's RSpec suite and narrow specs in Docker.
+prefix_rule(
+    pattern=[
+        "docker",
+        "compose",
+        "run",
+        "--rm",
+        "web",
+        "bundle",
+        "exec",
+        "rspec",
+    ],
+    decision="allow",
+    justification="RSpec is the project's standard non-destructive test command",
+    match=[
+        "docker compose run --rm web bundle exec rspec",
+        "docker compose run --rm web bundle exec rspec spec/requests/home_spec.rb",
+    ],
+    not_match=[
+        "docker compose run web bundle exec rspec",
+        "docker compose run --rm web bundle exec rubocop",
+    ],
+)

@@ -1,0 +1,7 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.devcontainer
+      args:
+        NODE_VERSION: "24.18.0"

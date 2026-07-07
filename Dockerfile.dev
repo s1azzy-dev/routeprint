@@ -1,0 +1,73 @@
+# syntax=docker/dockerfile:1.7
+
+ARG RUBY_VERSION=4.0.5
+ARG RUBYGEMS_VERSION=4.0.15
+ARG NODE_VERSION=24.18.0
+ARG RTK_VERSION=0.43.0
+FROM node:${NODE_VERSION}-bookworm-slim AS node
+
+FROM ruby:${RUBY_VERSION}-slim
+ARG RUBYGEMS_VERSION
+ARG RTK_VERSION
+ARG TARGETARCH
+
+WORKDIR /app
+
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+
+RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+  && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
+  ca-certificates \
+  curl \
+  gnupg \
+  && install -d /usr/share/postgresql-common/pgdg \
+  && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+    | gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg \
+  && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] http://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo \"$VERSION_CODENAME\")-pgdg main" \
+    > /etc/apt/sources.list.d/pgdg.list \
+  && apt-get update -qq && apt-get install -y --no-install-recommends \
+  build-essential \
+  chromium \
+  chromium-driver \
+  chromium-headless-shell \
+  git \
+  libpq-dev \
+  libyaml-dev \
+  pkg-config \
+  postgresql-client-18 \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN case "${TARGETARCH}" in \
+    amd64) rtk_target="x86_64-unknown-linux-musl" ;; \
+    arm64) rtk_target="aarch64-unknown-linux-gnu" ;; \
+    *) echo "Unsupported RTK architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+  esac \
+  && curl -fsSL \
+    "https://github.com/rtk-ai/rtk/releases/download/v${RTK_VERSION}/rtk-${rtk_target}.tar.gz" \
+    -o /tmp/rtk.tar.gz \
+  && tmpdir="$(mktemp -d)" \
+  && tar -xzf /tmp/rtk.tar.gz -C "${tmpdir}" \
+  && find "${tmpdir}" -type f -name rtk -exec install -m 0755 {} /usr/local/bin/rtk \; -quit \
+  && rtk --version \
+  && rm -rf "${tmpdir}" /tmp/rtk.tar.gz
+
+RUN install -d /root/.config/rtk /app/tmp/rtk/tee
+
+COPY config/rtk/container.toml /root/.config/rtk/config.toml
+
+RUN gem update --system ${RUBYGEMS_VERSION}
+
+ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3 \
+    RTK_TELEMETRY_DISABLED=1 \
+    RTK_TEE_DIR=/app/tmp/rtk/tee
+
+COPY Gemfile Gemfile.lock .ruby-version ./
+RUN --mount=type=cache,target=/usr/local/bundle/cache \
+  bundle install
+
+EXPOSE 3000 3036
