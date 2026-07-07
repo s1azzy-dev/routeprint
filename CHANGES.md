@@ -9,3 +9,5 @@
 - Expanded README and harness documentation from the Wild Waters control plane,
   adapted Routeprint source maps, security guidance, frontend design workflow,
   and project-local skills links.
+- Added compact-output tooling regression coverage, Routeprint frontend test
+  helpers, and a fuller map/geospatial ADR.
