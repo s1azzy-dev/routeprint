@@ -23,6 +23,22 @@ module Routeprint
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
+    config.add_autoload_paths_to_load_path = false
+    config.active_record.schema_format = :sql
+    config.i18n.available_locales = %i[en ru]
+    config.i18n.default_locale = :en
+    config.generators do |g|
+      g.fixture_replacement :factory_bot, dir: "spec/factories"
+      g.test_framework :rspec,
+                       fixtures: true,
+                       view_specs: false,
+                       helper_specs: false,
+                       routing_specs: false,
+                       request_specs: true,
+                       controller_specs: false
+      g.system_tests = nil
+    end
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
@@ -35,8 +51,5 @@ module Routeprint
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
-    # Don't generate system test files.
-    config.generators.system_tests = nil
   end
 end
