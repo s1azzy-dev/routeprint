@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-07-08
+
+- Added the first authentication foundation implementation slice: account,
+  identity, and user-session schema; core auth models; token digest helpers;
+  password policy validation; email normalization; factories; and model/lib
+  specs.
+- Switched Rails schema dumps to SQL format and generated `db/structure.sql`
+  plus `db/queue_structure.sql`.
+
 ## 2026-07-07
 
 - Bootstrapped Routeprint from a fresh Rails scaffold.

@@ -6,11 +6,11 @@
 
 ## 2. Stage 1: Core Schema And Models
 
-- [ ] 2.1 Inspect the Wildwaters auth model, constants, current-attributes, normalizer, factory, and model-spec files selected by the transfer plan.
-- [ ] 2.2 Add failing model/lib specs for `User`, `UserIdentity`, `UserSession`, `Current`, and `EmailNormalizer`.
-- [ ] 2.3 Add migrations for `users`, `user_identities`, and `user_sessions` using Routeprint database conventions.
-- [ ] 2.4 Adapt Wildwaters model behavior to Routeprint, including `Session` to `UserSession`, token digests, reset TTL, role/status helpers, and password minimum length 12.
-- [ ] 2.5 Run the targeted model/lib specs, then the selected fast verification gate.
+- [x] 2.1 Inspect the Wildwaters auth model, constants, current-attributes, normalizer, factory, and model-spec files selected by the transfer plan.
+- [x] 2.2 Add failing model/lib specs for `User`, `UserIdentity`, `UserSession`, `Current`, and `EmailNormalizer`.
+- [x] 2.3 Add migrations for `users`, `user_identities`, and `user_sessions` using Routeprint database conventions.
+- [x] 2.4 Adapt Wildwaters model behavior to Routeprint, including `Session` to `UserSession`, token digests, reset TTL, role/status helpers, and password minimum length 12.
+- [x] 2.5 Run the targeted model/lib specs, then the selected fast verification gate.
 
 ## 3. Stage 2: Registration, Login, Logout, And Current Session
 
