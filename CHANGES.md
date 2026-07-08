@@ -2,6 +2,9 @@
 
 ## 2026-07-08
 
+- Added typed runtime configuration loading through `BootConfig` and
+  `ApplicationConfig`, then routed database, Puma, Action Cable, mailer URL,
+  storage, logging, CI, and queue settings through the config objects.
 - Added password registration, sign-in, sign-out, signed user-session cookie
   handling, current-session resume, last-seen throttling, suspended-user
   rejection, and a minimal protected dashboard for the auth foundation.
