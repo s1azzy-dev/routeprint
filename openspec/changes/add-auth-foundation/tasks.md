@@ -14,11 +14,11 @@
 
 ## 3. Stage 2: Registration, Login, Logout, And Current Session
 
-- [ ] 3.1 Inspect the Wildwaters authentication concern, sessions/registrations controllers, auth interactors, routes, request specs, and matching frontend auth components.
-- [ ] 3.2 Add failing request/interactor/frontend specs for registration, login, logout, protected dashboard, cookie behavior, suspended users, and `last_seen_at` throttling.
-- [ ] 3.3 Implement the authentication concern, registration/login/logout interactors, controllers, routes, signed `:user_session_token` cookie, and minimal protected dashboard.
-- [ ] 3.4 Implement minimal Routeprint Inertia auth/dashboard pages without expanding the design system unnecessarily.
-- [ ] 3.5 Run the targeted auth request/interactor/frontend specs, then `make verify-fast` and `make security`.
+- [x] 3.1 Inspect the Wildwaters authentication concern, sessions/registrations controllers, auth interactors, routes, request specs, and matching frontend auth components.
+- [x] 3.2 Add failing request/interactor/frontend specs for registration, login, logout, protected dashboard, cookie behavior, suspended users, and `last_seen_at` throttling.
+- [x] 3.3 Implement the authentication concern, registration/login/logout interactors, controllers, routes, signed `:user_session_token` cookie, and minimal protected dashboard.
+- [x] 3.4 Implement minimal Routeprint Inertia auth/dashboard pages without expanding the design system unnecessarily.
+- [x] 3.5 Run the targeted auth request/interactor/frontend specs, then `make verify-fast` and `make security`.
 
 ## 4. Stage 3: Password Reset
 

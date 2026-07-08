@@ -28,4 +28,32 @@
 #       enabled: "ON"
 
 en:
+  auth:
+    fields:
+      email: Email
+      locale: Language
+      password: Password
+      password_confirmation: Confirm password
+    locales:
+      en: English
+      ru: Russian
+    registrations:
+      created: Account created.
+      heading: Create account
+      invalid: Check the registration details.
+      sign_in_link: Sign in
+      sign_in_prompt: Already registered?
+      submit: Create account
+    sessions:
+      created: Signed in.
+      destroyed: Signed out.
+      heading: Sign in
+      invalid: Email or password is incorrect.
+      require_authentication: Sign in to continue.
+      sign_up_link: Create an account
+      sign_up_prompt: New here?
+      submit: Sign in
+  dashboard:
+    heading: Dashboard
+    sign_out: Sign out
   hello: "Hello world"

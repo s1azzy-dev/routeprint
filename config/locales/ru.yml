@@ -1,2 +1,30 @@
 ru:
+  auth:
+    fields:
+      email: Email
+      locale: Язык
+      password: Пароль
+      password_confirmation: Подтвердите пароль
+    locales:
+      en: Английский
+      ru: Русский
+    registrations:
+      created: Аккаунт создан.
+      heading: Создать аккаунт
+      invalid: Проверьте данные регистрации.
+      sign_in_link: Войти
+      sign_in_prompt: Уже зарегистрированы?
+      submit: Создать аккаунт
+    sessions:
+      created: Вход выполнен.
+      destroyed: Вы вышли.
+      heading: Войти
+      invalid: Email или пароль неверны.
+      require_authentication: Войдите, чтобы продолжить.
+      sign_up_link: Создать аккаунт
+      sign_up_prompt: Вы здесь впервые?
+      submit: Войти
+  dashboard:
+    heading: Панель
+    sign_out: Выйти
   routeprint: Routeprint

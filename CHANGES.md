@@ -2,6 +2,9 @@
 
 ## 2026-07-08
 
+- Added password registration, sign-in, sign-out, signed user-session cookie
+  handling, current-session resume, last-seen throttling, suspended-user
+  rejection, and a minimal protected dashboard for the auth foundation.
 - Added the first authentication foundation implementation slice: account,
   identity, and user-session schema; core auth models; token digest helpers;
   password policy validation; email normalization; factories; and model/lib
