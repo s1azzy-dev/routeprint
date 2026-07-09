@@ -51,6 +51,7 @@ RSpec.describe "Authentication", type: :request do
       expect(response).to have_http_status(:ok)
       expect(inertia.component).to eq("Auth/SignIn")
       expect(inertia.props.dig(:urls, :submit)).to eq(sign_in_path)
+      expect(inertia.props.dig(:urls, :passwordReset)).to eq(new_password_reset_path)
       expect_inertia_runtime_document!
     end
   end

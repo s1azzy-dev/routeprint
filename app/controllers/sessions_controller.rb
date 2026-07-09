@@ -37,12 +37,14 @@ class SessionsController < ApplicationController
         email: t("auth.fields.email"),
         heading: t("auth.sessions.heading"),
         password: t("auth.fields.password"),
+        passwordReset: t("auth.sessions.password_reset"),
         submit: t("auth.sessions.submit"),
         switchLink: t("auth.sessions.sign_up_link"),
         switchPrompt: t("auth.sessions.sign_up_prompt")
       },
       formError: form_error,
       urls: {
+        passwordReset: new_password_reset_path,
         signUp: sign_up_path,
         submit: sign_in_path
       },

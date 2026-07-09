@@ -49,10 +49,31 @@ en:
       destroyed: Signed out.
       heading: Sign in
       invalid: Email or password is incorrect.
+      password_reset: Forgot your password?
       require_authentication: Sign in to continue.
       sign_up_link: Create an account
       sign_up_prompt: New here?
       submit: Sign in
+    password_resets:
+      invalid: That password reset link is invalid or expired.
+      requested: If that email exists, we sent password reset instructions.
+      updated: Your password has been updated. Please sign in.
+      edit:
+        heading: Choose a new password
+        sign_in_link: Back to sign in
+        sign_in_prompt: Need the sign-in page?
+        submit: Update password
+      mailer:
+        cta: Reset password
+        greeting: Hello,
+        ignore: If you did not request this, you can safely ignore this email.
+        instructions: Use the link below to choose a new Routeprint password.
+        subject: Reset your Routeprint password
+      new:
+        heading: Reset password
+        sign_in_link: Back to sign in
+        sign_in_prompt: Remembered it?
+        submit: Send reset link
   dashboard:
     heading: Dashboard
     sign_out: Sign out

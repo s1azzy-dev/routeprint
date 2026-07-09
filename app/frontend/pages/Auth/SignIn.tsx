@@ -1,21 +1,27 @@
 import { Link, useForm } from "@inertiajs/react"
 import type { FormEvent } from "react"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import {
+  AuthForm,
+  AuthFormError,
+  AuthPageShell,
+  AuthSubmit,
+  AuthTextField,
+} from "@/components/routeprint"
 
 export type SignInProps = {
   copy: {
     email: string
     heading: string
     password: string
+    passwordReset: string
     submit: string
     switchLink: string
     switchPrompt: string
   }
   formError: string | null
   urls: {
+    passwordReset: string
     signUp: string
     submit: string
   }
@@ -38,68 +44,52 @@ export default function SignIn({ copy, formError, urls, values }: SignInProps) {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <section className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
-        <h1 className="text-3xl font-semibold">{copy.heading}</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          {copy.switchPrompt}{" "}
-          <Link
-            className="font-medium text-primary hover:underline"
-            href={urls.signUp}
-          >
-            {copy.switchLink}
-          </Link>
-        </p>
-
-        <form className="mt-8 flex flex-col gap-5" onSubmit={submit}>
-          {formError ? (
-            <p
-              className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-              role="alert"
+    <AuthPageShell
+      heading={copy.heading}
+      switchHref={urls.signUp}
+      switchLink={copy.switchLink}
+      switchPrompt={copy.switchPrompt}
+    >
+      <AuthForm onSubmit={submit}>
+        <AuthFormError message={formError} />
+        <AuthTextField
+          autoComplete="email"
+          id="session-email"
+          label={copy.email}
+          name="session[email]"
+          onChange={(email) =>
+            setData("session", {
+              ...data.session,
+              email,
+            })
+          }
+          type="email"
+          value={data.session.email}
+        />
+        <AuthTextField
+          autoComplete="current-password"
+          id="session-password"
+          label={copy.password}
+          labelAction={
+            <Link
+              className="text-sm font-medium text-primary hover:underline"
+              href={urls.passwordReset}
             >
-              {formError}
-            </p>
-          ) : null}
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="session-email">{copy.email}</Label>
-            <Input
-              autoComplete="email"
-              id="session-email"
-              name="session[email]"
-              onChange={(event) =>
-                setData("session", {
-                  ...data.session,
-                  email: event.target.value,
-                })
-              }
-              type="email"
-              value={data.session.email}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="session-password">{copy.password}</Label>
-            <Input
-              autoComplete="current-password"
-              id="session-password"
-              name="session[password]"
-              onChange={(event) =>
-                setData("session", {
-                  ...data.session,
-                  password: event.target.value,
-                })
-              }
-              type="password"
-              value={data.session.password}
-            />
-          </div>
-
-          <Button disabled={processing} size="lg" type="submit">
-            {copy.submit}
-          </Button>
-        </form>
-      </section>
-    </main>
+              {copy.passwordReset}
+            </Link>
+          }
+          name="session[password]"
+          onChange={(password) =>
+            setData("session", {
+              ...data.session,
+              password,
+            })
+          }
+          type="password"
+          value={data.session.password}
+        />
+        <AuthSubmit disabled={processing}>{copy.submit}</AuthSubmit>
+      </AuthForm>
+    </AuthPageShell>
   )
 }

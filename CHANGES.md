@@ -6,6 +6,10 @@
   Waters frontend workflow: Rails/Inertia boundaries, component ownership,
   shadcn-first composition, Routeprint wrapper layering, and frontend quality
   gates are now explicit in ADRs and the design guide.
+- Added password reset request and consume flows with digest-backed reset
+  tokens, generic reset responses, reset mailer templates, password-policy
+  enforcement, all-session revocation after reset, and minimal Inertia reset
+  pages.
 
 ## 2026-07-08
 

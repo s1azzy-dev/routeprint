@@ -22,10 +22,10 @@
 
 ## 4. Stage 3: Password Reset
 
-- [ ] 4.1 Inspect the Wildwaters password reset controller, interactors, mailer, mail templates, routes, and specs.
-- [ ] 4.2 Add failing request/interactor/mailer specs for generic reset responses, digest-backed tokens, expiry, invalid tokens, password policy, and session revocation.
-- [ ] 4.3 Implement password reset request and consume flows with transient raw tokens, stored digests, 30-minute TTL, generic responses, and all-session revocation.
-- [ ] 4.4 Run the targeted reset and mailer specs, then `make verify-fast` and `make security`.
+- [x] 4.1 Inspect the Wildwaters password reset controller, interactors, mailer, mail templates, routes, and specs.
+- [x] 4.2 Add failing request/interactor/mailer specs for generic reset responses, digest-backed tokens, expiry, invalid tokens, password policy, and session revocation.
+- [x] 4.3 Implement password reset request and consume flows with transient raw tokens, stored digests, 30-minute TTL, generic responses, and all-session revocation.
+- [x] 4.4 Run the targeted reset and mailer specs, then `make verify-fast` and `make security`.
 
 ## 5. Stage 4: Security Notes And Deferred Boundaries
 

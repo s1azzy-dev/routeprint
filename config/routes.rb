@@ -12,5 +12,9 @@ Rails.application.routes.draw do
   post "sign_in" => "sessions#create"
   delete "sign_out" => "sessions#destroy", as: :sign_out
 
+  resource :password_reset, only: %i[new create], path: "password-reset"
+  get "password-reset/:token" => "password_resets#edit", as: :edit_password_reset_token
+  patch "password-reset/:token" => "password_resets#update", as: :password_reset_token
+
   get "dashboard" => "dashboard#show", as: :dashboard
 end
