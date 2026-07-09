@@ -29,12 +29,12 @@
 
 ## 5. Stage 4: Security Notes And Deferred Boundaries
 
-- [ ] 5.1 Add or update the owning security/TODO documentation for cookie policy, token storage, suspended users, identity versus connected account boundary, deferred rate limiting, deferred email verification, deferred OAuth, and deferred connected accounts.
-- [ ] 5.2 Add or strengthen specs for no raw token persistence, no auth tokens in Inertia props, generic auth/reset errors, suspended-session rejection, and reset session revocation.
-- [ ] 5.3 Confirm that no OAuth, connected-account token storage, public API, native mobile, live tracking, AI, or import/sync behavior was introduced.
+- [x] 5.1 Add or update the owning security/TODO documentation for cookie policy, token storage, suspended users, identity versus connected account boundary, deferred rate limiting, deferred email verification, deferred OAuth, and deferred connected accounts.
+- [x] 5.2 Add or strengthen specs for no raw token persistence, no auth tokens in Inertia props, generic auth/reset errors, suspended-session rejection, and reset session revocation.
+- [x] 5.3 Confirm that no OAuth, connected-account token storage, public API, native mobile, live tracking, AI, or import/sync behavior was introduced.
 
 ## 6. Final Verification And Archive
 
-- [ ] 6.1 Run `bin/openspec validate add-auth-foundation --strict` and `make verify`.
-- [ ] 6.2 Update implementation notes if verification discovers a required spec/design correction.
-- [ ] 6.3 Archive the OpenSpec change after implementation and verification are complete.
+- [x] 6.1 Run `bin/openspec validate add-auth-foundation --strict` and `make verify`.
+- [x] 6.2 Update implementation notes if verification discovers a required spec/design correction.
+- [x] 6.3 Archive the OpenSpec change after implementation and verification are complete.

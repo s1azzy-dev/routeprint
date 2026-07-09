@@ -32,14 +32,21 @@ Before starting an item:
 
 10. Add landing/onboarding flow.
 11. Add privacy/export/delete-account copy and behavior.
-12. Add admin import operations visibility.
+12. Add authentication abuse protection/rate limiting for public auth endpoints.
+13. Add mandatory email verification before public launch, email import, or
+    OAuth account linking.
+14. Add admin import operations visibility.
 
 ## P3: Post-MVP Expansion
 
-13. Add additional flight-history imports.
-14. Add trips and travel journal grouping.
-15. Add email forwarding import.
-16. Add upcoming flights.
-17. Evaluate external flight data API for enrichment/live status.
-18. Add non-flight transport modes only after explicit product decision.
-19. Evaluate PWA/mobile app after web MVP validates usage.
+15. Add additional flight-history imports.
+16. Add trips and travel journal grouping.
+17. Add email forwarding import.
+18. Add OAuth login and account-linking policy only after a separate auth
+    OpenSpec change.
+19. Add connected accounts for Gmail, Outlook, calendar, TripIt, or similar
+    integrations with encrypted external-provider token storage.
+20. Add upcoming flights.
+21. Evaluate external flight data API for enrichment/live status.
+22. Add non-flight transport modes only after explicit product decision.
+23. Evaluate PWA/mobile app after web MVP validates usage.

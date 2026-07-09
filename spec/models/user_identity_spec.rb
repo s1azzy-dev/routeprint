@@ -63,6 +63,13 @@ RSpec.describe UserIdentity, type: :model do
     expect(user_identity.errors[:provider_uid]).to include("can't be blank")
   end
 
+  it "rejects external integration tokens in metadata" do
+    user_identity = build(:user_identity, :google, metadata: { "access_token" => "provider-token" })
+
+    expect(user_identity).not_to be_valid
+    expect(user_identity.errors[:metadata]).to include("must not store external integration tokens")
+  end
+
   it "prevents duplicate provider_uid within the same provider" do
     create(:user_identity, :google, provider_uid: "google-123")
 

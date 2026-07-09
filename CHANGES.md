@@ -10,6 +10,10 @@
   tokens, generic reset responses, reset mailer templates, password-policy
   enforcement, all-session revocation after reset, and minimal Inertia reset
   pages.
+- Hardened the auth foundation boundary so `UserIdentity` metadata rejects
+  external token-like fields, security docs capture session cookie and token
+  storage rules, and TODO tracks deferred rate limiting, email verification,
+  OAuth, and connected accounts.
 
 ## 2026-07-08
 

@@ -20,6 +20,7 @@ class UserIdentity < ApplicationRecord
   validate :password_identity_requires_password_digest
   validate :password_identity_unique_per_user
   validate :external_identity_requires_provider_uid
+  validate :metadata_excludes_external_tokens
 
   scope :password, -> { where(provider: Auth::Constants::PASSWORD) }
 
@@ -48,6 +49,12 @@ class UserIdentity < ApplicationRecord
     errors.add(:provider_uid, :blank)
   end
 
+  def metadata_excludes_external_tokens
+    return unless metadata_contains_external_token_key?(metadata)
+
+    errors.add(:metadata, "must not store external integration tokens")
+  end
+
   def password_identity_requires_password_digest
     return unless provider == Auth::Constants::PASSWORD
     return if password_digest.present?
@@ -64,5 +71,26 @@ class UserIdentity < ApplicationRecord
 
   def password_provider_with_password?
     provider == Auth::Constants::PASSWORD && password.present?
+  end
+
+  def metadata_contains_external_token_key?(value)
+    case value
+    when Hash
+      value.any? do |key, nested_value|
+        external_token_metadata_key?(key) || metadata_contains_external_token_key?(nested_value)
+      end
+    when Array
+      value.any? { |nested_value| metadata_contains_external_token_key?(nested_value) }
+    else
+      false
+    end
+  end
+
+  def external_token_metadata_key?(key)
+    normalized_key = key.to_s.gsub(/([a-z])([A-Z])/, '\1_\2').tr("-", "_").downcase
+
+    normalized_key.include?("token") ||
+      normalized_key.include?("secret") ||
+      normalized_key.include?("credential")
   end
 end

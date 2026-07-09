@@ -16,6 +16,20 @@ Authentication and sessions:
 - Rotate session identifiers on successful sign in.
 - Cookies must be Secure, HttpOnly, and use a deliberate SameSite policy.
 - CSRF protection stays enabled for web flows.
+- Browser login sessions use the signed `:user_session_token` cookie with
+  `HttpOnly`, `SameSite=Lax`, production-only `Secure`, and an expiry matching
+  the persisted `user_sessions.expires_at`.
+- Persist only token digests for session and password-reset lookup. Raw session
+  and reset tokens must stay transient and must not appear in Inertia props,
+  logs, docs, fixtures, or persistent columns.
+- Suspended users must not sign in or continue existing browser sessions.
+- `UserIdentity` stores authentication methods only. External integration
+  access tokens, refresh tokens, secrets, credentials, Gmail/Outlook/calendar
+  import state, and sync metadata belong to a future connected-account model,
+  not to `user_identities` or its `metadata`.
+- Mandatory email verification, OAuth login/account linking, connected
+  accounts, and authentication rate limiting remain deferred controls until
+  implemented through their own OpenSpec changes.
 
 Authorization:
 
