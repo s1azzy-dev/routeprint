@@ -89,6 +89,8 @@ Concrete cross-cutting decisions live in ADRs:
   `docs/adr/0002-business-frontend-architecture.md`
 - Import architecture: `docs/adr/0003-import-architecture.md`
 - UI component foundation: `docs/adr/0004-ui-component-foundation.md`
+- Time zone and flight schedule time handling:
+  `docs/adr/0006-time-zone-and-flight-schedule-time-handling.md`
 
 ## Domain Boundary
 

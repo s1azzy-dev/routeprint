@@ -36,6 +36,7 @@ code and RSpec.
 - [ADR 0003: Import Architecture](0003-import-architecture.md)
 - [ADR 0004: UI Component Foundation](0004-ui-component-foundation.md)
 - [ADR 0005: Authentication Foundation](0005-authentication-foundation.md)
+- [ADR 0006: Time Zone And Flight Schedule Time Handling](0006-time-zone-and-flight-schedule-time-handling.md)
 
 ## Header Format
 
