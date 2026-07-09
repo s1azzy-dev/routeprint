@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-07-10
+
+- Added ADR 0006 defining Routeprint's dual representation of airport-local
+  schedule times and UTC instants, IANA timezone snapshots, conservative DST
+  resolution, duration semantics, future-flight recalculation, historical
+  provenance, and privacy boundaries.
+
 ## 2026-07-09
 
 - Strengthened the frontend architecture and UI-kit guidance from the Wild

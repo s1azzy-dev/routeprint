@@ -65,9 +65,9 @@ workflow. Load only the routed skill plus the rows named by this map.
 | --- | --- | --- |
 | Auth/session/password reset | `docs/QUALITY_SECURITY.md`, `config/routes.rb` | Once present: authentication concern, sessions/registrations/password-reset controllers, auth interactors, user/session models, matching request/interactor/model specs |
 | Admin/authorization | `docs/QUALITY_SECURITY.md`, `app/policies/application_policy.rb` | Once present: admin base controller, matching controller/request/policy specs, and neighboring admin flows |
-| Places/airports | `docs/FOUNDATIONS.md`, `docs/adr/0001-map-and-geospatial-stack.md` | Once present: place/airport models, airport factories, airport search/import specs, relevant migrations |
+| Places/airports | `docs/FOUNDATIONS.md`, `docs/adr/0001-map-and-geospatial-stack.md`, `docs/adr/0006-time-zone-and-flight-schedule-time-handling.md` | Once present: place/airport models, airport factories, airport search/import specs, relevant migrations |
 | Airlines | `docs/FOUNDATIONS.md` | Once present: airline model, airline factories/import specs, relevant migrations |
-| Travel segments/flights | `docs/FOUNDATIONS.md`, `config/routes.rb` | Once present: travel segment and flight detail models, flight interactors/queries/presenters, request/system/interactor specs |
+| Travel segments/flights | `docs/FOUNDATIONS.md`, `docs/adr/0006-time-zone-and-flight-schedule-time-handling.md`, `config/routes.rb` | Once present: travel segment and flight detail models, flight interactors/queries/presenters, request/system/interactor specs |
 | Imports/App in the Air/CSV | `docs/FOUNDATIONS.md`, `docs/adr/0003-import-architecture.md`, `docs/QUALITY_SECURITY.md` | Once present: import models, import interactors/jobs, parser fixtures, import specs |
 | Models/domain persistence | Relevant model and matching factory/spec | Neighboring models, relevant migrations, related interactors |
 | Interactors/use cases | `app/interactors/application_interactor.rb`, relevant interactor | Matching interactor spec, neighboring interactor in same namespace, relevant contract/model |
