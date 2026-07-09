@@ -9,6 +9,7 @@ const props: SignInProps = {
     email: "Email",
     heading: "Sign in",
     password: "Password",
+    passwordReset: "Forgot your password?",
     submit: "Sign in",
     switchLink: "Create an account",
     switchPrompt: "New here?",
@@ -16,6 +17,7 @@ const props: SignInProps = {
   formError: null,
   urls: {
     signUp: "/sign_up",
+    passwordReset: "/password-reset/new",
     submit: "/sign_in",
   },
   values: {
@@ -43,6 +45,9 @@ describe("Auth/SignIn", () => {
     expect(
       screen.getByRole("link", { name: "Create an account" }),
     ).toHaveAttribute("href", "/sign_up")
+    expect(
+      screen.getByRole("link", { name: "Forgot your password?" }),
+    ).toHaveAttribute("href", "/password-reset/new")
   })
 
   it("renders a generic error without password values", () => {

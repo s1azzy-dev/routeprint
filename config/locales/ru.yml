@@ -20,10 +20,31 @@ ru:
       destroyed: Вы вышли.
       heading: Войти
       invalid: Email или пароль неверны.
+      password_reset: Забыли пароль?
       require_authentication: Войдите, чтобы продолжить.
       sign_up_link: Создать аккаунт
       sign_up_prompt: Вы здесь впервые?
       submit: Войти
+    password_resets:
+      invalid: Ссылка для сброса пароля недействительна или истекла.
+      requested: Если такой email существует, мы отправили инструкции для сброса пароля.
+      updated: Пароль обновлен. Теперь войдите снова.
+      edit:
+        heading: Задайте новый пароль
+        sign_in_link: Вернуться ко входу
+        sign_in_prompt: Нужна страница входа?
+        submit: Обновить пароль
+      mailer:
+        cta: Сбросить пароль
+        greeting: Здравствуйте,
+        ignore: Если вы не запрашивали сброс, просто проигнорируйте это письмо.
+        instructions: Перейдите по ссылке ниже, чтобы задать новый пароль Routeprint.
+        subject: Сброс пароля Routeprint
+      new:
+        heading: Сброс пароля
+        sign_in_link: Вернуться ко входу
+        sign_in_prompt: Вспомнили пароль?
+        submit: Отправить ссылку
   dashboard:
     heading: Панель
     sign_out: Выйти
