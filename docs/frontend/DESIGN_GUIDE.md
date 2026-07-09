@@ -48,9 +48,23 @@ Use the layers defined by ADR 0004:
 - `app/frontend/pages/**`: route orchestration, page-specific layout, and
   feature-local components that are not stable shared concepts yet.
 
-Page files should stay as route-level orchestration. Move repeated or visually
-distinct regions into typed components, and move browser lifecycle concerns
-into hooks when that keeps the page readable.
+Page files should stay as route-level orchestration. They may choose data,
+layout, and page-specific composition, but they should not become the long-term
+home for reusable controls, repeated regions, browser lifecycle, fetch
+cancellation, or persistence concerns.
+
+Use a strict component approach:
+
+- name visually distinct regions as typed components before a page becomes hard
+  to scan;
+- keep feature-local components near the page until the second real call site
+  proves a shared wrapper is useful;
+- move browser lifecycle, refs, storage, timers, and cancellation into local
+  hooks when they distract from page composition;
+- keep shared Routeprint wrappers small and product-shaped, built from shadcn
+  primitives rather than competing with them;
+- export shared wrapper APIs from `app/frontend/components/routeprint` once
+  they are stable enough for reuse.
 
 ## Shadcn-First Rule
 
@@ -67,6 +81,11 @@ For every new or migrated control:
 Custom components are allowed for MapLibre canvas integration and other
 behavior that a UI kit does not own. The reason should be clear from the
 component name, nearby test, or design note.
+
+Do not hand-roll a button, field, card, table, menu, dialog, sheet, drawer,
+popover, tooltip, toast, empty state, skeleton, badge, tabs, pagination, or
+breadcrumb when an installed shadcn primitive or official shadcn component
+fits the semantics.
 
 ## Tokens And Styling
 
@@ -116,3 +135,8 @@ props and submit through the existing Inertia/Rails contracts.
 Add or update tests when a component owns behavior, accessibility semantics,
 state transitions, validation display, or a public prop contract. Pure visual
 replacement can use the narrowest relevant component or browser smoke check.
+
+Request specs should cover Rails-owned route, auth, redirect, flash, and prop
+contracts. Component tests should cover user-visible behavior, accessibility
+semantics, validation states, and wrapper APIs. Avoid tests that only prove an
+old implementation detail is absent.
