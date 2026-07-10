@@ -126,6 +126,9 @@ Canonical place model:
 - `Place` represents selectable real-world locations such as airports, cities,
   stations, ports, or custom places.
 - `airport` is the active MVP place kind.
+- The MVP airport reference catalog covers fixed-wing airports; closed records
+  remain available for historical travel, while heliports, seaplane bases, and
+  balloonports require a later product decision.
 - Airport-specific source fields belong in `airports`.
 - Stable public identifiers, names, coordinates, timezones, and country codes
   should be first-class fields.
