@@ -2,14 +2,21 @@
 
 ## 2026-07-10
 
+- Defined the accepted admin reference-import subsystem architecture: durable
+  source/run/item history, raw-artifact and source-record provenance, immutable
+  retries, diagnostics for dirty rows, Solid Queue execution, and explicit
+  source-to-airport mapping; user imports and admin UI remain separate work.
+- Implemented the import foundation, durable item orchestration, private raw
+  artifacts, source-record snapshots, sanitized row diagnostics, and the first
+  OurAirports airport adapter with conservative matching, WGS84 persistence,
+  and full-snapshot missing-upstream reconciliation.
+- Added the `csv` runtime gem required by Ruby 4 for provider CSV parsing.
 - Fixed GitHub Actions PostGIS initialization so Rails loads `structure.sql` into a clean test database.
 - Added the fixed-wing airport reference foundation with PostGIS points,
   localized `place_names` fallbacks, timezone verification metadata, optional
   IATA/ICAO lookup codes, and retained closed records for historical travel.
 - Kept domain vocabularies, code formats, and timezone workflow rules in the
   application layer instead of encoding them as database `CHECK` constraints.
-- Kept import provenance, raw source records, and airport facility detail out of
-  this change for the separate import subsystem.
 - Added ADR 0006 defining Routeprint's dual representation of airport-local
   schedule times and UTC instants, IANA timezone snapshots, conservative DST
   resolution, duration semantics, future-flight recalculation, historical
