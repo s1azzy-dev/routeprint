@@ -2,6 +2,13 @@
 
 ## 2026-07-10
 
+- Added the fixed-wing airport reference foundation with PostGIS points,
+  localized `place_names` fallbacks, timezone verification metadata, optional
+  IATA/ICAO lookup codes, and retained closed records for historical travel.
+- Kept domain vocabularies, code formats, and timezone workflow rules in the
+  application layer instead of encoding them as database `CHECK` constraints.
+- Kept import provenance, raw source records, and airport facility detail out of
+  this change for the separate import subsystem.
 - Added ADR 0006 defining Routeprint's dual representation of airport-local
   schedule times and UTC instants, IANA timezone snapshots, conservative DST
   resolution, duration semantics, future-flight recalculation, historical
