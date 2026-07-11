@@ -19,7 +19,7 @@ metadata, and one or more persisted run items before it enqueues work.
   duplicate work
 
 ### Requirement: Run progress and terminal status are durable
-The system SHALL persist progress, attempts, checkpoints, item status, item
+The system SHALL persist progress, attempts, item status, item
 errors, and aggregate run outcome so that an operator can inspect an import
 after its job process has ended.
 
@@ -35,23 +35,29 @@ after its job process has ended.
 - **THEN** it is marked partially failed and retains the completed-item counts
   and sanitized failure information
 
+### Requirement: Item execution uses ordered fail-fast phases
+The system SHALL process one item through ordered phases: acquire the complete
+artifact, parse the complete source file, persist all raw source records, and
+only then normalize, match, and apply canonical records. A phase failure SHALL
+stop later phases and mark the item failed.
+
+#### Scenario: Persist raw rows before canonical apply
+- **GIVEN** a valid source file containing multiple provider rows
+- **WHEN** the item starts processing
+- **THEN** all raw rows are persisted before normalization or canonical apply
+  begins
+- **AND THEN** a failure during apply leaves the raw rows available for
+  diagnosis while canonical changes from that apply phase are rolled back
+
 ### Requirement: Queued processing is safe under at-least-once delivery
-The system SHALL make processing a run item idempotent across duplicate job
-delivery, retries, and recovery after a worker failure.
+The system SHALL limit concurrent jobs for the same run item to one and make
+processing idempotent across duplicate job delivery and retries.
 
 #### Scenario: Deliver a completed item again
 - **GIVEN** a run item has already succeeded
 - **WHEN** its job is delivered again
 - **THEN** it performs no domain apply work and leaves the recorded result
   unchanged
-
-#### Scenario: Recover a stale claimed item
-- **GIVEN** a run item has a running status and an expired execution lease
-- **WHEN** stale-work recovery runs
-- **THEN** the item becomes eligible for a new claim using its persisted
-  checkpoint
-- **AND THEN** the replacement execution increments its attempt count without
-  creating a second run
 
 ### Requirement: Retry preserves completed run history
 The system SHALL keep a terminal run immutable and represent an operator retry
@@ -66,13 +72,13 @@ as a separate successor run linked to the failed predecessor.
 - **AND THEN** the predecessor's status, timestamps, counters, and errors stay
   unchanged
 
-### Requirement: Cancellation is cooperative and auditable
-The system SHALL stop unclaimed or checkpoint-reached work after cancellation
-is requested while retaining completed work and terminal history.
+### Requirement: Abandoned running items are maintained separately
+The system SHALL keep periodic cleanup of items that remain running beyond an
+operational threshold outside the import execution path. The maintenance policy
+is deferred from this change.
 
-#### Scenario: Cancel a running import
-- **GIVEN** a running reference import with active and queued items
-- **WHEN** cancellation is requested
-- **THEN** queued items are not newly claimed and active items stop at a safe
-  checkpoint
-- **AND THEN** the run and affected items record a cancelled terminal outcome
+#### Scenario: Defer abandoned-item cleanup
+- **GIVEN** a run item remains `running` beyond the future operational threshold
+- **WHEN** the current import execution path processes jobs
+- **THEN** it does not use an application-level lease or cancellation branch
+- **AND THEN** a separate maintenance job/change is responsible for cleanup

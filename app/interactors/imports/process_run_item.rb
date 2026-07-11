@@ -1,4 +1,9 @@
 module Imports
+  # Orchestrates claim, source processing, item completion/failure, and run finalization.
+  #
+  # @example
+  #   Imports::ProcessRunItem.call(input: { run_item_id: item.id })
+  # @param input [Hash] persisted run-item identifier
   class ProcessRunItem < ApplicationInteractor
     option :input
     option :claim_run_item, default: -> { Imports::ClaimRunItem }
@@ -18,7 +23,7 @@ module Imports
       claimed = yield claim_run_item.call(input: { run_item_id: item.id })
       return Success(item:, skipped: true) if claimed.fetch(:skipped)
 
-      processor_result = processor.call(input: { run: item.run, item: })
+      processor_result = process(item)
       if processor_result.success?
         yield complete_run_item.call(input: { item:, **processor_result.value! })
       else
@@ -30,6 +35,24 @@ module Imports
     end
 
     private
+
+    def process(item)
+      processor.call(input: { run: item.run, item: })
+    rescue StandardError => error
+      Rails.logger.error(
+        "Imports::ProcessRunItem processor_error " \
+        "run_item_id=#{item.id} " \
+        "#{error.full_message(highlight: false, order: :top)}"
+      )
+      Failure(
+        code: :processor_error,
+        errors: {
+          exception_class: [ error.class.name ],
+          exception_message: [ error.message.to_s ],
+          backtrace: Array(error.backtrace)
+        }
+      )
+    end
 
     def find_item
       item = Imports::RunItem.includes(:run).find_by(id: input[:run_item_id])

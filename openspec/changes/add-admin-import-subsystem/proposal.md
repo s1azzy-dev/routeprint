@@ -13,8 +13,7 @@ schemas part of the product domain.
 
 - Add an `Imports` subsystem for admin-operated reference-data imports.
 - Persist source definitions, immutable import runs, independently processed
-  run items, source records, changed-payload snapshots, raw input artifacts,
-  and per-record diagnostics.
+  run items, source records, changed-payload snapshots, and raw input artifacts.
 - Use Solid Queue jobs that receive only a persisted run-item identifier,
   report durable progress, and are safe to retry after failure or duplicate
   delivery.
@@ -33,8 +32,8 @@ schemas part of the product domain.
 - Admin/reference imports only.
 - The future admin action may create a run, but admin routes, UI, Inertia props,
   and operational screens are not part of this change.
-- Invalid or ambiguous reference rows remain staged with diagnostics; they do
-  not silently modify the canonical catalog.
+- Invalid or ambiguous reference rows fail the item without canonical writes;
+  the complete raw stage remains available for diagnosis and a later full run.
 
 ### Non-Goals
 
@@ -50,11 +49,11 @@ schemas part of the product domain.
 ### New Capabilities
 
 - `reference-import-orchestration`: source/run/item lifecycle, Solid Queue
-  execution, durable progress, stale-work recovery, cancellation, and immutable
+  execution, durable progress, and immutable
   retry history for admin reference imports.
 - `reference-import-provenance`: raw artifact retention, external source-record
-  identities, normalized payloads, checksums, snapshots, diagnostics, and
-  explicit domain mapping boundaries.
+  identities, normalized payloads, checksums, snapshots, structured item
+  failures, and explicit domain mapping boundaries.
 - `ourairports-airport-import`: idempotent import of eligible OurAirports
   airport records into Routeprint's canonical airport catalog.
 

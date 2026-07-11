@@ -144,6 +144,40 @@ Behavior-changing work:
 6. Run the relevant verification command.
 7. Update `CHANGES.md` when required.
 
+## Interactor Execution Loop
+
+When adding, reviewing, or refactoring an `ApplicationInteractor`:
+
+1. Model one meaningful use case per interactor. Do not turn each private
+   pipeline step into another interactor; extract one only when it has an
+   independent contract, reuse, authorization, transaction, or domain boundary.
+2. Define an explicit `ValidationContract` for every real `input` field. Do not
+   add dummy `input` or an empty contract when the use case has no input.
+3. Document the interactor class with concise YARD: purpose, example call, and
+   arguments. Document other public methods, but do not duplicate the class
+   documentation on the interactor's single `call` method.
+4. Only `call` reads from `input`; assign values to locals and pass them
+   explicitly to private methods. Avoid hidden mutable instance state.
+5. `call` is normally an orchestrator for an ordered pipeline. Use `yield` with
+   `Success`/`Failure` stages so the first failure stops later work. A genuinely
+   small one-step use case may remain direct.
+6. Declare interactor collaborators as injected `option` dependencies. Never
+   call another interactor by constant from inside an interactor.
+7. Rescue only where an exception can be classified or recovered from.
+   Unexpected exceptions normally reach an outer job/orchestration boundary,
+   where class, message, and backtrace remain visible in structured failure
+   evidence and logs.
+8. Start with the simplest correct state machine. Add leases, cancellation,
+   checkpoints, recovery loops, or custom locking only when the approved
+   requirements and actual concurrency model need them. Queued work should
+   tolerate duplicate delivery through durable state and existing queue or
+   database guarantees; keep stale-work cleanup outside the happy path.
+
+Use `$routeprint-yabi-interactor` for the canonical example and review
+checklist. Structural invariants are covered by
+`spec/tooling/interactor_conventions_spec.rb`; semantic pipeline behavior still
+requires focused specs.
+
 UI-only visual polish:
 
 1. Inspect neighboring views, components, styles, and system specs.
@@ -394,6 +428,11 @@ Codex behavior.
 | User explicitly opts out of SDD or OpenSpec | Agent follows the narrowed request, records the opt-out as scoped to that task, and does not treat it as a default for later work |
 | User asks for docs, process rules, comments, formatting, or other non-functional maintenance | Agent selects Level 0 when no runtime behavior, product acceptance criteria, schema, dependency, or security posture changes |
 | User asks for behavior change | Agent writes or updates a failing spec before production code |
+| User asks for an interactor | Agent loads `$routeprint-yabi-interactor`, defines only real input, and keeps `call` as the explicit fail-fast pipeline orchestrator |
+| One interactor calls another | Collaborator is injected through an `option`; no direct constant `.call` appears inside the caller |
+| Interactor flow has multiple stages | Values are passed explicitly between stages and the first `Failure` prevents later work |
+| Interactor handles an unexpected exception | Broad rescue exists only at the outer boundary and preserves class, message, and backtrace |
+| Proposed reliability machinery has no demonstrated requirement | Agent keeps the state machine simple and does not add leases, cancellation, checkpoints, or custom recovery |
 | User asks for visual-only polish | Agent does not invent artificial behavior specs |
 | User asks for migration/schema work | Agent reads recent migrations and never edits `db/structure.sql` by hand |
 | User asks for auth/session/upload/security work | Agent reads `docs/QUALITY_SECURITY.md` and uses security-focused verification |

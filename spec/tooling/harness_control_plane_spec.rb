@@ -8,8 +8,10 @@ end
 RSpec.describe HarnessControlPlane do
   let(:root) { Pathname(__dir__).join("../..").expand_path }
   let(:development) { root.join("docs/DEVELOPMENT.md").read }
+  let(:foundations) { root.join("docs/FOUNDATIONS.md").read }
   let(:context_map) { root.join("docs/CONTEXT_MAP.md").read }
   let(:makefile) { root.join("Makefile").read }
+  let(:yabi_skill) { root.join(".agents/skills/routeprint-yabi-interactor/SKILL.md").read }
 
   it "keeps the SDD gate, command routing, and completion proof explicit" do
     expect(development).to include(
@@ -93,5 +95,24 @@ RSpec.describe HarnessControlPlane do
       "git diff --name-status"
     )
     expect(development).to include("make agent-state")
+  end
+
+  it "defines the explicit fail-fast interactor style in project docs" do
+    expect(foundations).to include("explicit, fail-fast pipelines")
+    expect(development).to include(
+      "## Interactor Execution Loop",
+      "Only `call` reads from `input`",
+      "pipeline step into another interactor"
+    )
+  end
+
+  it "keeps the canonical interactor rules in the routed skill" do
+    expect(yabi_skill).to include(
+      "`call` is normally an orchestrator",
+      "call another interactor by constant",
+      "Do not add dummy `input` or an empty contract",
+      "Document every interactor class with concise YARD",
+      "Rescue only where the exception can be handled meaningfully"
+    )
   end
 end

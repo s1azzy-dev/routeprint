@@ -4,13 +4,33 @@
 
 - Defined the accepted admin reference-import subsystem architecture: durable
   source/run/item history, raw-artifact and source-record provenance, immutable
-  retries, diagnostics for dirty rows, Solid Queue execution, and explicit
+  retries, structured item failures, Solid Queue execution, and explicit
   source-to-airport mapping; user imports and admin UI remain separate work.
 - Implemented the import foundation, durable item orchestration, private raw
-  artifacts, source-record snapshots, sanitized row diagnostics, and the first
+  artifacts, source-record snapshots, structured item errors, and the first
   OurAirports airport adapter with conservative matching, WGS84 persistence,
   and full-snapshot missing-upstream reconciliation.
 - Added the `csv` runtime gem required by Ruby 4 for provider CSV parsing.
+- Simplified item execution: Solid Queue now limits one job per run item,
+  claim is a queued-to-running status transition, and cancellation/lease
+  orchestration is removed from this slice.
+- Removed checkpoint persistence and resume semantics; retries now reprocess a
+  complete item from the beginning.
+- Reworked source processing into ordered acquire/parse/raw-persist/apply
+  phases: raw rows commit first, canonical apply is transactional, and phase
+  failures stop the item instead of continuing row-by-row. The normal recovery
+  path is a new full run; the old row-issue interactor is no longer active.
+- Added explicit input contracts to all application interactors and concise
+  YARD documentation for interactors and public helper methods.
+- Routed nested interactor calls through injected `option` dependencies so
+  adapter and artifact orchestration remain replaceable in tests and runtime.
+- Refined import orchestration interactors to use explicit monadic pipelines,
+  narrow exception boundaries, and atomic claim/finalization flows without
+  splitting already-simple use cases into unnecessary helpers.
+- Promoted the import-refactor feedback into the Routeprint harness: explicit
+  fail-fast interactor pipelines, orchestration-first `call`, real contracts,
+  YARD, injected collaborators, complexity limits, realistic pipeline tests,
+  and mechanical convention checks are now durable project rules.
 - Fixed GitHub Actions PostGIS initialization so Rails loads `structure.sql` into a clean test database.
 - Added the fixed-wing airport reference foundation with PostGIS points,
   localized `place_names` fallbacks, timezone verification metadata, optional

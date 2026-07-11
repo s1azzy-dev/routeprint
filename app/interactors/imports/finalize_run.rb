@@ -1,4 +1,9 @@
 module Imports
+  # Finalizes a run after all of its items reach a terminal state.
+  #
+  # @example
+  #   Imports::FinalizeRun.call(input: { run_id: run.id })
+  # @param input [Hash] persisted run identifier
   class FinalizeRun < ApplicationInteractor
     option :input
 
@@ -10,18 +15,7 @@ module Imports
 
     def call
       run = yield find_run
-      result = nil
-
-      run.with_lock do
-        items = run.items.reload
-        if items.any? { |item| item.status.in?(%w[queued running]) }
-          result = Success(run:, finalized: false)
-        else
-          result = finalize(run, items)
-        end
-      end
-
-      result
+      finalize_run(run)
     end
 
     private
@@ -33,11 +27,21 @@ module Imports
       fail_with(code: :run_not_found, errors: { run_id: [ "not found" ] })
     end
 
+    def finalize_run(run)
+      run.with_lock { finalize_locked_run(run) }
+    end
+
+    def finalize_locked_run(run)
+      items = run.items.reload
+      return Success(run:, finalized: false) if items.any? { |item| item.status.in?(%w[queued running]) }
+
+      finalize(run, items)
+    end
+
     def finalize(run, items)
       succeeded_count = items.count(&:status_succeeded?)
       failed_count = items.count(&:status_failed?)
-      cancelled_count = items.count(&:status_cancelled?)
-      status = final_status(run:, succeeded_count:, failed_count:, cancelled_count:)
+      status = final_status(succeeded_count:, failed_count:)
       stats = run.stats.to_h.merge(
         "total_item_count" => items.size,
         "completed_item_count" => succeeded_count,
@@ -58,8 +62,7 @@ module Imports
       Success(run:, finalized: true)
     end
 
-    def final_status(run:, succeeded_count:, failed_count:, cancelled_count:)
-      return "cancelled" if run.cancel_requested_at.present? || (cancelled_count.positive? && failed_count.zero?)
+    def final_status(succeeded_count:, failed_count:)
       return "partially_failed" if failed_count.positive? && succeeded_count.positive?
       return "failed" if failed_count.positive?
 

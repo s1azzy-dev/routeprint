@@ -3,6 +3,11 @@ require "stringio"
 module Imports
   module OurAirports
     module Airports
+      # Runs the ordered OurAirports pipeline from acquisition through canonical apply.
+      #
+      # @example
+      #   Imports::OurAirports::Airports::Processor.call(input: { run:, item: })
+      # @param input [Hash] import run and run item
       class Processor < ApplicationInteractor
         option :input
         option :parser, default: -> { Imports::OurAirports::Airports::Parser }
@@ -10,128 +15,154 @@ module Imports
         option :eligibility, default: -> { Imports::OurAirports::Airports::Eligibility }
         option :persist_source_record, default: -> { Imports::PersistSourceRecord }
         option :apply_record, default: -> { Imports::OurAirports::Airports::ApplyRecord }
-        option :record_issue, default: -> { Imports::RecordIssue }
         option :reconcile_missing_upstream, default: -> { Imports::ReconcileMissingUpstream }
         option :downloader, default: -> { Imports::OurAirports::Airports::Download }
+
+        class ValidationContract < ApplicationContract
+          params do
+            required(:run).filled(type?: Imports::Run)
+            required(:item).filled(type?: Imports::RunItem)
+          end
+        end
 
         def call
           run = input.fetch(:run)
           item = input.fetch(:item)
-          artifact = item.artifacts.where(kind: "source_dump").order(:created_at).last || run.artifacts.where(kind: "source_dump").order(:created_at).last
-          unless artifact
-            download_result = downloader.call(input: { run:, item:, source_url: item.params.to_h["source_url"] })
-            return download_result if download_result.failure?
+          artifact = yield find_or_download_artifact(run:, item:)
+          rows = yield parse_artifact(artifact)
+          source_records = yield persist_raw_records(run:, rows:)
+          stats = yield apply_records(run:, source_records:)
 
-            artifact = download_result.value!.fetch(:artifact)
-          end
-          return fail_with(code: :source_artifact_missing, errors: { item_id: [ item.id ] }) unless artifact&.file&.attached?
-
-          processed_count = 0
-          valid_count = 0
-          issue_count = 0
-          seen_external_uids = []
-
-          parser.call(StringIO.new(artifact.file.download)).each do |parsed|
-            processed_count += 1
-            raw_payload = parsed.fetch(:raw_payload)
-            row_number = parsed.fetch(:row_number)
-            normalized_result = normalizer.call(raw_payload)
-
-            unless normalized_result.success?
-              source_record = stage_invalid_source_record(run:, raw_payload:)
-              issue_count += stage_issue(run:, item:, source_record:, raw_payload:, row_number:, failure: normalized_result, stage: "normalize")
-              next
-            end
-
-            normalized = normalized_result.value!
-            external_uid = normalized.fetch(:external_uid)
-            seen_external_uids << external_uid
-            record_result = persist_source_record.call(
-              input: {
-                source: run.source,
-                run:,
-                record: {
-                  record_kind: normalized.fetch(:record_kind),
-                  external_uid:,
-                  raw_payload:,
-                  normalized_payload: normalized.fetch(:normalized_payload)
-                }
-              }
-            )
-            unless record_result.success?
-              issue_count += stage_issue(run:, item:, raw_payload:, row_number:, failure: record_result, stage: "normalize")
-              next
-            end
-
-            source_record = record_result.value!.fetch(:source_record)
-            eligibility_result = eligibility.call(normalized.fetch(:normalized_payload))
-            unless eligibility_result.success?
-              issue_count += stage_issue(run:, item:, source_record:, raw_payload:, row_number:, failure: eligibility_result, stage: "normalize")
-              next
-            end
-
-            apply_result = apply_record.call(input: { source_record: })
-            unless apply_result.success?
-              issue_count += stage_issue(run:, item:, source_record:, raw_payload:, row_number:, failure: apply_result, stage: "apply")
-              next
-            end
-
-            valid_count += 1
-          end
-
-          item.checkpoint = item.checkpoint.to_h.merge("last_row_number" => processed_count)
-          reconcile_missing_upstream.call(input: { run: }) if run.mode_full?
-          Success(
-            checkpoint: item.checkpoint,
-            stats: item.stats.to_h.merge(
-              "processed_count" => processed_count,
-              "succeeded_count" => valid_count,
-              "issue_count" => issue_count
-            )
-          )
-        rescue CSV::MalformedCSVError => error
-          fail_with(code: :parse_error, errors: { message: [ error.message.to_s.truncate(500) ] })
+          Success(stats:)
         end
 
         private
 
-        def stage_invalid_source_record(run:, raw_payload:)
-          external_uid = raw_payload["id"].to_s.strip.presence
-          return unless external_uid
+        def find_or_download_artifact(run:, item:)
+          artifact = item.artifacts.where(kind: "source_dump").order(:created_at).last || run.artifacts.where(kind: "source_dump").order(:created_at).last
+          return Success(artifact) if artifact&.file&.attached?
 
-          result = persist_source_record.call(
-            input: {
-              source: run.source,
-              run:,
-              record: {
-                record_kind: "airport",
-                external_uid:,
-                raw_payload:,
-                normalized_payload: {}
-              }
-            }
-          )
-          result.success? ? result.value!.fetch(:source_record) : nil
+          result = downloader.call(input: { run:, item:, source_url: item.params.to_h["source_url"] })
+          return result if result.failure?
+
+          Success(result.value!.fetch(:artifact))
         end
 
-        def stage_issue(run:, item:, source_record: nil, raw_payload:, row_number:, failure:, stage:)
-          failure_hash = failure.respond_to?(:failure) ? failure.failure : failure
-          code = failure_hash.fetch(:code, :invalid_row)
-          errors = failure_hash.fetch(:errors, {})
-          record_issue.call(
-            input: {
-              run:,
-              run_item: item,
-              source_record:,
-              stage:,
-              code:,
-              severity: "error",
-              message: errors.to_json,
-              details: { "provider" => "ourairports" },
-              row_locator: { "row_number" => row_number }
-            }
+        def parse_artifact(artifact)
+          rows = parser.call(StringIO.new(artifact.file.download))
+          return fail_with(code: :source_file_empty, errors: { artifact_id: [ artifact.id ] }) if rows.empty?
+
+          Success(rows)
+        rescue CSV::MalformedCSVError => error
+          fail_with(code: :parse_error, errors: { message: [ error.message.to_s.truncate(500) ] })
+        end
+
+        def persist_raw_records(run:, rows:)
+          persisted = []
+          failure = nil
+
+          ApplicationRecord.transaction do
+            rows.each do |parsed|
+              row_number = parsed.fetch(:row_number)
+              raw_payload = parsed.fetch(:raw_payload)
+              external_uid = raw_payload["id"].to_s.strip.presence
+              unless external_uid
+                failure = { code: :missing_external_uid, errors: { id: [ "is required" ], row_number: [ row_number ] } }
+                raise ActiveRecord::Rollback
+              end
+
+              result = persist_source_record.call(
+                input: {
+                  phase: "raw",
+                  source: run.source,
+                  run:,
+                  record: {
+                    record_kind: "airport",
+                    external_uid:,
+                    raw_payload:
+                  }
+                }
+              )
+              if result.failure?
+                failure = with_row_number(result.failure, row_number)
+                raise ActiveRecord::Rollback
+              end
+
+              persisted << { source_record: result.value!.fetch(:source_record), row_number: }
+            end
+          end
+
+          return Failure(failure) if failure
+
+          Success(persisted)
+        end
+
+        def apply_records(run:, source_records:)
+          processed_count = 0
+          failure = nil
+
+          ApplicationRecord.transaction do
+            source_records.each do |entry|
+              source_record = entry.fetch(:source_record)
+              row_number = entry.fetch(:row_number)
+              normalized_result = normalizer.call(source_record.raw_payload)
+              unless normalized_result.success?
+                failure = with_row_number(normalized_result.failure, row_number)
+                raise ActiveRecord::Rollback
+              end
+
+              normalized = normalized_result.value!
+              persist_result = persist_source_record.call(
+                input: {
+                  source: run.source,
+                  run:,
+                  record: {
+                    record_kind: normalized.fetch(:record_kind),
+                    external_uid: normalized.fetch(:external_uid),
+                    raw_payload: source_record.raw_payload,
+                    normalized_payload: normalized.fetch(:normalized_payload)
+                  }
+                }
+              )
+              unless persist_result.success?
+                failure = with_row_number(persist_result.failure, row_number)
+                raise ActiveRecord::Rollback
+              end
+
+              source_record = persist_result.value!.fetch(:source_record)
+              eligibility_result = eligibility.call(normalized.fetch(:normalized_payload))
+              unless eligibility_result.success?
+                failure = with_row_number(eligibility_result.failure, row_number)
+                raise ActiveRecord::Rollback
+              end
+
+              apply_result = apply_record.call(input: { source_record: })
+              unless apply_result.success?
+                failure = with_row_number(apply_result.failure, row_number)
+                raise ActiveRecord::Rollback
+              end
+
+              processed_count += 1
+            end
+
+            reconciliation = reconcile_missing_upstream.call(input: { run: }) if run.mode_full?
+            if reconciliation&.failure?
+              failure = reconciliation.failure
+              raise ActiveRecord::Rollback
+            end
+          end
+
+          return Failure(failure) if failure
+
+          Success(
+            "processed_count" => processed_count,
+            "succeeded_count" => processed_count,
+            "issue_count" => 0
           )
-          1
+        end
+
+        def with_row_number(failure, row_number)
+          failure.merge(errors: failure.fetch(:errors, {}).merge(row_number: [ row_number ]))
         end
       end
     end

@@ -30,15 +30,28 @@ RSpec.describe Imports::ProcessRunItem, type: :interactor do
     end
   end
 
-  context "when the item has a live lease" do
+  context "when the item is already running" do
     let(:status) { "running" }
-
-    before { item.update!(lease_token: SecureRandom.uuid, lease_expires_at: 5.minutes.from_now) }
 
     it "skips duplicate processor work" do
       expect(result).to be_success
       expect(result.value!).to include(skipped: true)
       expect(processor).not_to have_received(:call)
+    end
+  end
+
+  context "when the processor raises" do
+    before { allow(processor).to receive(:call).and_raise(StandardError, "provider failure") }
+
+    it "marks the item failed and finalizes the parent run" do
+      expect(result).to be_success
+      expect(item.reload).to have_attributes(status: "failed", error_code: "processor_error")
+      expect(JSON.parse(item.error_message)).to include(
+        "exception_class" => [ "StandardError" ],
+        "exception_message" => [ "provider failure" ]
+      )
+      expect(JSON.parse(item.error_message).fetch("backtrace")).to be_an(Array)
+      expect(run.reload.status).to eq("failed")
     end
   end
 end

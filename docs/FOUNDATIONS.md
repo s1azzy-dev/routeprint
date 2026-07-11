@@ -65,6 +65,12 @@ Stable architecture rules:
   invariants.
 - Business use cases live in `app/interactors` and use the canonical `yabi`
   style.
+- Business use cases are explicit, fail-fast pipelines: validate real input,
+  keep `call` focused on orchestration, pass state through method arguments,
+  and stop on the first failure.
+- One interactor represents one meaningful use case, not one private pipeline
+  step. Prefer focused private methods before extracting another interactor;
+  inject nested interactor dependencies instead of calling constants directly.
 - Queries that are not business use cases may live in `app/queries`.
 - Authorization stays explicit through policies for user-owned resources or a
   dedicated guard for bounded admin surfaces.
@@ -80,6 +86,11 @@ Stable architecture rules:
   map payloads.
 - Background work uses the Rails/Solid Queue stack unless a concrete need
   justifies otherwise.
+- Add leases, cancellation, checkpoints, compensating flows, or custom locking
+  only for a demonstrated execution requirement; default to simple state
+  transitions and existing database/queue guarantees.
+- Queued use cases tolerate duplicate delivery through durable state and keep
+  exceptional stale-work cleanup outside the normal execution pipeline.
 - Do not introduce parallel service/interactor/API response styles.
 
 Concrete cross-cutting decisions live in ADRs:

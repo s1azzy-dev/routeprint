@@ -15,11 +15,13 @@ segments, and admin UI are explicitly deferred.
 
 **Goals:**
 
-- Make every reference import durable, observable, idempotent, and retryable.
+- Make every reference import durable, observable, idempotent, and restartable
+  from a new full run.
 - Preserve source identity, raw input, normalized data, changed payload history,
   and the explicit link to an internal airport.
-- Allow valid rows to progress while invalid or ambiguous rows stay staged with
-  actionable diagnostics.
+- Preserve the complete raw stage when canonical processing fails so an
+  operator can inspect the failed input, fix the source or code, and start a
+  new full run.
 - Keep domain writes in explicit `yabi` interactors and PostGIS persistence in
   the established `Place`/`Airport` boundary.
 - Use existing Rails, Solid Queue, Active Storage, PostgreSQL, and PostGIS
@@ -61,11 +63,11 @@ second path into the domain.
 | --- | --- | --- |
 | `import_sources` | Stable definition of one provider dataset | unique `key`, provider/dataset metadata, fetch mode, enabled flag, attribution/license, non-secret config |
 | `import_runs` | One immutable execution receipt | source, effective parameter/parser snapshot, optional initiating admin, `retry_of_run_id`, aggregate counters, terminal outcome |
-| `import_run_items` | Independently claimable shard or chunk | unique `(run, item_kind, item_key)`, checkpoint, lease, attempts, item counters and error state |
+| `import_run_items` | Independently executable shard or chunk | unique `(run, item_kind, item_key)`, attempts, item counters and error state |
 | `import_artifacts` | Original downloaded source snapshot | checksum, source URL/metadata, capture time, private Active Storage attachment |
 | `import_source_records` | Stable upstream record identity and current staged state | unique `(source, record_kind, external_uid)`, raw/normalized payloads, checksum, seen times, latest run |
 | `import_record_snapshots` | Changed source-record versions | source record, run, checksum, payload snapshot, capture time |
-| `import_issues` | Row- or item-level diagnostics | run/item/source record, stage, code, severity, sanitized detail, resolution state |
+| `import_issues` | Reserved diagnostic history for a future admin workflow | run/item/source record, stage, code, severity, sanitized detail, resolution state |
 | `import_airport_source_links` | Provider-neutral mapping to the catalog | one source record to `airports.place_id`, match strategy, linked time |
 
 Operational import tables use bigint primary keys. The airport source link uses a
@@ -97,22 +99,43 @@ hides domain-specific matching rules.
 enqueues one Solid Queue job per item on the `imports` queue. A job receives only
 the run-item ID.
 
-`Imports::ProcessRunItem` claims the row under a lock. A successful claim stores
-an execution token and lease expiry; a duplicate delivery with a live lease is
-a no-op. The processor checkpoints after bounded batches. Retrying a row is
-safe because external identity, checksum, source record, domain link, and
-domain apply behavior are idempotent; a checkpoint improves efficiency rather
-than being the correctness mechanism.
+`RunItemJob` uses Solid Queue concurrency controls with `to: 1` and a key based
+on the persisted run-item ID. This prevents overlapping delivery of the same
+item without adding application-level lease machinery. `ClaimRunItem` only
+checks that the item is still queued, then changes it to `running` and records
+the attempt. A duplicate job that runs after the first one completes observes
+the terminal status and skips processing.
 
-When a worker disappears, stale claimed items are recoverable after lease
-expiry. A run is finalized under a parent-row lock only after all items are
-terminal. A failed or partially failed run stays terminal forever. An operator
-retry creates a successor run with `retry_of_run_id` and a copied effective
-snapshot, selecting the failed scope; it never rewrites the predecessor.
+Each item is processed as one complete pass. If it fails, an operator retry
+reprocesses the whole item from the beginning. Retrying is safe because
+external identity, checksum, source record, domain link, and domain apply
+behavior are idempotent. A run is finalized after all items are terminal. A
+failed or partially failed run stays terminal forever. An operator retry creates
+a successor run with `retry_of_run_id` and a copied effective snapshot,
+selecting the failed scope; it never rewrites the predecessor.
 
-Cancellation is cooperative: a cancellation request prevents new item claims
-and is observed between batches. It preserves completed work and terminal
-history.
+Periodic cleanup of items that remain `running` beyond an operational threshold
+is intentionally deferred to a separate maintenance job/change.
+
+### 4. Use an ordered fail-fast source pipeline
+
+Each source item is processed as one complete pass with explicit phase
+boundaries:
+
+1. acquire and retain the complete raw artifact;
+2. parse the complete source file;
+3. persist all raw source records in one transaction;
+4. normalize, validate, match, and apply canonical records in a separate
+   transaction;
+5. reconcile the completed full snapshot;
+6. mark the item succeeded.
+
+If parsing or raw persistence fails, no raw stage changes are committed. If the
+canonical phase fails, its domain and normalized-record changes are rolled back
+while the committed raw stage remains available. The item is then marked
+failed, and no later phase runs. Row-level continuation and automatic issue
+accumulation are not part of this execution path; the failure details are
+stored on the item and logged.
 
 Alternative: reopen a failed run and reset its items. Rejected because it
 destroys the history requested for operations and makes progress/error evidence
@@ -120,16 +143,13 @@ ambiguous. This intentionally differs from the older Wildwaters retry shape.
 
 ### 4. Keep dirty data in staging and diagnostics
 
-The common pipeline permits a source item to complete with row-level issues.
-Invalid, incomplete, or ambiguous records receive `ImportIssue` rows and remain
-unresolved in `ImportSourceRecord`; they do not reach a domain apply interactor.
-Issues retain an error code, stage (`acquire`, `parse`, `normalize`, `match`,
-or `apply`), severity, and sanitized detail, not a raw exception dump.
-
 The source-specific adapter decides whether a record is eligible for automatic
 application. It cannot silently guess through an ambiguous catalog match. A
-future admin UI can query unresolved records and issues, but that UI is not
-defined by this change.
+failure stops the item and stores the structured error on the run item; the
+raw stage remains available for diagnosis. Row-level continuation and automatic
+`ImportIssue` creation are not part of this execution path. The existing issue
+table remains reserved for a future diagnostic workflow rather than being an
+active processor stage.
 
 ### 5. Implement `ourairports_airports` as the first adapter
 
@@ -177,23 +197,25 @@ definition is inserted idempotently. Deployment adds the subsystem and adapter
 but does not run an import automatically.
 
 Before production catalog data exists, a migration rollback can remove the
-tables. After a real run, rollback is logical: disable the source, cancel active
-work, and retain evidence rather than dropping provenance or catalog data.
+tables. After a real run, rollback is logical: disable the source, let active
+work reach a terminal state, and retain evidence rather than dropping
+provenance or catalog data.
 
 ## Risks / Trade-offs
 
 - **Provider schema or content drift** → retain exact artifacts, checksum and
-  parser version; convert unsupported rows into diagnostics rather than silently
-  mapping them.
-- **Duplicate delivery or a worker crash** → locked claim, lease recovery,
-  checkpoints, unique identity, and idempotent domain links.
-- **Large source files** → bounded run items and batch checkpoints; choose the
-  partition size from measurements during the first adapter implementation.
+  parser version; fail the item with an explicit row error rather than silently
+  mapping unsupported rows.
+- **Duplicate delivery or a worker crash** → per-item Solid Queue concurrency,
+  status checks, unique identity, and idempotent domain links;
+  periodic cleanup of abandoned items remains a follow-up.
+- **Large source files** → process the source as one item for now; introduce
+  partitioning only when source size requires a separate change.
 - **Unbounded raw-data storage** → retain only source artifacts and changed
   record snapshots; document source licensing and retention before production
   scheduling.
 - **Accidental catalog merge through public codes** → use a source link and
-  conservative matcher; collision becomes an issue, not an overwrite.
+  conservative matcher; collision fails the item, not an overwrite.
 - **Premature country/region abstraction** → retain no country/region domain
   data until product behavior defines its canonical target.
 

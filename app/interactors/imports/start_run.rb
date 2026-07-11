@@ -1,4 +1,14 @@
 module Imports
+  # Creates a queued import run and enqueues one job per run item.
+  #
+  # @example
+  #   Imports::StartRun.call(input: {
+  #     source_key: "ourairports_airports",
+  #     mode: "full",
+  #     params: {},
+  #     items: [{ item_kind: "file", item_key: "all", params: {} }]
+  #   })
+  # @param input [Hash] source, mode, persisted params, items, and optional initiator
   class StartRun < ApplicationInteractor
     option :input
 
@@ -7,8 +17,13 @@ module Imports
         required(:source_key).filled(:string)
         required(:mode).filled(:string)
         required(:params).filled(:hash)
-        required(:items).filled(:array)
+        required(:items).array(:hash) do
+          required(:item_kind).filled(:string)
+          required(:item_key).filled(:string)
+          optional(:params).maybe(:hash)
+        end
         optional(:initiated_by_user_id).maybe(:string)
+        optional(:retry_of_run_id).maybe(:integer)
       end
     end
 
@@ -38,15 +53,12 @@ module Imports
     end
 
     def persist_run(source)
-      run = nil
-      items = []
-
       in_transaction do
         run = yield create_run(source)
         items = yield create_items(run)
-      end
 
-      Success(run:, items:)
+        Success(run:, items:)
+      end
     end
 
     def create_run(source)
@@ -80,8 +92,6 @@ module Imports
             params: item.fetch(:params, {})
           )
         end
-      rescue KeyError => error
-        fail_with(code: :validation_error, errors: { items: [ error.message ] })
       end
     end
 

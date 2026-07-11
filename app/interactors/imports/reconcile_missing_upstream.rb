@@ -1,6 +1,17 @@
 module Imports
+  # Marks source records absent from a completed full snapshot as missing upstream.
+  #
+  # @example
+  #   Imports::ReconcileMissingUpstream.call(input: { run: })
+  # @param input [Hash] completed import run
   class ReconcileMissingUpstream < ApplicationInteractor
     option :input
+
+    class ValidationContract < ApplicationContract
+      params do
+        required(:run).filled(type?: Imports::Run)
+      end
+    end
 
     def call
       run = input.fetch(:run)

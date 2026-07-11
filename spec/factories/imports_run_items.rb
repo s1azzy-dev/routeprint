@@ -5,7 +5,6 @@ FactoryBot.define do
     item_key { "all" }
     status { "queued" }
     params { {} }
-    checkpoint { {} }
     stats { {} }
   end
 end

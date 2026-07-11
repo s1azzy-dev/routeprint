@@ -1,4 +1,9 @@
 module Auth
+  # Starts a password reset flow without revealing whether an email exists.
+  #
+  # @example
+  #   Auth::RequestPasswordReset.call(input: { email: "person@example.com" })
+  # @param input [Hash] the email address requesting a reset
   class RequestPasswordReset < ApplicationInteractor
     option :input
 

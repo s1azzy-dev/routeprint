@@ -1,38 +1,24 @@
 module Imports
   module OurAirports
     module Airports
+      # Applies one normalized OurAirports record to the canonical airport catalog.
+      #
+      # @example
+      #   Imports::OurAirports::Airports::ApplyRecord.call(input: { source_record: })
+      # @param input [Hash] normalized source record to apply
       class ApplyRecord < ApplicationInteractor
         option :input
+
+        class ValidationContract < ApplicationContract
+          params do
+            required(:source_record).filled(type?: Imports::SourceRecord)
+          end
+        end
 
         def call
           source_record = input.fetch(:source_record)
           normalized = source_record.normalized_payload.to_h
-          airport = nil
-          strategy = nil
-
-          in_transaction do
-            if (link = source_record.airport_source_link)
-              airport = link.airport
-              strategy = link.match_strategy
-            else
-              airport, strategy = find_or_build_airport(normalized)
-            end
-
-            update_canonical_records!(airport, normalized)
-
-            unless source_record.airport_source_link
-              link = source_record.build_airport_source_link(
-                airport:,
-                match_strategy: strategy,
-                confidence: strategy == "created_from_source" ? 1.0 : 0.95,
-                matched_at: Time.current
-              )
-              link.save!
-            end
-            source_record.update!(status: "applied")
-          end
-
-          Success(airport:, match_strategy: strategy)
+          in_transaction { apply_source_record(source_record:, normalized:) }
         rescue AmbiguousMatch => error
           fail_with(code: :ambiguous_code_match, errors: { codes: [ error.message ] })
         rescue ActiveRecord::RecordInvalid => error
@@ -42,6 +28,26 @@ module Imports
         end
 
         private
+
+        def apply_source_record(source_record:, normalized:)
+          link = source_record.airport_source_link
+          airport, strategy = link ? [ link.airport, link.match_strategy ] : find_or_build_airport(normalized)
+
+          update_canonical_records!(airport, normalized)
+          persist_source_link(source_record:, airport:, strategy:) unless link
+          source_record.update!(status: "applied")
+
+          Success(airport:, match_strategy: strategy)
+        end
+
+        def persist_source_link(source_record:, airport:, strategy:)
+          source_record.build_airport_source_link(
+            airport:,
+            match_strategy: strategy,
+            confidence: strategy == "created_from_source" ? 1.0 : 0.95,
+            matched_at: Time.current
+          ).save!
+        end
 
         def find_or_build_airport(normalized)
           candidates = matching_airports(normalized)

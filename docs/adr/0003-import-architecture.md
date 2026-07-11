@@ -46,9 +46,10 @@ artifacts are retained privately through the existing Active Storage boundary.
 `ImportSourceRecord` persists the stable upstream identity as source, record
 kind, and external UID, together with raw and normalized payloads, a checksum,
 and seen/change metadata. Changed content produces an `ImportRecordSnapshot`.
-`ImportIssue` persists sanitized row- or item-level diagnostics. JSONB is
-reserved for source-specific/import-oriented data rather than canonical
-searchable fields.
+Run-item error fields persist structured failure diagnostics. The existing
+`import_issues` table is reserved for a future admin diagnostic workflow and is
+not written by the fail-fast processor. JSONB is reserved for
+source-specific/import-oriented data rather than canonical searchable fields.
 
 Domain mapping uses explicit link tables. The first is
 `ImportAirportSourceLink`, which connects a source record to
@@ -58,25 +59,36 @@ polymorphic domain links are not used.
 
 ### Execution, idempotency, and retry
 
-Solid Queue jobs receive only an import-run-item ID and claim work under a row
-lock with a persisted execution lease and checkpoint. Delivery is treated as
-at-least-once: duplicate delivery, a retry, or a stale-worker recovery must not
-duplicate source records, links, or domain writes.
+Solid Queue jobs receive only an import-run-item ID and use a per-item
+concurrency limit of one. Delivery is treated as at-least-once: duplicate
+delivery or a retry must not duplicate source records, links, or domain writes.
+`ClaimRunItem` performs only a simple queued-status check and transition to
+`running`; application-level leases, checkpoints, and cancellation are not part
+of this execution path. Each item is processed as one complete pass, and a
+retry starts that item from the beginning.
 
 One source has at most one queued or running run. Item progress and errors are
-durable. Parent finalization occurs under a run lock only after all items are
-terminal. A failed or partially failed run remains immutable; an operator retry
-creates a successor run linked through `retry_of_run_id`, using the persisted
-input and failed scope. Cancellation is cooperative between batches and also
-preserves history.
+durable. Parent finalization occurs after all items are terminal. A failed or
+partially failed run remains immutable. The normal recovery path is to inspect
+the raw stage, fix the code or source file, and start a new full run. The
+optional `RetryRun` compatibility use case can still create a successor for
+failed scope without mutating the predecessor. Periodic cleanup of abandoned
+running items is deferred to a separate maintenance job/change.
+
+Each item follows an ordered fail-fast pipeline: complete artifact acquisition,
+complete parsing, raw source-record persistence, then normalization/matching/
+canonical apply, and finally full-snapshot reconciliation. Raw persistence is
+committed before canonical processing. Canonical and normalized-record writes
+are transactional and roll back together when that phase fails; the raw stage
+remains available for diagnosis. A failed phase stops the item and records the
+failure instead of continuing with later rows.
 
 ### Dirty data and reference catalog policy
 
-Invalid, incomplete, excluded, or ambiguously matched rows remain staged with
-an issue and do not silently write to the canonical catalog. A valid row can
-continue even when another row in the item has an issue. Raw input and detailed
-diagnostics remain internal and never belong in public, map, or ordinary
-Inertia response surfaces or in logs.
+Invalid, incomplete, excluded, or ambiguously matched rows fail the item and do
+not silently write to the canonical catalog. A later row is not processed after
+the first failure. Raw input and detailed diagnostics remain internal and never
+belong in public, map, or ordinary Inertia response surfaces or in logs.
 
 `ourairports_airports` is the first adapter. Its stable provider row ID is the
 external identity; IATA and ICAO codes are lookup attributes only. The adapter

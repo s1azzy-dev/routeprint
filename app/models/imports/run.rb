@@ -1,7 +1,7 @@
 module Imports
   class Run < ApplicationRecord
     MODES = %w[full incremental replay retry].freeze
-    STATUSES = %w[queued running succeeded partially_failed failed cancelled].freeze
+    STATUSES = %w[queued running succeeded partially_failed failed].freeze
 
     belongs_to :source, class_name: "Imports::Source", inverse_of: :runs
     belongs_to :retry_of_run, class_name: "Imports::Run", optional: true, inverse_of: :retry_runs

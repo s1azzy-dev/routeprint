@@ -14,26 +14,27 @@
 
 - [x] 2.1 Write failing interactor and job specs for start, active-run exclusion,
   item-only job arguments, progress aggregation, and terminal finalization.
-- [x] 2.2 Implement start, claim, checkpoint, complete/fail, cancel, and
-  finalize interactors using row locks, an execution lease, and persisted
-  effective input snapshots.
-- [x] 2.3 Add the thin Solid Queue `imports` job and prove duplicate delivery of
-  a succeeded or live-leased item does not repeat domain work.
-- [x] 2.4 Write failing retry and stale-recovery specs, then implement successor
-  runs linked by `retry_of_run_id` and recovery of only expired active items.
+- [x] 2.2 Implement start, simple status claim, complete/fail, and
+  finalize interactors using persisted effective input snapshots.
+- [x] 2.3 Add the thin Solid Queue `imports` job with a per-item concurrency
+  limit and prove duplicate delivery of a succeeded or running item does not
+  repeat domain work.
+- [x] 2.4 Write failing retry specs, then implement successor runs linked by
+  `retry_of_run_id`; defer periodic cleanup of abandoned running items to a
+  separate background-maintenance change.
 - [x] 2.5 Run the focused interactor/job specs and `make verify-fast` after the
   orchestration slice is green.
 
-## 3. Provenance, artifacts, and diagnostics
+## 3. Provenance, artifacts, and failure evidence
 
 - [x] 3.1 Write failing specs for artifact checksum retention, source-record
   identity, normalized/raw payload preservation, and changed-payload snapshots.
 - [x] 3.2 Implement private artifact storage through the existing Active Storage
   boundary and source-record/snapshot persistence without raw payloads in logs
   or ordinary response serializers.
-- [x] 3.3 Write failing mixed-validity batch specs, then implement staged
-  unresolved records and sanitized `ImportIssue` diagnostics that allow later
-  valid rows to continue.
+- [x] 3.3 Write failing mixed-validity batch specs, then implement fail-fast
+  processing: persist the complete raw stage, roll back canonical changes on
+  the first invalid row, and retain structured item failure details.
 - [x] 3.4 Add focused security/logging coverage and run the relevant specs plus
   `make security`.
 
@@ -41,8 +42,8 @@
 
 - [x] 4.1 Add sanitized OurAirports fixture files and write failing parser,
   normalization, eligibility, and source-identity specs.
-- [x] 4.2 Implement the source-specific acquisition, parser, normalizer, and
-  bounded item processing path using provider row ID as external identity.
+- [x] 4.2 Implement the source-specific acquisition, complete-file parser,
+  raw persistence stage, transactional apply stage, and provider-ID identity.
 - [x] 4.3 Write failing airport-link and catalog-apply specs for existing links,
   unambiguous matching, ambiguous code collisions, and newly created airports.
 - [x] 4.4 Implement the explicit airport apply interactor and

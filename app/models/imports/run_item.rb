@@ -1,6 +1,6 @@
 module Imports
   class RunItem < ApplicationRecord
-    STATUSES = %w[queued running succeeded failed cancelled].freeze
+    STATUSES = %w[queued running succeeded failed].freeze
 
     belongs_to :run, class_name: "Imports::Run", inverse_of: :items
 

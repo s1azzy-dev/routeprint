@@ -332,11 +332,8 @@ CREATE TABLE public.import_run_items (
     item_key text NOT NULL,
     status text NOT NULL,
     params jsonb DEFAULT '{}'::jsonb NOT NULL,
-    checkpoint jsonb DEFAULT '{}'::jsonb NOT NULL,
     stats jsonb DEFAULT '{}'::jsonb NOT NULL,
     attempts_count integer DEFAULT 0 NOT NULL,
-    lease_token text,
-    lease_expires_at timestamp with time zone,
     started_at timestamp with time zone,
     finished_at timestamp with time zone,
     error_code text,
@@ -379,7 +376,6 @@ CREATE TABLE public.import_runs (
     issue_count integer DEFAULT 0 NOT NULL,
     started_at timestamp with time zone,
     finished_at timestamp with time zone,
-    cancel_requested_at timestamp with time zone,
     error_code text,
     error_message text,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -1174,8 +1170,9 @@ ALTER TABLE ONLY public.user_sessions
 SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260711131500'),
+('20260711130000'),
 ('20260710130000'),
 ('20260710100000'),
 ('20260708132000'),
 ('20260707000100');
-

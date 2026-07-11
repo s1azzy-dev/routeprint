@@ -1,50 +1,84 @@
 ---
 name: routeprint-yabi-interactor
-description: Use this skill when adding or changing Routeprint business use cases, app/interactors code, interactor specs, or deciding whether Rails logic belongs in a yabi interactor. Do not use for pure view, copy, or style-only edits.
+description: Use when adding, changing, reviewing, or refactoring Routeprint business use cases, app/interactors code, interactor specs, or controller/model logic that may belong in a yabi interactor. Enforces real input contracts, orchestration-first call methods, explicit fail-fast pipelines, injected interactor collaborators, narrow exception handling, concise YARD, simple state machines, and proportionate tests. Do not use for pure view, copy, or style-only edits.
 ---
 
 # Routeprint Yabi Interactor
 
-## When to use
+## Load
 
-Use for behavior-changing business logic, `app/interactors/**`, `spec/interactors/**`, or controller/model changes whose orchestration should move into a use case.
+- Read the SDD/task/verification sections of `docs/DEVELOPMENT.md`.
+- Read the "Interactors/use cases" row plus the active domain row in
+  `docs/CONTEXT_MAP.md`.
+- Read `docs/FOUNDATIONS.md` architecture boundary.
+- Read `app/interactors/application_interactor.rb`, the target interactor/spec,
+  and one good neighboring interactor/spec.
 
-Do not replace the project harness. First classify the task with `docs/DEVELOPMENT.md`, then use this skill only for the interactor slice.
+Do not scan every interactor or load unrelated ADRs by default.
 
-## Read
+## Core rules
 
-- `docs/DEVELOPMENT.md` task router, task packet, execution loop, and verification matrix.
-- `docs/CONTEXT_MAP.md` rows for "Interactors/use cases" plus the active domain area.
-- `docs/FOUNDATIONS.md` architecture boundary when deciding where logic belongs.
-- `app/interactors/application_interactor.rb`.
-- The directly relevant interactor and matching spec, then one neighboring interactor/spec in the same namespace.
-
-## Do not read by default
-
-- The whole repository.
-- All interactors or all specs.
-- ADRs unless the context map names one for the active domain.
-- `db/structure.sql` unless the task depends on generated schema output.
+1. One interactor represents one meaningful use case, not one private method.
+   Prefer focused private methods before creating another interactor. Extract a
+   collaborator only for an independent contract, reuse, authorization,
+   transaction, domain boundary, or separately meaningful action.
+2. Validate only real input. Define an explicit `ValidationContract` listing
+   every accepted `input` field. Do not add dummy `input` or an empty contract
+   when the use case has no input.
+3. `call` is normally an orchestrator. Read `input` once there, bind values to
+   locals, and pass them explicitly to private methods. Avoid hidden mutable
+   instance state and private methods that reach back into `input`.
+4. Express multi-stage work as an ordered, one-directional pipeline. Use
+   `yield` with `Success`/`Failure` results so the first failure stops later
+   stages. Keep a genuinely small one-step `call` direct.
+5. Declare interactor collaborators with injected `option` dependencies. Never
+   call another interactor by constant from inside an interactor.
+6. Return expected failures as `Failure(code:, errors:)` through `fail_with`.
+   Rescue only where the exception can be handled meaningfully. Broad rescue
+   belongs only at an outer job/orchestration boundary and must preserve the
+   exception class, message, and backtrace in logs or structured failure
+   evidence.
+7. Start with the simplest correct state machine. Do not add leases,
+   cancellation, checkpoints, recovery loops, custom locking, or generic
+   pipeline frameworks without a current requirement and matching tests.
+   For queued work, tolerate duplicate delivery through durable state and
+   existing queue/database guarantees; keep rare stale-work cleanup outside the
+   happy-path interactor.
+8. Document every interactor class with concise YARD: purpose, example call,
+   and arguments. Document other public methods, but do not repeat the class
+   documentation above the interactor's single `call` method.
 
 ## Procedure
 
-1. Fill a compact task packet: task type, behavior change, risk class, docs loaded, context row, red test, approval, verification.
-2. If behavior changes, write or update the failing interactor/request spec first.
-3. Keep the use case in `app/interactors` using the existing `ApplicationInteractor` helpers.
-4. Put persistence invariants in models, HTTP orchestration in controllers, and non-business read composition in queries.
-5. Prefer one focused interactor over a new service layer, command object style, or alternate result API.
-6. Return `Success(...)` on success and `Failure(code:, errors:)` through `fail_with` on expected failures.
-7. Run the narrow spec first, then the verification required by `docs/DEVELOPMENT.md`.
-8. Update `CHANGES.md` for behavior, schema, dependency, process, or user-facing changes.
+1. Fill the compact task packet from `docs/DEVELOPMENT.md`.
+2. Identify the use case boundary and write the public input/output/failure
+   contract before decomposing implementation steps.
+3. For behavior changes, write or update the failing interactor/request spec
+   first. A contract-preserving refactor may rely on existing behavior specs.
+4. Sketch the happy path as a short sequence of named stages. Make `call` show
+   that sequence in execution order.
+5. Pass stage values explicitly. Use private methods for local steps; introduce
+   another interactor only when the extraction rule above is satisfied.
+6. Keep transactions around the atomic business boundary. Fail fast and do not
+   continue later records or stages after a failure unless the specification
+   explicitly defines partial success.
+7. Inject interactor collaborators through `option`; keep external I/O at a
+   narrow boundary.
+8. Run the narrow spec, then the verification selected by
+   `docs/DEVELOPMENT.md`. Update `CHANGES.md` when required.
 
-## Default style example
-
-Use this as the shape to preserve; adjust names and fields to the real domain.
+## Canonical shape
 
 ```ruby
 module Namespace
+  # Updates a record and records the completed business action.
+  #
+  # @example
+  #   Namespace::DoThing.call(input: { record_id:, name: "New name" })
+  # @param input [Hash] record identifier and editable attributes
   class DoThing < ApplicationInteractor
     option :input
+    option :audit_interactor, default: -> { Namespace::AuditThing }
 
     class ValidationContract < ApplicationContract
       params do
@@ -55,9 +89,14 @@ module Namespace
     end
 
     def call
+      record_id = input.fetch(:record_id)
+      name = input.fetch(:name)
+      note = input[:note]
+
       in_transaction do
-        record = yield find_record(input[:record_id])
-        updated = yield update_record(record)
+        record = yield find_record(record_id)
+        updated = yield update_record(record, name:, note:)
+        yield audit_interactor.call(input: { record: updated })
 
         Success(record: updated)
       end
@@ -67,14 +106,13 @@ module Namespace
 
     def find_record(record_id)
       record = Record.find_by(id: record_id)
-
       return Success(record) if record
 
       fail_with(code: :record_not_found, errors: { record_id: [ "not found" ] })
     end
 
-    def update_record(record)
-      return Success(record) if record.update(name: input[:name], note: input[:note])
+    def update_record(record, name:, note:)
+      return Success(record) if record.update(name:, note:)
 
       fail_with(code: :validation_error, errors: record.errors.to_hash)
     end
@@ -82,52 +120,32 @@ module Namespace
 end
 ```
 
-Spec shape:
+## Testing
 
-```ruby
-RSpec.describe Namespace::DoThing, type: :interactor do
-  subject(:result) { described_class.call(input:) }
+- Prove success, expected failure codes, and state changes at the public use-case
+  boundary.
+- Prove fail-fast behavior when later work must not run after a failed stage.
+- Prove rollback when the use case promises atomicity.
+- Use doubles for external I/O or injected collaborators when testing
+  orchestration order/error propagation.
+- Keep at least one real fixture/integration path for critical import pipelines;
+  do not replace parser, database, matching, and domain apply all at once.
+- Run `spec/tooling/interactor_conventions_spec.rb` when changing these
+  conventions.
 
-  let(:input) { { record_id: record.id, name: "New name" } }
-  let(:record) { create(:record) }
+## Review checklist
 
-  it "returns success" do
-    expect(result).to be_success
-  end
+- Is this one meaningful use case with one `call`?
+- Does the contract list only real input fields?
+- Is the happy-path pipeline obvious from `call`?
+- Does the first failure stop later stages?
+- Are values passed explicitly instead of read from hidden state?
+- Are nested interactors injected through `option`?
+- Are rescues narrow and failures observable?
+- Was complexity added only for a demonstrated requirement?
+- Do YARD and tests describe the public boundary without duplicating internals?
 
-  it "persists the change" do
-    expect { result }.to change { record.reload.name }.to("New name")
-  end
+## Handoff
 
-  context "when the record does not exist" do
-    let(:input) { super().merge(record_id: SecureRandom.uuid) }
-
-    it "returns failure" do
-      expect(result).to be_failure
-      expect(result.failure[:code]).to eq(:record_not_found)
-    end
-  end
-end
-```
-
-## Outputs
-
-When reporting or handing off, include:
-
-```text
-Loaded:
-Skipped:
-Interactor:
-Spec:
-Failure codes:
-Red test:
-Verification:
-Open question:
-```
-
-## Token economy
-
-- Read one base interactor, one target file, one matching spec, and one neighbor.
-- Use `rg` for namespace names and failure codes before opening files.
-- Summarize large existing specs; keep exact snippets only for style-critical lines.
-- Do not paste full validation contracts unless the task changes those fields.
+Report the interactor, public input/output, failure codes, transaction boundary,
+specs run, and any deliberately deferred complexity.

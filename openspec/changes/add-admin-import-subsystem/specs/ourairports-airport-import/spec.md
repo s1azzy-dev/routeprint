@@ -18,7 +18,7 @@ record. IATA and ICAO codes SHALL remain lookup attributes, not mapping keys.
 - **GIVEN** an existing airport has an IATA or ICAO code that also appears in an
   incoming OurAirports row without an existing source link
 - **WHEN** the catalog match is ambiguous
-- **THEN** the row is staged with an ambiguity issue
+- **THEN** the item fails with an ambiguity error after the raw stage is retained
 - **AND THEN** the system does not merge or overwrite an airport solely because
   of the shared public code
 
@@ -50,14 +50,15 @@ canonical airport.
 - **GIVEN** an OurAirports row represents a heliport, seaplane base, balloonport,
   or another excluded facility
 - **WHEN** the row is processed
-- **THEN** it receives a source-record diagnostic
+- **THEN** the item fails with a stable eligibility error after the raw stage is
+  retained
 - **AND THEN** no place, airport, or airport source link is created
 
 #### Scenario: Reject invalid spatial or timezone data
 - **GIVEN** an otherwise eligible OurAirports row has invalid coordinates or an
   invalid supplied IANA timezone
 - **WHEN** the row is processed
-- **THEN** it receives a validation issue and remains unapplied
+- **THEN** the item fails with a validation error and remains unapplied
 - **AND THEN** no invalid PostGIS point or airport record is persisted
 
 ### Requirement: Airport import preserves the canonical spatial boundary

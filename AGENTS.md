@@ -29,7 +29,8 @@ docs unless explicitly requested.
 - Read the related baseline spec before changing established behavior.
 - Behavior-changing work uses red test, minimal code, green test.
 - Keep MVP user-facing behavior flight-first.
-- Put business use cases in `app/interactors` using the canonical `yabi` style.
+- Put business use cases in `app/interactors` as explicit, fail-fast `yabi`
+  pipelines; use the routed project skill for the detailed style contract.
 - Require explicit authorization for every user-owned travel resource.
 - Treat Inertia props as a public response surface.
 - Never edit `db/structure.sql` by hand.

@@ -1,6 +1,18 @@
 module Imports
+  # Marks a run item as failed and stores its structured failure evidence.
+  #
+  # @example
+  #   Imports::FailRunItem.call(input: { item:, error: { code: :parse_error, errors: {} } })
+  # @param input [Hash] run item and failure result or exception
   class FailRunItem < ApplicationInteractor
     option :input
+
+    class ValidationContract < ApplicationContract
+      params do
+        required(:item).filled(type?: Imports::RunItem)
+        required(:error).filled
+      end
+    end
 
     def call
       item = input.fetch(:item)
@@ -9,8 +21,6 @@ module Imports
       item.update!(
         status: "failed",
         finished_at: Time.current,
-        lease_token: nil,
-        lease_expires_at: nil,
         error_code: error_code_for(error),
         error_message: error_message_for(error)
       )

@@ -16,7 +16,7 @@ RSpec.describe Imports::Run, type: :model do
 
     it "defines the mode and status vocabularies" do
       expect(described_class::MODES).to contain_exactly("full", "incremental", "replay", "retry")
-      expect(described_class::STATUSES).to contain_exactly("queued", "running", "succeeded", "partially_failed", "failed", "cancelled")
+      expect(described_class::STATUSES).to contain_exactly("queued", "running", "succeeded", "partially_failed", "failed")
     end
   end
 

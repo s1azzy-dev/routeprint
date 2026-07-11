@@ -39,11 +39,13 @@ RSpec.describe Imports::OurAirports::Airports::Processor, type: :interactor do
   let(:parser) { parser_for(rows) }
   let(:normalizer) { normalizer_for(normalized_payload) }
 
-  it "continues after a dirty row and records a sanitized issue" do
+  it "stops on a dirty row after persisting the complete raw stage" do
     result = described_class.call(input: { run:, item: }, parser:, normalizer:)
 
-    expect(result).to be_success
-    expect_batch_outcome(result)
+    expect(result).to be_failure
+    expect(result.failure.fetch(:code)).to eq(:unsupported_facility_type)
+    expect([ Place.count, Airport.count ]).to eq([ 0, 0 ])
+    expect([ Imports::SourceRecord.count, Imports::SourceRecord.where(status: "staged").count ]).to eq([ 2, 2 ])
   end
 
   private
@@ -60,13 +62,5 @@ RSpec.describe Imports::OurAirports::Airports::Processor, type: :interactor do
         row.fetch("id") == "1" ? success.call(external_uid: "1", record_kind: "airport", normalized_payload: valid_payload) : failure.call(code: :unsupported_facility_type, errors: { type: [ "heliport" ] })
       end
     end
-  end
-
-  def expect_batch_outcome(result)
-    expect(result.value!.fetch(:stats)).to include("processed_count" => 2, "succeeded_count" => 1, "issue_count" => 1)
-    expect(Place.count).to eq(1)
-    expect(Imports::Issue.count).to eq(1)
-    expect(Imports::Issue.first).to have_attributes(code: "unsupported_facility_type", message: '{"type":["heliport"]}')
-    expect(Imports::SourceRecord.find_by(external_uid: "2")).to be_status_unresolved
   end
 end

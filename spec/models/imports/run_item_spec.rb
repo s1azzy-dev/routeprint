@@ -16,6 +16,6 @@ RSpec.describe Imports::RunItem, type: :model do
   end
 
   it "defines the supported statuses" do
-    expect(described_class::STATUSES).to include("queued", "running", "succeeded", "failed", "cancelled")
+    expect(described_class::STATUSES).to include("queued", "running", "succeeded", "failed")
   end
 end

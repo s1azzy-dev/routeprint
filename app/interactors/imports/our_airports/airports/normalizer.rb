@@ -1,17 +1,28 @@
 module Imports
   module OurAirports
     module Airports
+      # Normalizes one raw OurAirports row into the airport source schema.
       class Normalizer
         FIXED_WING_TYPES = %w[large_airport medium_airport small_airport closed_airport].freeze
 
+        # Normalizes a raw provider row.
+        #
+        # @param row [Hash] provider row keyed by CSV header
+        # @return [Dry::Monads::Result] normalized payload or a validation failure
         def self.call(row)
           new(row).call
         end
 
+        # Builds a normalizer for a raw provider row.
+        #
+        # @param row [Hash] provider row keyed by CSV header
         def initialize(row)
           @row = row.transform_keys(&:to_s)
         end
 
+        # Validates and transforms the provider row.
+        #
+        # @return [Dry::Monads::Result] normalized payload or a validation failure
         def call
           external_uid = string("id")
           return Dry::Monads::Failure(code: :missing_external_uid, errors: { id: [ "is required" ] }) if external_uid.blank?

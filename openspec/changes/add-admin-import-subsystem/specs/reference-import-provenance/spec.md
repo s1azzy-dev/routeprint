@@ -39,23 +39,27 @@ changed payload version.
 - **THEN** its current payload is updated and a new snapshot is attached to the
   current run
 
-### Requirement: Invalid reference rows remain diagnosable staging data
-The system SHALL retain a sanitized diagnostic for an invalid, incomplete, or
-ambiguous source row and SHALL not apply that row to a canonical domain record.
+### Requirement: Canonical failures preserve the raw staging boundary
+The system SHALL stop the item on the first invalid, incomplete, or ambiguous
+source row, retain the committed raw stage, and SHALL not commit canonical or
+normalized-record changes from the failed apply phase.
 
-#### Scenario: Continue after an invalid row
+#### Scenario: Stop after an invalid row
 - **GIVEN** a run item contains one invalid row and later valid rows
 - **WHEN** the item is processed
-- **THEN** the invalid row receives an unresolved source-record state and issue
-- **AND THEN** valid rows continue through their applicable pipeline
-- **AND THEN** the item reports the issue count in its durable progress
+- **THEN** the raw rows are retained in source records
+- **AND THEN** canonical and normalized-record writes from the apply phase are
+  rolled back
+- **AND THEN** later rows are not processed
+- **AND THEN** the item stores a stable failure code and row number
 
-#### Scenario: Preserve sanitized failures
+#### Scenario: Preserve explicit failures
 - **WHEN** parsing, matching, or applying a source row fails
-- **THEN** the issue records its stage, stable error code, severity, and
-  sanitized detail
-- **AND THEN** the run error state and application logs do not contain the raw
-  payload, signed artifact URL, credentials, or full provider response
+- **THEN** the item records its stable error code, exception class/message, and
+  backtrace
+- **AND THEN** the application log records the exception with the run-item ID
+- **AND THEN** neither contains the raw payload, signed artifact URL, or
+  credentials
 
 ### Requirement: Raw import data stays internal
 The system SHALL keep source artifacts, raw payloads, and detailed diagnostics
