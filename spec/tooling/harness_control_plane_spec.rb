@@ -11,6 +11,8 @@ RSpec.describe HarnessControlPlane do
   let(:foundations) { root.join("docs/FOUNDATIONS.md").read }
   let(:context_map) { root.join("docs/CONTEXT_MAP.md").read }
   let(:makefile) { root.join("Makefile").read }
+  let(:codex_rules) { root.join(".codex/rules/rspec.rules").read }
+  let(:readme) { root.join("README.md").read }
   let(:yabi_skill) { root.join(".agents/skills/routeprint-yabi-interactor/SKILL.md").read }
 
   it "keeps the SDD gate, command routing, and completion proof explicit" do
@@ -114,5 +116,35 @@ RSpec.describe HarnessControlPlane do
       "Document every interactor class with concise YARD",
       "Rescue only where the exception can be handled meaningfully"
     )
+  end
+
+  it "keeps archived feature completion synchronized across project documents" do
+    expect(development).to include(
+      "## Completion Synchronization Checklist",
+      "update `CHANGES.md`",
+      "Current Runtime Foundation",
+      "remove the corresponding item from `docs/TODO.md`"
+    )
+    expect(readme).to include(
+      "Authentication, sessions, registration, sign-in/sign-out, and password reset",
+      "Protected dashboard",
+      "Place and airport reference foundation"
+    )
+    expect(readme).not_to include("auth, and admin product behavior should be added later")
+  end
+
+  it "allows only stable Make verification targets in the project Codex rule" do
+    expect(codex_rules).to include(
+      '"make"',
+      '"agent-rspec"',
+      '"agent-test"',
+      '"agent-verify-fast"',
+      '"verify-fast"',
+      '"verify"',
+      '"security"',
+      '"openspec-validate"',
+      '"Stable non-destructive Routeprint verification targets"'
+    )
+    expect(codex_rules).not_to include('"docker"', '"compose"', '"bundle"', '"exec"', '"rspec"')
   end
 end

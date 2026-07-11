@@ -10,7 +10,7 @@ AGENT_LOG_LIMIT ?= 20
 AGENT_DOCKER_LOG_LINES ?= 200
 AGENT_DOCKER_SERVICE ?= web
 
-.PHONY: setup openspec-install openspec-update openspec-validate frontend-install frontend-format frontend-lint frontend-typecheck frontend-test frontend-build frontend-audit frontend-verify frontend-outdated agent-state agent-search agent-diff-stat agent-diff-names agent-log agent-docker-logs agent-rtk agent-rtk-gain agent-rtk-gain-daily agent-rtk-gain-history agent-rtk-session agent-rtk-discover agent-host-state agent-host-search agent-host-diff-stat agent-host-diff-names agent-host-log agent-host-docker-logs agent-host-rtk-gain agent-host-rtk-session agent-host-rtk-discover agent-container-rtk agent-container-rtk-gain agent-container-rtk-gain-daily agent-container-rtk-gain-history agent-frontend-format agent-frontend-lint agent-frontend-typecheck agent-frontend-test agent-rubocop agent-rspec agent-test agent-verify-fast install-hooks up down logs shell bash bundle lint rubocop rubocop-autocorrect test security verify verify-fast ci migration doctor bundle-outdated maplibre-outdated outdated
+.PHONY: setup openspec-install openspec-update openspec-validate frontend-install frontend-format frontend-lint frontend-typecheck frontend-test frontend-build frontend-audit frontend-check frontend-verify frontend-outdated agent-state agent-search agent-diff-stat agent-diff-names agent-log agent-docker-logs agent-rtk agent-rtk-gain agent-rtk-gain-daily agent-rtk-gain-history agent-rtk-session agent-rtk-discover agent-host-state agent-host-search agent-host-diff-stat agent-host-diff-names agent-host-log agent-host-docker-logs agent-host-rtk-gain agent-host-rtk-session agent-host-rtk-discover agent-container-rtk agent-container-rtk-gain agent-container-rtk-gain-daily agent-container-rtk-gain-history agent-frontend-format agent-frontend-lint agent-frontend-typecheck agent-frontend-test agent-rubocop agent-rubocop-fix agent-ruby-test agent-rspec agent-test agent-verify-fast install-hooks up down logs shell bash bundle lint rubocop rubocop-check rubocop-fix rubocop-autocorrect ruby-test test security verify verify-fast ci migration doctor bundle-outdated maplibre-outdated outdated
 
 setup: openspec-install
 	$(COMPOSE) up --build -d
@@ -47,8 +47,11 @@ frontend-build:
 frontend-audit:
 	$(APP) bin/npm run frontend:audit
 
+frontend-check: frontend-format frontend-lint frontend-typecheck frontend-test frontend-build
+
 frontend-verify:
-	$(APP) bin/npm run frontend:verify
+	$(MAKE) frontend-check
+	$(MAKE) frontend-audit
 
 # Agent commands keep app/runtime work inside the web container where needed and
 # keep routine workspace/tool feedback compact before it reaches the context.
@@ -140,7 +143,13 @@ agent-frontend-test:
 	$(APP) bash -lc "PATH=/app/node_modules/.bin:$$PATH rtk vitest run --coverage --reporter=minimal --passWithNoTests"
 
 agent-rubocop:
+	$(APP) env RUBOCOP_CACHE_ROOT=/app/tmp/rubocop rtk rubocop --format simple --config /app/.rubocop.yml
+
+agent-rubocop-fix:
 	$(APP) env RUBOCOP_CACHE_ROOT=/app/tmp/rubocop rtk rubocop -A --format simple --config /app/.rubocop.yml
+
+agent-ruby-test:
+	$(APP) bash -lc "RAILS_ENV=test bin/rails db:prepare && ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test rtk rspec"
 
 agent-rspec:
 	$(APP) bash -lc "RAILS_ENV=test bin/rails db:prepare && ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test rtk rspec $(SPEC)"
@@ -149,7 +158,13 @@ agent-test: frontend-install
 	$(APP) bash -lc "bin/npm run frontend:build:test && RAILS_ENV=test bin/rails db:prepare && ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test rtk rspec"
 
 agent-verify-fast: frontend-install
-	$(APP) bash -lc "PATH=/app/node_modules/.bin:$$PATH rtk prettier $(RTK_FRONTEND_FORMAT_ARGS) && PATH=/app/node_modules/.bin:$$PATH rtk eslint . --quiet && PATH=/app/node_modules/.bin:$$PATH rtk tsc --noEmit --pretty false && PATH=/app/node_modules/.bin:$$PATH rtk vitest run --coverage --reporter=minimal --passWithNoTests && bin/npm run frontend:build:test && RUBOCOP_CACHE_ROOT=/app/tmp/rubocop rtk rubocop -A --format simple --config /app/.rubocop.yml && RAILS_ENV=test bin/rails db:prepare && ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test rtk rspec"
+	$(MAKE) agent-frontend-format
+	$(MAKE) agent-frontend-lint
+	$(MAKE) agent-frontend-typecheck
+	$(MAKE) agent-frontend-test
+	$(MAKE) frontend-build
+	$(MAKE) agent-rubocop
+	$(MAKE) agent-ruby-test
 
 # Host Git and Docker orchestration targets.
 install-hooks:
@@ -174,14 +189,21 @@ bash:
 bundle:
 	$(APP) bundle install
 
-lint:
-	$(APP) bin/rubocop -A
+lint: rubocop-check
 
-rubocop:
-	$(APP) bin/rubocop -A
+rubocop: rubocop-check
 
 rubocop-autocorrect:
-	$(APP) bin/rubocop -A
+	$(MAKE) rubocop-fix
+
+rubocop-check:
+	$(APP) env RUBOCOP_CACHE_ROOT=/app/tmp/rubocop bin/rubocop --format simple --config /app/.rubocop.yml
+
+rubocop-fix:
+	$(APP) env RUBOCOP_CACHE_ROOT=/app/tmp/rubocop bin/rubocop -A --format simple --config /app/.rubocop.yml
+
+ruby-test:
+	$(APP) bash -lc "RAILS_ENV=test bin/rails db:prepare && RAILS_ENV=test bundle exec rspec"
 
 test: frontend-install
 	$(APP) bash -lc "bin/npm run frontend:build:test && RAILS_ENV=test bin/rails db:prepare && RAILS_ENV=test bundle exec rspec"
@@ -189,11 +211,9 @@ test: frontend-install
 security:
 	$(APP) bash -lc "bin/bundler-audit && bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
 
-verify: openspec-validate frontend-install frontend-verify
-	$(APP) bash -lc "bin/npm run frontend:build:test && bin/rubocop -A && RAILS_ENV=test bin/rails db:prepare && RAILS_ENV=test bundle exec rspec && bin/bundler-audit && bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
+verify: openspec-validate verify-fast frontend-audit security
 
-verify-fast: frontend-install
-	$(APP) bash -lc "bin/npm run frontend:format && bin/npm run frontend:lint && bin/npm run frontend:typecheck && bin/npm run frontend:test && bin/npm run frontend:build:test && bin/rubocop -A && RAILS_ENV=test bin/rails db:prepare && RAILS_ENV=test bundle exec rspec"
+verify-fast: frontend-install frontend-check rubocop-check ruby-test
 
 ci:
 	$(APP) bin/ci
