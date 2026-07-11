@@ -1,4 +1,9 @@
 module Auth
+  # Revokes an active user session.
+  #
+  # @example
+  #   Auth::LogoutUser.call(input: { user_session: })
+  # @param input [Hash] the session to revoke
   class LogoutUser < ApplicationInteractor
     option :input
 

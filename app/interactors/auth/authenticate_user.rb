@@ -1,4 +1,9 @@
 module Auth
+  # Authenticates a password identity and verifies that its user is active.
+  #
+  # @example
+  #   Auth::AuthenticateUser.call(input: { email: "person@example.com", password: "secret" })
+  # @param input [Hash] email and password credentials
   class AuthenticateUser < ApplicationInteractor
     option :input
 

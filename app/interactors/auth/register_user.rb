@@ -1,4 +1,13 @@
 module Auth
+  # Creates a user and its password identity atomically.
+  #
+  # @example
+  #   Auth::RegisterUser.call(input: {
+  #     email: "person@example.com",
+  #     password: "secret",
+  #     password_confirmation: "secret"
+  #   })
+  # @param input [Hash] registration attributes
   class RegisterUser < ApplicationInteractor
     option :input
 

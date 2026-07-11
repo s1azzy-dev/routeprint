@@ -1,4 +1,9 @@
 module Auth
+  # Issues a persistent session token for an authenticated user identity.
+  #
+  # @example
+  #   Auth::IssueSession.call(input: { user:, user_identity:, ip_address: nil, user_agent: nil })
+  # @param input [Hash] user, identity, and optional request metadata
   class IssueSession < ApplicationInteractor
     SESSION_TTL = 30.days
 
@@ -8,6 +13,8 @@ module Auth
       params do
         required(:user).filled(type?: User)
         required(:user_identity).filled(type?: UserIdentity)
+        optional(:ip_address).maybe(:string)
+        optional(:user_agent).maybe(:string)
       end
     end
 

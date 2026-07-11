@@ -1,0 +1,10 @@
+"id","ident","type","name","latitude_deg","longitude_deg","elevation_ft","continent","iso_country","iso_region","municipality","scheduled_service","icao_code","iata_code","gps_code","local_code","home_link","wikipedia_link","keywords"
+35167,"AGGF","small_airport","Fera/Maringe Airport",-8.1075,159.576996,9,"OC","SB","SB-IS","Fera Island","yes","AGGF","FRE","AGGF",,,"https://en.wikipedia.org/wiki/Fera_Airport","Santa Isabel Islands"
+3,"AGGH","large_airport","Honiara International Airport",-9.428,160.054993,28,"OC","SB","SB-GU","Honiara","yes","AGGH","HIR","AGGH",,,"https://en.wikipedia.org/wiki/Honiara_International_Airport","Henderson Field"
+31885,"AGGI","small_airport","Babanakira Airport",-9.7475,159.839005,,"OC","SB","SB-GU","Mbambanakira","no","AGGI","MBU","AGGI",,,"https://en.wikipedia.org/wiki/Mbambanakira_Airport","Mbambanakira Airport"
+301837,"AGGJ","small_airport","Avu Avu Airport",-9.868333,160.410556,25,"OC","SB","SB-GU","Avu Avu","no","AGGJ","AVU","AGGJ",,,,,
+31686,"AGGK","small_airport","Ngorangora Airport",-10.449700355500001,161.897994995,54,"OC","SB","SB-MK","Kirakira","yes","AGGK","IRA","AGGK",,,"https://en.wikipedia.org/wiki/Kirakira_Airport",
+32275,"AGGL","small_airport","Santa Cruz/Graciosa Bay/Luova Airport",-10.7203,165.794998,18,"OC","SB","SB-TE","Santa Cruz/Graciosa Bay/Luova","yes","AGGL","SCZ","AGGL",,,"https://en.wikipedia.org/wiki/Luova_Airport",
+4,"AGGM","medium_airport","Munda Airport",-8.32797,157.263,10,"OC","SB","SB-WE","Munda","yes","AGGM","MUA","AGGM",,,"https://en.wikipedia.org/wiki/Munda_Airport",
+31563,"AGGN","small_airport","Nusatupe Airport",-8.09778022766,156.863998413,13,"OC","SB","SB-WE","Gizo","yes","AGGN","GZO","AGGN",,,"https://en.wikipedia.org/wiki/Nusatupe_Airport",
+31932,"AGGO","small_airport","Mono Airport",-7.41694,155.565002,35,"OC","SB","SB-WE","Stirling Island","yes","AGGO","MNY","AGGO",,,"https://en.wikipedia.org/wiki/Mono_Airport",

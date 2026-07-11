@@ -100,6 +100,11 @@ Default stance:
 - Integration-first with real PostgreSQL/PostGIS.
 - Avoid mocks/stubs for app internals without a strong reason.
 - Mocks/stubs are acceptable mainly at external I/O boundaries.
+- Injected collaborator doubles are acceptable in focused orchestration specs
+  when they prove ordering, fail-fast propagation, or explicit error handling.
+  Critical import pipelines must also have a real fixture test covering the
+  actual parser, persistence, matching, and domain-apply path without replacing
+  those internals.
 - Prefer request/system coverage for core user journeys.
 
 Required spec layers:

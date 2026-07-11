@@ -1,4 +1,13 @@
 module Auth
+  # Replaces a password using a valid reset token and revokes active sessions.
+  #
+  # @example
+  #   Auth::ResetPassword.call(input: {
+  #     token: reset_token,
+  #     password: "new-secret",
+  #     password_confirmation: "new-secret"
+  #   })
+  # @param input [Hash] reset token and password attributes
   class ResetPassword < ApplicationInteractor
     option :input
 
