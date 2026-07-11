@@ -19,7 +19,7 @@ gem "vite_rails", "3.11.0"
 gem "inertia_rails", "3.21.2"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-gem "pagy", "~> 43.5"
+gem "pagy", "~> 43.6"
 gem "pundit"
 gem "dry-configurable"
 gem "dry-types"
