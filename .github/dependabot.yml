@@ -5,6 +5,17 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  # Keep major npm updates ungrouped for separate migration-guide review.
+  groups:
+    frontend-minor-patch:
+      update-types:
+      - minor
+      - patch
 - package-ecosystem: github-actions
   directory: "/"
   schedule:

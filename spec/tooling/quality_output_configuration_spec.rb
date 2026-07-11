@@ -8,6 +8,7 @@ end
 
 RSpec.describe QualityOutputConfiguration do
   let(:root) { Pathname(__dir__).join("../..").expand_path }
+  let(:ci_workflow) { root.join(".github/workflows/ci.yml").read }
 
   it "uses a minimal RSpec formatter by default" do
     rspec_options = root.join(".rspec").read
@@ -49,6 +50,38 @@ RSpec.describe QualityOutputConfiguration do
     expect(makefile).to include("rtk eslint . --quiet")
     expect(makefile).to include("rtk tsc --noEmit --pretty false")
     expect(makefile).to include("rtk vitest run --coverage --reporter=minimal --passWithNoTests")
-    expect(makefile).to include("rtk rubocop -A --format simple --config /app/.rubocop.yml")
+    expect(makefile).to include("rtk rubocop --format simple --config /app/.rubocop.yml")
+  end
+
+  it "keeps RuboCop checking separate from explicit autocorrection" do
+    makefile = root.join("Makefile").read
+
+    expect(makefile).to include("rubocop-check:")
+    expect(makefile).to include("bin/rubocop --format simple --config /app/.rubocop.yml")
+    expect(makefile).to include("rubocop-fix:")
+    expect(makefile).to include("bin/rubocop -A --format simple --config /app/.rubocop.yml")
+    expect(makefile).to include("agent-rubocop-fix:")
+
+    verification_targets = makefile.scan(
+      /^(?:verify|verify-fast|agent-verify-fast):.*?(?=^[^\t ]|\z)/m
+    ).join
+
+    expect(verification_targets).not_to include("-A")
+  end
+
+  it "keeps the CI RuboCop check non-mutating" do
+    expect(ci_workflow).to include("run: bin/rubocop -f github")
+    expect(ci_workflow).not_to include("bin/rubocop -A")
+  end
+
+  it "centralizes the Ruby and frontend verification gates" do
+    makefile = root.join("Makefile").read
+
+    expect(makefile).to include(
+      "frontend-check: frontend-format frontend-lint frontend-typecheck frontend-test frontend-build",
+      "ruby-test:",
+      "agent-ruby-test:",
+      "verify-fast: frontend-install frontend-check rubocop-check ruby-test"
+    )
   end
 end

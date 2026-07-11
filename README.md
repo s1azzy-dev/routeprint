@@ -46,10 +46,12 @@ Useful local targets:
 - `make logs` - view web container logs
 - `make bash` - shell into the web container
 - `make shell` - open Rails console in the web container
-- `make lint` - run RuboCop with autocorrect
+- `make rubocop-check` - check Ruby style without changing files
+- `make rubocop-fix` - explicitly autocorrect Ruby style
 - `make test` - run the full test suite
 - `make security` - run bundler-audit and Brakeman
-- `make frontend-verify` - run all frontend quality and build gates
+- `make frontend-check` - run frontend format, lint, typecheck, test, and build checks
+- `make frontend-verify` - run all frontend quality and build gates, including audit
 - `make verify` - run the full local verification gate
 
 Default host ports:
@@ -77,10 +79,14 @@ The initialized project currently includes:
 - OpenSpec
 - Docker Compose and devcontainer support
 - RTK-backed agent/verification commands
+- Authentication, sessions, registration, sign-in/sign-out, and password reset
+- Protected dashboard
+- Place and airport reference foundation with PostGIS points and localized names
 
-The root page intentionally renders only a minimal Routeprint Inertia React
-shell. Flight, airport, import, map, statistics, export, auth, and admin product
-behavior should be added later through SDD/OpenSpec slices.
+The current product surface includes authentication, password reset, a protected
+dashboard, and the airport reference foundation. Manual flight history, import,
+map, statistics, export, and broader admin product behavior remain future
+SDD/OpenSpec slices.
 
 ## Spec-Driven Changes
 
@@ -123,8 +129,7 @@ make openspec-update
 Do not start with feature enthusiasm. The intended order is:
 
 ```text
-bootstrap -> auth -> airports -> manual flights -> map -> CSV import ->
-App in the Air import -> export -> launch
+manual flights -> map -> CSV import -> App in the Air import -> export -> launch
 ```
 
 `docs/TODO.md` is the queue, not acceptance criteria. Each business slice should

@@ -1,5 +1,23 @@
 # Changes
 
+## 2026-07-12
+
+- Added weekly Dependabot npm updates with minor/patch grouping; major updates
+  remain separate for Context7 or official migration-guide review.
+- Moved the project Codex allow-rule from raw Docker RSpec commands to stable
+  Make verification targets; raw Docker commands remain outside the allowlist.
+
+## 2026-07-11
+
+- Separated RuboCop checking from explicit autocorrection: verification gates
+  are now non-mutating, while `rubocop-fix` and `agent-rubocop-fix` perform
+  autocorrection intentionally.
+- Centralized frontend, Ruby, and RSpec verification in reusable Make targets;
+  the regular and RTK-backed fast gates now share the same stage boundaries.
+- Synchronized the roadmap with the implemented auth, password-reset,
+  protected-dashboard, and airport-reference foundations; future OpenSpec
+  archives now require the matching CHANGES, README, and TODO updates in one PR.
+
 ## 2026-07-10
 
 - Defined the accepted admin reference-import subsystem architecture: durable

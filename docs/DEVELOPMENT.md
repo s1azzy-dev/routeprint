@@ -95,6 +95,25 @@ After this bootstrap:
 Every direct baseline repair is a documentation/process change: update
 `CHANGES.md`, run strict OpenSpec validation, and run the tooling spec.
 
+### Completion Synchronization Checklist
+
+When an OpenSpec change is implemented and archived, the same PR must:
+
+- archive the OpenSpec change;
+- update `CHANGES.md`;
+- update the runtime status in README's `Current Runtime Foundation` section;
+- remove the corresponding item from `docs/TODO.md`;
+- run strict OpenSpec validation and the relevant tooling checks.
+
+This keeps archived intent, the human-facing runtime summary, and the deferred
+work queue synchronized in one reviewable change.
+
+### Dependency Update Review
+
+Dependabot groups npm minor and patch updates. Major npm updates remain separate
+pull requests and require review through Context7 or the package's official
+migration guides before merging.
+
 ## Branching
 
 When a task includes creating a PR, create or switch to a `codex/` branch in the
@@ -258,14 +277,15 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Refresh generated OpenSpec adapters | `make openspec-update` | Host OpenSpec wrapper |
 | Validate all OpenSpec artifacts | `make openspec-validate` | Host OpenSpec wrapper |
 | Install locked frontend dependencies | `make frontend-install` | Web container |
-| Run frontend format, lint, typecheck, tests, build, and audit | `make frontend-verify` | Web container |
+| Run frontend format, lint, typecheck, tests, and build checks | `make frontend-check` | Web container |
+| Run all frontend quality and build gates, including audit | `make frontend-verify` | Web container |
 | Run one frontend gate | `make frontend-format`, `make frontend-lint`, `make frontend-typecheck`, `make frontend-test`, `make frontend-build`, or `make frontend-audit` | Web container |
 | Install gems | `make bundle` | Web container |
 | Rails console | `make shell` | Web container |
 | Container shell | `make bash` | Web container |
-| Lint with autocorrect | `make lint` | Web container |
-| RuboCop with autocorrect | `make rubocop` | Web container |
-| RuboCop with autocorrect alias | `make rubocop-autocorrect` | Web container |
+| Check Ruby style without changing files | `make rubocop-check` | Web container |
+| Autocorrect Ruby style explicitly | `make rubocop-fix` | Web container |
+| Compatibility RuboCop check alias | `make rubocop` | Web container |
 | Full test suite | `make test` | Web container |
 | Security checks | `make security` | Web container |
 | Fast local verification | `make verify-fast` | Web container |
@@ -333,7 +353,10 @@ Container app/runtime commands:
   gates, because `npm ci` rewrites the shared `node_modules` tree. Focused
   `agent-frontend-*` targets assume dependencies are already installed; use
   `make agent-verify-fast` for a serial install-plus-check loop.
-- Use `make agent-rubocop` for compact RuboCop autocorrect output.
+- Use `make agent-rubocop` for compact RuboCop check output.
+- Use `make agent-rubocop-fix` only when an explicit autocorrect is intended.
+- After either `*-fix` target, inspect `git diff --name-status` and rerun the
+  corresponding check target before considering the change complete.
 - Use `make agent-verify-fast` while iterating with an agent when compact
   output is more useful than full logs.
 - RTK-backed RSpec agent targets set `ROUTEPRINT_SKIP_SIMPLECOV=1` so RTK can parse
@@ -355,8 +378,8 @@ on failure. Disable RTK for one host command with `RTK_DISABLED=1` when needed.
 | Change type | Minimum verification |
 | --- | --- |
 | Docs only | `git diff --check` |
-| Ruby style-only | `make rubocop` |
-| ERB/view-only | `make rubocop` plus relevant request/system spec when behavior changes |
+| Ruby style-only | `make rubocop-check` |
+| ERB/view-only | `make rubocop-check` plus relevant request/system spec when behavior changes |
 | Model/interactor behavior | Narrow spec, then `make test` or `make verify-fast` |
 | Controller/request behavior | Narrow request spec, then `make verify-fast` |
 | Policy/authorization | Policy/request specs, then `make verify-fast` |
