@@ -1,0 +1,52 @@
+version: 1
+scope: routeprint-project-skills
+note: Generated OpenSpec adapters are command wrappers and are covered by their own tooling specs.
+skills:
+  - id: routeprint-sdd-intake-gate
+    category: router
+    positive:
+      - "Требования к новой функции неоднозначны и могут затронуть схему или безопасность"
+      - "После compaction нужно восстановить уровень SDD и следующий workflow"
+    negative:
+      - "Исправь опечатку в документации"
+      - "Обнови цвет кнопки без изменения поведения"
+  - id: routeprint-spec-driven-change
+    category: router
+    positive:
+      - "Добавь новую пользовательскую возможность с несколькими взаимодействующими механизмами"
+      - "Нужно принять durable архитектурное решение и оформить OpenSpec с ADR"
+    negative:
+      - "Обнови TODO"
+      - "Исправь форматирование Ruby-файла"
+  - id: routeprint-workspace-state
+    category: router
+    positive:
+      - "Продолжи Routeprint task после паузы и сначала проверь ветку, diff и PR"
+      - "Перед публикацией проверь текущий branch state и какие проверки уже актуальны"
+    negative:
+      - "Добавь новый interactor"
+      - "Измени текст ошибки входа"
+  - id: routeprint-authz-security-flow
+    category: domain
+    positive:
+      - "Добавь authorization для user-owned travel resource"
+      - "Измени password reset или session cookie flow"
+    negative:
+      - "Добавь поиск airport по радиусу"
+      - "Исправь отступ у кнопки входа"
+  - id: routeprint-postgis-map-query
+    category: domain
+    positive:
+      - "Добавь поиск airport в радиусе"
+      - "Построй bounds для маршрутов на карте"
+    negative:
+      - "Измени password policy"
+      - "Обнови текст в README"
+  - id: routeprint-yabi-interactor
+    category: domain
+    positive:
+      - "Вынеси orchestration создания flight из controller в use case"
+      - "Добавь failure code при неизвестном airport"
+    negative:
+      - "Исправь отступ у кнопки входа"
+      - "Обнови TODO"

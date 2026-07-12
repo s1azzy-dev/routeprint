@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "yaml"
 
 ROOT = Pathname(__dir__).parent.expand_path
 errors = []
@@ -80,16 +81,78 @@ def check_skill_names(root, errors)
       match = line.match(/\Aname:\s*(\S+)/)
       match && match[1]
     end&.compact&.first
+    description = frontmatter&.lines&.map do |line|
+      match = line.match(/\Adescription:\s*(.+)/)
+      match && match[1]
+    end&.compact&.first
 
     if name.nil?
       errors << "#{path.relative_path_from(root)}: missing frontmatter name"
       next
     end
 
+    errors << "#{path.relative_path_from(root)}: missing frontmatter description" if description.to_s.strip.empty?
+
     errors << "duplicate skill name #{name}" if names.key?(name)
     errors << "#{path.relative_path_from(root)}: directory does not match #{name}" unless path.dirname.basename.to_s == name
     names[name] = path
   end
+end
+
+def check_skill_trigger_cases(root, errors)
+  path = root.join("harness/skills/cases.yml")
+  unless path.file?
+    errors << "missing harness/skills/cases.yml"
+    return
+  end
+
+  registry = YAML.safe_load(path.read, aliases: false)
+  skills = Array(registry.fetch("skills"))
+  ids = skills.map { |skill| skill.fetch("id") }
+  errors << "skill trigger IDs must be unique" unless ids.uniq.size == ids.size
+
+  project_skills = root.join(".agents/skills").glob("routeprint-*/SKILL.md").map do |skill_path|
+    skill_path.dirname.basename.to_s
+  end.sort
+  missing = project_skills - ids
+  unknown = ids - project_skills
+  errors << "skill trigger registry is missing #{missing.join(", ")}" unless missing.empty?
+  errors << "skill trigger registry has unknown #{unknown.join(", ")}" unless unknown.empty?
+
+  skills.each do |skill|
+    %w[positive negative].each do |polarity|
+      examples = Array(skill[polarity])
+      errors << "#{skill.fetch("id")}: #{polarity} trigger cases are required" if examples.empty?
+      errors << "#{skill.fetch("id")}: #{polarity} trigger cases must be strings" unless examples.all? { |example| example.is_a?(String) && !example.strip.empty? }
+    end
+    overlap = Array(skill["positive"]) & Array(skill["negative"])
+    errors << "#{skill.fetch("id")}: trigger case appears in both polarities" unless overlap.empty?
+  end
+rescue Psych::Exception, KeyError, TypeError => e
+  errors << "harness/skills/cases.yml: invalid registry (#{e.message})"
+end
+
+def check_reviewer_profile(root, errors)
+  path = root.join(".codex/agents/reviewer.toml")
+  unless path.file?
+    errors << "missing .codex/agents/reviewer.toml"
+    return
+  end
+
+  content = path.read
+  errors << "reviewer profile must be read-only" unless content.include?('sandbox_mode = "read-only"')
+  errors << "reviewer profile must forbid edits" unless content.match?(/do not edit/i)
+  errors << "reviewer profile must avoid network by default" unless content.match?(/do not run network/i)
+end
+
+def check_governance_contract(root, errors)
+  rules = root.join(".codex/rules").glob("**/*").select(&:file?).map(&:read).join("\n")
+  %w[agent-state agent-host-search agent-rspec agent-frontend-format agent-rubocop agent-verify-fast harness-check verify-fast security openspec-validate].each do |target|
+    errors << "Codex rules missing stable Make target #{target}" unless rules.include?("\"#{target}\"")
+  end
+
+  template = root.join(".github/pull_request_template.md").read
+  errors << "PR template missing dependency approval contract" unless template.include?("Dependency approval")
 end
 
 def check_codex_rules(root, errors)
@@ -139,6 +202,9 @@ end
 check_code_paths(ROOT, ROOT.join("AGENTS.md"), errors)
 check_code_paths(ROOT, ROOT.join("docs/CONTEXT_MAP.md"), errors, skip_once_present: true)
 check_skill_names(ROOT, errors)
+check_skill_trigger_cases(ROOT, errors)
+check_reviewer_profile(ROOT, errors)
+check_governance_contract(ROOT, errors)
 check_make_references(ROOT, errors)
 check_codex_rules(ROOT, errors)
 check_verification_targets(ROOT, errors)
