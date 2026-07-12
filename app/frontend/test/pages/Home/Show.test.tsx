@@ -1,8 +1,12 @@
 import { screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import HomeShow from "../../../pages/Home/Show"
 import { renderInertiaPage } from "../../inertia"
+
+vi.mock("../../../components/routeprint/route-map", () => ({
+  RouteMap: () => <div data-testid="route-map" />,
+}))
 
 describe("HomeShow", () => {
   it("renders through the Inertia test harness", () => {
@@ -11,6 +15,6 @@ describe("HomeShow", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Routeprint" }),
     ).toBeVisible()
-    expect(screen.getByText("Rails / Inertia / React")).toBeVisible()
+    expect(screen.getByTestId("route-map")).toBeVisible()
   })
 })

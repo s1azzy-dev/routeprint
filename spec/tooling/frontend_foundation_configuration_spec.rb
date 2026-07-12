@@ -49,7 +49,14 @@ RSpec.describe FrontendFoundationConfiguration do
 
   it "uses strict TypeScript and the shared Vitest setup" do
     expect(root.join("tsconfig.json").read).to include('"strict": true', '"noEmit": true')
-    expect(root.join("vite.config.ts").read).to include("react()", "tailwindcss()", 'setupFiles: ["./test/setup.ts"]')
+    expect(root.join("vite.config.ts").read).to include(
+      "react()",
+      "tailwindcss()",
+      "clientPort: viteClientPort",
+      "ws:",
+      'setupFiles: ["./test/setup.ts"]',
+    )
+    expect(root.join("docker-compose.yml").read).to include("VITE_HMR_CLIENT_PORT: 3038")
     expect(root.join("app/frontend/test/setup.ts")).to exist
   end
 
