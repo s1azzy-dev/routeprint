@@ -1,0 +1,359 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "csv"
+require "digest"
+require "fileutils"
+require "json"
+require "open3"
+require "optparse"
+require "pathname"
+require "timeout"
+require "time"
+
+load File.expand_path("harness-eval", __dir__)
+
+module HarnessRun
+  ROOT = Pathname(__dir__).join("..").expand_path.freeze
+  RUNS_ROOT = ROOT.join("tmp/harness-runs").freeze
+  WORKTREES_ROOT = ROOT.join("tmp/harness-worktrees").freeze
+
+  class Error < StandardError; end
+
+  module_function
+
+  def run(options)
+    HarnessEval.validate!
+    eval_case = HarnessEval.find_case(options.fetch(:case_id))
+    base_ref = options[:base_ref] || eval_case.fetch("base_ref")
+    timeout_seconds = options[:timeout_seconds] || eval_case.fetch("timeout_seconds", 600).to_i
+    ensure_ref!(base_ref)
+    codex_version = ensure_codex!(options.fetch(:codex_bin))
+
+    run_id = build_run_id(eval_case.fetch("id"), base_ref)
+    run_dir = RUNS_ROOT.join(run_id)
+    worktree = WORKTREES_ROOT.join(run_id)
+    FileUtils.mkdir_p(run_dir)
+    FileUtils.mkdir_p(WORKTREES_ROOT)
+    metadata = initial_metadata(eval_case, options, base_ref, timeout_seconds, codex_version, run_id, run_dir, worktree)
+    write_metadata(run_dir, metadata)
+    started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    workspace_type = "unknown"
+    return_code = 1
+
+    begin
+      workspace_type = prepare_workspace(worktree, base_ref)
+      metadata["workspace_type"] = workspace_type
+      metadata["base_commit"] = git_output(worktree, "rev-parse", "HEAD").strip
+      write_metadata(run_dir, metadata)
+
+      prompt = ROOT.join(eval_case.fetch("prompt_file")).read
+      result = execute_codex(codex_command(options, prompt), worktree, timeout_seconds)
+      trace_path = run_dir.join("trace.jsonl")
+      stderr_path = run_dir.join("stderr.log")
+      trace_path.write(result.fetch(:stdout))
+      stderr_path.write(result.fetch(:stderr))
+      metadata.merge!(
+        "trace_path" => trace_path.to_s,
+        "stderr_path" => stderr_path.to_s,
+        "exit_status" => result[:status]&.exitstatus,
+        "status" => terminal_status(result),
+        "wall_clock_seconds" => elapsed(started_at),
+        "metrics" => trace_metrics(result.fetch(:stdout))
+      )
+
+      verification = run_verifications(eval_case, worktree)
+      unless verification.empty?
+        run_dir.join("verification.json").write(JSON.pretty_generate(verification) + "\n")
+        metadata["verification_path"] = run_dir.join("verification.json").to_s
+      end
+      write_metadata(run_dir, metadata)
+
+      grade = if worktree.directory? && trace_path.file?
+                HarnessEval.grade(case_id: eval_case.fetch("id"), run_dir: run_dir)
+      end
+      append_result(eval_case, metadata, run_dir, grade) if options[:record]
+      return_code = metadata["status"] == "completed" ? 0 : 1
+    rescue Interrupt
+      metadata["status"] = "interrupted"
+      metadata["wall_clock_seconds"] = elapsed(started_at)
+      return_code = 130
+    rescue StandardError => e
+      metadata.merge!("status" => "failed", "error_class" => e.class.name, "error" => e.message,
+                      "wall_clock_seconds" => elapsed(started_at))
+    ensure
+      cleanup_status = cleanup_workspace(worktree, workspace_type, options)
+      metadata["cleanup_status"] = cleanup_status
+      metadata["wall_clock_seconds"] ||= elapsed(started_at)
+      write_metadata(run_dir, metadata)
+    end
+
+    puts JSON.pretty_generate(metadata)
+    return_code
+  rescue KeyError, HarnessEval::Error, Error => e
+    warn "harness-run: #{e.message}"
+    1
+  end
+
+  def initial_metadata(eval_case, options, base_ref, timeout_seconds, codex_version, run_id, run_dir, worktree)
+    {
+      "run_id" => run_id,
+      "case_id" => eval_case.fetch("id"),
+      "profile" => eval_case["profile"],
+      "variant" => options.fetch(:variant),
+      "base_ref" => base_ref,
+      "timeout_seconds" => timeout_seconds,
+      "codex_version" => codex_version,
+      "sandbox" => "workspace-write",
+      "ephemeral" => true,
+      "harness_hash" => HarnessEval.source_hash,
+      "registry_hash" => HarnessEval.registry_hash,
+      "prompt_hash" => HarnessEval.prompt_hash(eval_case),
+      "run_dir" => run_dir.to_s,
+      "worktree" => worktree.to_s,
+      "started_at" => Time.now.utc.iso8601,
+      "status" => "preparing"
+    }
+  end
+
+  def build_run_id(case_id, base_ref)
+    timestamp = Time.now.utc.strftime("%Y%m%dT%H%M%SZ")
+    digest = Digest::SHA256.hexdigest("#{case_id}:#{base_ref}:#{HarnessEval.source_hash}")[0, 10]
+    "#{timestamp}-#{case_id}-#{digest}"
+  end
+
+  def ensure_ref!(ref)
+    _out, err, status = git("rev-parse", "--verify", ref, chdir: ROOT)
+    raise Error, "base ref is not available: #{ref} (#{err.strip})" unless status.success?
+  end
+
+  def ensure_codex!(binary)
+    _out, _err, which_status = Open3.capture3("which", binary)
+    raise Error, "Codex executable not found: #{binary}" unless which_status.success?
+
+    output, _error, status = Open3.capture3(binary, "--version")
+    raise Error, "Codex version check failed" unless status.success?
+
+    output.lines.first.to_s.strip
+  end
+
+  def codex_command(options, prompt)
+    command = [ options.fetch(:codex_bin), "exec", "--json", "--ephemeral", "--sandbox", "workspace-write" ]
+    command += [ "--model", options[:model] ] if options[:model]
+    command << prompt
+    command
+  end
+
+  def execute_codex(command, worktree, timeout_seconds)
+    stdout = ""
+    stderr = ""
+    status = nil
+    terminal = "completed"
+
+    Open3.popen3(*command, chdir: worktree.to_s, pgroup: true) do |stdin, output, error, waiter|
+      stdin.close
+      output_thread = Thread.new { output.read }
+      error_thread = Thread.new { error.read }
+      begin
+        status = Timeout.timeout(timeout_seconds) { waiter.value }
+      rescue Timeout::Error
+        terminal = "timeout"
+        terminate_process_group(waiter.pid)
+        status = waiter.value rescue nil
+      rescue Interrupt
+        terminal = "interrupted"
+        terminate_process_group(waiter.pid)
+        status = waiter.value rescue nil
+      ensure
+        stdout = output_thread.value rescue ""
+        stderr = error_thread.value rescue ""
+      end
+    end
+
+    { stdout: stdout, stderr: stderr, status: status, terminal_status: terminal }
+  end
+
+  def terminate_process_group(pid)
+    begin
+      Process.kill("TERM", -pid)
+    rescue Errno::ESRCH
+      nil
+    end
+    sleep 0.2
+    begin
+      Process.kill("KILL", -pid)
+    rescue Errno::ESRCH
+      nil
+    end
+  end
+
+  def terminal_status(result)
+    return result.fetch(:terminal_status) unless result.fetch(:terminal_status) == "completed"
+
+    result[:status]&.success? ? "completed" : "failed"
+  end
+
+  def trace_metrics(trace)
+    records = trace.lines.map { |line| JSON.parse(line) rescue nil }.compact
+    completed_usage = records.reverse.find { |record| record["type"] == "turn.completed" }.to_h["usage"] || {}
+    {
+      "tool_calls" => records.count do |record|
+        record["type"] == "item.completed" && record.dig("item", "type") == "command_execution"
+      end,
+      "compaction_count" => trace.scan(/compaction/i).size,
+      "input_tokens" => completed_usage["input_tokens"],
+      "cached_input_tokens" => completed_usage["cached_input_tokens"],
+      "output_tokens" => completed_usage["output_tokens"],
+      "reasoning_output_tokens" => completed_usage["reasoning_output_tokens"]
+    }
+  end
+
+  def run_verifications(eval_case, worktree)
+    commands = Array(eval_case.dig("behavior", "verification_commands"))
+    commands.map do |argv|
+      raise Error, "verification command must be an argv array" unless argv.is_a?(Array)
+
+      stdout, stderr, status = Open3.capture3(*argv.map(&:to_s), chdir: worktree.to_s)
+      { "command" => argv, "passed" => status.success?, "exit_code" => status.exitstatus,
+        "stdout_bytes" => stdout.bytesize, "stderr_bytes" => stderr.bytesize }
+    end
+  end
+
+  def append_result(eval_case, metadata, run_dir, grade)
+    path = ROOT.join("harness/experiments/results.csv")
+    headers = ensure_result_schema(path)
+    graders = Array(grade && grade["graders"])
+    by_name = graders.to_h { |item| [ item["grader"], item ] }
+    tests = by_name["tests"] || {}
+    scope = by_name["diff-scope"] || {}
+    row = headers.to_h { |header| [ header, "" ] }
+    row.update(
+      "run_id" => metadata["run_id"], "case_id" => eval_case["id"], "variant" => metadata["variant"],
+      "base_ref" => metadata["base_ref"], "status" => metadata["status"],
+      "mechanical_pass" => grade && grade["passed"],
+      "workflow_pass" => by_name.dig("workflow", "passed"),
+      "behavior_pass" => by_name.dig("behavior", "passed"),
+      "timeout_status" => metadata["status"],
+      "changed_files" => JSON.generate(scope["changed_files"] || []),
+      "unrelated_changed_files" => JSON.generate(scope["unrelated_changed_files"] || []),
+      "gate_status" => JSON.generate(tests["gate_status"] || []),
+      "wall_clock_seconds" => metadata["wall_clock_seconds"],
+      "tool_calls" => metadata.dig("metrics", "tool_calls"),
+      "input_tokens" => metadata.dig("metrics", "input_tokens"),
+      "cached_input_tokens" => metadata.dig("metrics", "cached_input_tokens"),
+      "output_tokens" => metadata.dig("metrics", "output_tokens"),
+      "reasoning_output_tokens" => metadata.dig("metrics", "reasoning_output_tokens"),
+      "harness_hash" => metadata["harness_hash"], "base_commit" => metadata["base_commit"],
+      "codex_version" => metadata["codex_version"], "prompt_hash" => metadata["prompt_hash"],
+      "registry_hash" => metadata["registry_hash"], "source_hash" => metadata["harness_hash"],
+      "grade_path" => run_dir.join("grade.json").to_s
+    )
+    CSV.open(path, "a") { |csv| csv << headers.map { |header| row[header] } }
+  end
+
+  def ensure_result_schema(path)
+    required = %w[
+      run_id case_id variant base_ref status mechanical_pass workflow_pass behavior_pass
+      task_success first_pass_verification human_correction_minutes unrelated_changed_files
+      instruction_violations skipped_required_gates timeout_status wall_clock_seconds tool_calls
+      input_tokens cached_input_tokens output_tokens reasoning_output_tokens rtk_savings
+      harness_hash base_commit codex_version prompt_hash registry_hash source_hash changed_files
+      gate_status diff_scope grade_path notes
+    ]
+    unless path.file? && path.size.positive?
+      CSV.open(path, "w") { |csv| csv << required }
+      return required
+    end
+
+    existing = CSV.read(path, headers: true)
+    headers = existing.headers
+    missing = required - headers
+    return headers if missing.empty?
+
+    rows = existing.map(&:to_h)
+    CSV.open(path, "w") do |csv|
+      expanded = headers + missing
+      csv << expanded
+      rows.each { |row| csv << expanded.map { |header| row[header] } }
+    end
+    headers + missing
+  end
+
+  def prepare_workspace(worktree, base_ref)
+    _output, _error, add_status = git("worktree", "add", "--detach", worktree.to_s, base_ref, chdir: ROOT)
+    return "worktree" if add_status.success?
+
+    FileUtils.rm_rf(worktree) if worktree.exist?
+    _output, error, clone_status = git("clone", "--no-hardlinks", "--local", ROOT.to_s, worktree.to_s, chdir: ROOT)
+    raise Error, "could not create disposable clone: #{error.strip}" unless clone_status.success?
+
+    _output, error, checkout_status = git("-C", worktree.to_s, "checkout", "--detach", base_ref, chdir: ROOT)
+    raise Error, "could not checkout base ref in clone: #{error.strip}" unless checkout_status.success?
+
+    "clone"
+  end
+
+  def cleanup_workspace(worktree, workspace_type, options)
+    return "retained" if worktree.directory? && options[:keep_worktree]
+    return "not_created" unless worktree.directory?
+
+    if workspace_type == "worktree"
+      _out, _err, status = git("worktree", "remove", "--force", worktree.to_s, chdir: ROOT)
+      status.success? ? "removed" : "failed"
+    else
+      FileUtils.rm_rf(worktree)
+      worktree.exist? ? "failed" : "removed"
+    end
+  end
+
+  def git(*args, chdir:)
+    Open3.capture3("git", *args, chdir: chdir.to_s)
+  end
+
+  def git_output(worktree, *args)
+    output, _error, _status = git("-C", worktree.to_s, *args, chdir: ROOT)
+    output
+  end
+
+  def write_metadata(run_dir, metadata)
+    run_dir.join("metadata.json").write(JSON.pretty_generate(metadata) + "\n")
+  end
+
+  def elapsed(started_at)
+    Process.clock_gettime(Process::CLOCK_MONOTONIC) - started_at
+  end
+
+  def main(argv)
+    options = { variant: "default", codex_bin: ENV.fetch("CODEX_BIN", "codex"), record: false,
+                keep_worktree: false, model: nil, timeout_seconds: nil }
+    parser = OptionParser.new do |opts|
+      opts.on("--case ID") { |value| options[:case_id] = value }
+      opts.on("--profile NAME") { |value| options[:profile] = value }
+      opts.on("--base-ref REF") { |value| options[:base_ref] = value }
+      opts.on("--variant NAME") { |value| options[:variant] = value }
+      opts.on("--model NAME") { |value| options[:model] = value }
+      opts.on("--timeout-seconds N", Integer) { |value| options[:timeout_seconds] = value }
+      opts.on("--codex-bin PATH") { |value| options[:codex_bin] = value }
+      opts.on("--record") { options[:record] = true }
+      opts.on("--keep-worktree") { options[:keep_worktree] = true }
+    end
+    parser.parse!(argv)
+    raise Error, "use exactly one of --case or --profile" if options[:case_id] && options[:profile]
+    raise Error, "--case or --profile is required" unless options[:case_id] || options[:profile]
+
+    if options[:profile]
+      HarnessEval.profile(options[:profile]).each do |eval_case|
+        result = run(options.merge(case_id: eval_case.fetch("id"), profile: nil))
+        return result unless result.zero?
+      end
+      0
+    else
+      run(options)
+    end
+  rescue OptionParser::ParseError, Error => e
+    warn "harness-run: #{e.message}"
+    1
+  end
+end
+
+exit(HarnessRun.main(ARGV)) if $PROGRAM_NAME == __FILE__

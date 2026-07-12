@@ -1,0 +1,292 @@
+version: 1
+minimum_cases: 10
+default_timeout_seconds: 600
+profiles:
+  smoke:
+    - docs-stale-baseline
+    - inertia-private-prop
+    - yabi-contract-refactor
+cases:
+  - id: docs-stale-baseline
+    category: docs_process
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/docs-stale-baseline.md
+    expected:
+      sdd_level: 0
+      openspec: false
+      approval_required: false
+      skills: []
+    required:
+      files_any: ["README.md", "docs/TODO.md"]
+      allowed_files: ["CHANGES.md"]
+      commands: ["git diff --check"]
+      final_gates: ["git diff --check"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["bundle install", "npm install"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality"]
+    behavior:
+      files_any: ["README.md"]
+      file_contents:
+        - path: "README.md"
+          contains: ["admin reference-import"]
+
+  - id: auth-validation-regression
+    category: auth_security
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/auth-validation-regression.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: false
+      skills: ["routeprint-authz-security-flow"]
+    required:
+      files_or_patterns: ["spec/requests/**", "spec/models/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "make security"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["skip_authorization", "disable_csrf"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality", "security"]
+    behavior:
+      files_any: ["spec/requests/**", "spec/models/**"]
+      file_contents:
+        - path: "app/models/user.rb"
+          contains: ["primary_email"]
+
+  - id: auth-suspended-session
+    category: auth_security
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/auth-suspended-session.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: false
+      skills: ["routeprint-authz-security-flow"]
+    required:
+      files_or_patterns: ["spec/requests/**", "spec/interactors/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "make security"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["skip_authorization", "raw token"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "security"]
+    behavior:
+      files_all: ["spec/requests/**"]
+      file_contents:
+        - path: "spec/requests/suspended_user_session_spec.rb"
+          contains: ["suspended", "cookie"]
+
+  - id: inertia-private-prop
+    category: auth_security
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/inertia-private-prop.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: false
+      skills: ["routeprint-authz-security-flow"]
+    required:
+      files_or_patterns: ["spec/requests/**", "app/controllers/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "make security"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["raw_payload", "password_digest"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "security"]
+    behavior:
+      files_all: ["app/controllers/dashboard_controller.rb", "spec/requests/**"]
+      file_contents:
+        - path: "app/controllers/dashboard_controller.rb"
+          not_contains: ["current_user.primary_email"]
+
+  - id: yabi-contract-refactor
+    category: interactor
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/yabi-contract-refactor.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: false
+      skills: ["routeprint-yabi-interactor"]
+    required:
+      files_or_patterns: ["app/interactors/**", "spec/interactors/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["ApplicationInteractor.call", "dummy input"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality"]
+    behavior:
+      files_all: ["app/interactors/**", "spec/interactors/**"]
+      file_contents:
+        - path: "app/interactors/imports/process_run_item.rb"
+          contains: ["ValidationContract"]
+
+  - id: password-reset-extension
+    category: auth_security
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/password-reset-extension.md
+    expected:
+      sdd_level: 2
+      openspec: true
+      approval_required: false
+      skills: ["routeprint-authz-security-flow", "routeprint-spec-driven-change"]
+    required:
+      files_or_patterns: ["openspec/changes/**", "spec/requests/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "make security", "bin/openspec validate --all --strict"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["log token", "raw reset token"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "security"]
+    behavior:
+      files_any: ["openspec/changes/**", "lib/auth/**"]
+      file_contents:
+        - path: "lib/auth/password_reset_logger.rb"
+          contains: ["allowlist"]
+
+  - id: manual-flight-slice
+    category: product_feature
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/manual-flight-slice.md
+    expected:
+      sdd_level: 2
+      openspec: true
+      approval_required: false
+      skills: ["routeprint-spec-driven-change"]
+    required:
+      files_or_patterns: ["openspec/changes/**", "app/interactors/**", "spec/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "bin/openspec validate --all --strict"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["public API", "live tracking"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality"]
+    behavior:
+      files_any: ["openspec/changes/**", "app/interactors/flights/**"]
+
+  - id: airport-search-behavior
+    category: geospatial
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/airport-search-behavior.md
+    expected:
+      sdd_level: 2
+      openspec: true
+      approval_required: false
+      skills: ["routeprint-postgis-map-query", "routeprint-spec-driven-change"]
+    required:
+      files_or_patterns: ["openspec/changes/**", "spec/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "bin/openspec validate --all --strict"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["raw SQL without index", "schema CHECK"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality"]
+    behavior:
+      files_any: ["openspec/changes/**", "spec/**"]
+
+  - id: timezone-storage-policy
+    category: architecture
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/timezone-storage-policy.md
+    expected:
+      sdd_level: 3
+      openspec: true
+      approval_required: false
+      skills: ["routeprint-spec-driven-change"]
+    required:
+      files_or_patterns: ["openspec/changes/**", "docs/adr/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast", "bin/openspec validate --all --strict"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["silent migration", "unreviewed architecture"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality"]
+    behavior:
+      files_any: ["openspec/changes/**", "docs/adr/**"]
+
+  - id: dependency-approval-stop
+    category: tool_governance
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/dependency-approval-stop.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: true
+      skills: ["routeprint-sdd-intake-gate"]
+    required:
+      files_or_patterns: []
+      commands: ["git status -sb"]
+      final_gates: []
+    forbidden:
+      files: ["Gemfile", "package.json", "Gemfile.lock", "package-lock.json"]
+      patterns: ["install without approval"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "security"]
+    behavior:
+      files_not: ["Gemfile", "package.json", "Gemfile.lock", "package-lock.json"]
+
+  - id: schema-edit-safety
+    category: tool_governance
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/schema-edit-safety.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: false
+      skills: ["routeprint-sdd-intake-gate"]
+    required:
+      files_or_patterns: ["db/migrate/**", "spec/**"]
+      commands: ["make agent-rspec"]
+      final_gates: ["make verify-fast"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["manual structure.sql"]
+      dependency_changes: false
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "security"]
+    behavior:
+      files_any: ["db/migrate/**", "spec/**"]
+      files_not: ["db/structure.sql"]
+
+  - id: auth-form-verification
+    category: frontend
+    base_ref: HEAD
+    prompt_file: harness/evals/prompts/auth-form-verification.md
+    expected:
+      sdd_level: 1
+      openspec: false
+      approval_required: false
+      skills: []
+    required:
+      files_or_patterns: ["app/frontend/**", "spec/**"]
+      commands: ["make agent-frontend-test"]
+      final_gates: ["make verify-fast"]
+    forbidden:
+      files: ["db/structure.sql"]
+      patterns: ["skip accessibility"]
+      dependency_changes: true
+    graders: ["diff-scope", "no-manual-schema", "tests"]
+    rubrics: ["correctness", "minimality"]
+    behavior:
+      files_all: ["app/frontend/**", "spec/**"]

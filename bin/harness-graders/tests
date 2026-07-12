@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "support"
+
+begin
+  values = HarnessGraderSupport.options(ARGV)
+  required_commands = Array(values.fetch(:case).dig("required", "commands"))
+  required_gates = Array(values.fetch(:case).dig("required", "final_gates"))
+  commands = HarnessGraderSupport.command_statuses(values.fetch(:run_dir), required_commands)
+  gates = HarnessGraderSupport.command_statuses(values.fetch(:run_dir), required_gates)
+  evidence = commands + gates
+  HarnessGraderSupport.emit(
+    "passed" => !evidence.empty? ? evidence.all? { |item| item["status"] == "passed" } : true,
+    "trace_present" => values.fetch(:run_dir).join("trace.jsonl").file?,
+    "commands" => commands,
+    "final_gates" => gates,
+    "gate_status" => evidence.map { |item| item["status"] }.uniq
+  )
+rescue ArgumentError, HarnessEval::Error => e
+  HarnessGraderSupport.emit("passed" => false, "evidence" => [ e.message ])
+  exit 1
+end

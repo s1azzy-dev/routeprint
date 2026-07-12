@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "support"
+
+begin
+  values = HarnessGraderSupport.options(ARGV)
+  changed = HarnessGraderSupport.changed_files(values.fetch(:worktree))
+  manual_schema = changed.select { |path| path == "db/structure.sql" }
+  HarnessGraderSupport.emit("passed" => manual_schema.empty?, "changed_files" => manual_schema)
+rescue ArgumentError, HarnessEval::Error => e
+  HarnessGraderSupport.emit("passed" => false, "evidence" => [ e.message ])
+  exit 1
+end
