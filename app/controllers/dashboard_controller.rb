@@ -5,11 +5,7 @@ class DashboardController < ApplicationController
     render inertia: "Dashboard/Show", props: {
       copy: {
         email: current_user.primary_email,
-        heading: t("dashboard.heading"),
-        signOut: t("dashboard.sign_out")
-      },
-      urls: {
-        signOut: sign_out_path
+        heading: t("dashboard.heading")
       }
     }
   end

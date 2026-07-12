@@ -6,6 +6,8 @@ RSpec.describe "Home" do
 
     expect(response).to have_http_status(:ok)
     expect(inertia.component).to eq("Home/Show")
-    expect(inertia.props[:appName]).to eq("Routeprint")
+    expect(inertia.props.dig(:shell, :authenticated)).to be(false)
+    expect(inertia.props.dig(:shell, :urls, :signIn)).to eq(sign_in_path)
+    expect(inertia.props.dig(:shell, :urls, :signOut)).to eq(sign_out_path)
   end
 end

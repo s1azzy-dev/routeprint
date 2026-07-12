@@ -6,7 +6,21 @@ class ApplicationController < ActionController::Base
   inertia_share do
     {
       app: {
-        name: "Routeprint"
+        name: t("routeprint")
+      },
+      shell: {
+        authenticated: authenticated?,
+        labels: {
+          accountMenu: t("layouts.header.account_menu"),
+          brandName: t("routeprint"),
+          signIn: t("layouts.header.sign_in"),
+          signOut: t("layouts.header.sign_out")
+        },
+        urls: {
+          home: root_path,
+          signIn: sign_in_path,
+          signOut: sign_out_path
+        }
       }
     }
   end
