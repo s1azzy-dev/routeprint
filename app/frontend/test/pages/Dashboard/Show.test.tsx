@@ -10,10 +10,6 @@ const props: DashboardShowProps = {
   copy: {
     email: "user@example.com",
     heading: "Dashboard",
-    signOut: "Sign out",
-  },
-  urls: {
-    signOut: "/sign_out",
   },
 }
 
@@ -23,7 +19,7 @@ describe("Dashboard/Show", () => {
 
     expect(screen.getByRole("heading", { name: "Dashboard" })).toBeVisible()
     expect(screen.getByText("user@example.com")).toBeVisible()
-    expect(screen.getByRole("button", { name: "Sign out" })).toBeVisible()
+    expect(container.textContent).not.toContain("Sign out")
     expect(container.textContent).not.toContain("token")
   })
 })

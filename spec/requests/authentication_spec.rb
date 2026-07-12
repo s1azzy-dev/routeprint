@@ -177,6 +177,7 @@ RSpec.describe "Authentication", type: :request do
         expect(response).to have_http_status(:ok)
         expect(inertia.component).to eq("Dashboard/Show")
         expect(inertia.props.dig(:copy, :email)).to eq(user_session.user.primary_email)
+        expect(inertia.props.dig(:shell, :authenticated)).to be(true)
         expect(nested_keys(inertia.props)).not_to include(*sensitive_prop_keys)
       end
 

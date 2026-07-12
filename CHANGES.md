@@ -2,6 +2,9 @@
 
 ## 2026-07-13
 
+- Added a shared Routeprint header to every Inertia page with a branded icon,
+  sign-in action for guests, and an authenticated account dropdown containing
+  sign-out.
 - Allowed agents to run RTK-wrapped Make commands through the project Codex
   rule (`rtk make *`) for token-efficient workflows.
 

@@ -10,11 +10,8 @@ vi.mock("../../../components/routeprint/route-map", () => ({
 
 describe("HomeShow", () => {
   it("renders through the Inertia test harness", () => {
-    renderInertiaPage(HomeShow, { appName: "Routeprint" })
+    renderInertiaPage(HomeShow, {})
 
-    expect(
-      screen.getByRole("heading", { level: 1, name: "Routeprint" }),
-    ).toBeVisible()
     expect(screen.getByTestId("route-map")).toBeVisible()
   })
 })

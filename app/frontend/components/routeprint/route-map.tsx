@@ -2,8 +2,6 @@ import { useEffect, useRef } from "react"
 import maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
 
-import { Button } from "@/components/ui/button"
-
 const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty"
 const INITIAL_VIEW = {
   center: [15, 20] as [number, number],
@@ -12,7 +10,6 @@ const INITIAL_VIEW = {
 
 export function RouteMap() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<maplibregl.Map | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -27,7 +24,6 @@ export function RouteMap() {
       zoom: INITIAL_VIEW.zoom,
     })
 
-    mapRef.current = map
     map.addControl(new maplibregl.NavigationControl(), "top-right")
     map.addControl(
       new maplibregl.AttributionControl({ compact: true }),
@@ -37,7 +33,6 @@ export function RouteMap() {
 
     return () => {
       map.remove()
-      mapRef.current = null
     }
   }, [])
 
@@ -49,15 +44,6 @@ export function RouteMap() {
         className="absolute inset-0 h-full min-h-full w-full"
         data-testid="route-map"
       />
-      <div className="absolute right-4 top-4 z-10">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => mapRef.current?.flyTo(INITIAL_VIEW)}
-        >
-          Reset map view
-        </Button>
-      </div>
     </div>
   )
 }

@@ -1,4 +1,9 @@
 ru:
+  layouts:
+    header:
+      account_menu: Аккаунт
+      sign_in: Войти
+      sign_out: Выйти
   auth:
     fields:
       email: Email

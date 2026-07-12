@@ -28,6 +28,11 @@
 #       enabled: "ON"
 
 en:
+  layouts:
+    header:
+      account_menu: Account
+      sign_in: Sign in
+      sign_out: Sign out
   auth:
     fields:
       email: Email
@@ -77,4 +82,4 @@ en:
   dashboard:
     heading: Dashboard
     sign_out: Sign out
-  hello: "Hello world"
+  routeprint: Routeprint

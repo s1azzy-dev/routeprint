@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 const {
@@ -11,7 +11,6 @@ const {
   const eventHandlers = new globalThis.Map<string, () => void>()
   const mapInstance = {
     addControl: vi.fn(),
-    flyTo: vi.fn(),
     on: vi.fn((event: string, handler: () => void) => {
       eventHandlers.set(event, handler)
     }),
@@ -66,15 +65,8 @@ describe("RouteMap", () => {
     expect(mapInstance.resize).toHaveBeenCalledOnce()
   })
 
-  it("resets the view and removes the map on unmount", () => {
+  it("removes the map on unmount", () => {
     const { unmount } = render(<RouteMap />)
-
-    fireEvent.click(screen.getByRole("button", { name: "Reset map view" }))
-
-    expect(mapInstance.flyTo).toHaveBeenCalledWith({
-      center: [15, 20],
-      zoom: 2,
-    })
 
     unmount()
 
