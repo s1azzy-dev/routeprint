@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "support"
+
+begin
+  values = HarnessGraderSupport.options(ARGV)
+  changed = HarnessGraderSupport.changed_files(values.fetch(:worktree))
+  required = values.fetch(:case).fetch("required")
+  files_any = Array(required["files_any"] || required["files_or_patterns"])
+  files_all = Array(required["files_all"])
+  forbidden_files = Array(values.fetch(:case).dig("forbidden", "files"))
+  forbidden_patterns = Array(values.fetch(:case).dig("forbidden", "patterns"))
+  diff_text = HarnessGraderSupport.diff_text(values.fetch(:worktree))
+  missing_any = files_any.empty? || changed.any? { |path| files_any.any? { |pattern| HarnessGraderSupport.matches_path?(pattern, path) } }
+  missing_all = files_all.reject { |pattern| changed.any? { |path| HarnessGraderSupport.matches_path?(pattern, path) } }
+  forbidden = changed.select { |path| forbidden_files.any? { |pattern| HarnessGraderSupport.matches_path?(pattern, path) } }
+  forbidden += forbidden_patterns.select { |pattern| diff_text.include?(pattern) }
+  allowed = Array(required["allowed_files"])
+  known_patterns = files_any + files_all + allowed
+  unrelated = changed.reject do |path|
+    known_patterns.any? { |pattern| HarnessGraderSupport.matches_path?(pattern, path) }
+  end
+  HarnessGraderSupport.emit(
+    "passed" => missing_any && missing_all.empty? && forbidden.empty?,
+    "changed_files" => changed,
+    "missing_any_group" => !missing_any,
+    "missing_required_patterns" => missing_all,
+    "allowed_files" => allowed,
+    "unrelated_changed_files" => unrelated,
+    "forbidden_evidence" => forbidden
+  )
+rescue ArgumentError, HarnessEval::Error => e
+  HarnessGraderSupport.emit("passed" => false, "evidence" => [ e.message ])
+  exit 1
+end

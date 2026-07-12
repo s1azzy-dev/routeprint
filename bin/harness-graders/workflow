@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "support"
+
+begin
+  values = HarnessGraderSupport.options(ARGV)
+  eval_case = values.fetch(:case)
+  expected = eval_case.fetch("expected")
+  text = HarnessGraderSupport.trace_text(values.fetch(:run_dir))
+  changed = HarnessGraderSupport.changed_files(values.fetch(:worktree))
+  failures = []
+
+  level_match = text.match(/(?:SDD\s*(?:level|Level)|Level)\s*[:=]?\s*(\d)/i)
+  observed_level = level_match && level_match[1].to_i
+  failures << "expected SDD level #{expected["sdd_level"]}, observed #{observed_level || "unknown"}" if observed_level != expected["sdd_level"].to_i
+
+  skill_status = Array(expected["skills"]).to_h do |skill|
+    [ skill, text.include?(skill) ]
+  end
+  skill_status.each { |skill, present| failures << "missing skill evidence: #{skill}" unless present }
+
+  if expected["openspec"]
+    has_openspec_text = text.match?(/openspec/i)
+    has_openspec_change = changed.any? { |path| path.start_with?("openspec/changes/") }
+    failures << "missing OpenSpec evidence" unless has_openspec_text && has_openspec_change
+  end
+
+  if expected["approval_required"] && !text.match?(/approval|permission|stop before|cannot proceed/i)
+    failures << "missing approval-stop evidence"
+  end
+
+  HarnessGraderSupport.emit(
+    "passed" => failures.empty?,
+    "expected" => expected,
+    "observed_sdd_level" => observed_level,
+    "skills" => skill_status,
+    "failures" => failures
+  )
+rescue ArgumentError, HarnessEval::Error => e
+  HarnessGraderSupport.emit("passed" => false, "evidence" => [ e.message ])
+  exit 1
+end

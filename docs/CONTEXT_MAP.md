@@ -41,6 +41,7 @@ rules, or making cross-cutting decisions.
 | Human project entrypoint | `README.md` |
 | Durable architecture decisions | `docs/adr/README.md`, then the specific ADR |
 | Recent project changes | `CHANGES.md` |
+| Codex eval harness | `harness/README.md`, `harness/evals/cases.yml`, `bin/harness-eval`, `bin/harness-run` |
 | Commands | `Makefile` |
 | Dependencies | `Gemfile`, `Gemfile.lock`, `package.json`, `package-lock.json` |
 | Routes and entrypoints | `config/routes.rb` |

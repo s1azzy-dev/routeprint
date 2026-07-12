@@ -1,0 +1,307 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "csv"
+require "digest"
+require "json"
+require "open3"
+require "optparse"
+require "pathname"
+require "timeout"
+require "yaml"
+
+module HarnessEval
+  ROOT = Pathname(__dir__).join("..").expand_path.freeze
+  REGISTRY_PATH = ROOT.join("harness/evals/cases.yml").freeze
+  RESULTS_PATH = ROOT.join("harness/experiments/results.csv").freeze
+  REVIEWS_PATH = ROOT.join("harness/experiments/reviews.csv").freeze
+  REVIEW_HEADERS = %w[
+    run_id reviewer reviewed_at task_success correctness_score minimality_score
+    security_score behavior_notes human_correction_minutes notes
+  ].freeze
+
+  class Error < StandardError; end
+
+  module_function
+
+  def registry(path = REGISTRY_PATH)
+    YAML.safe_load(path.read, permitted_classes: [], aliases: false) || {}
+  end
+
+  def cases(path = REGISTRY_PATH)
+    registry(path).fetch("cases")
+  rescue KeyError, TypeError => e
+    raise Error, "invalid registry: #{e.message}"
+  end
+
+  def find_case(case_id, path = REGISTRY_PATH)
+    cases(path).find { |item| item["id"] == case_id } ||
+      raise(Error, "unknown case: #{case_id}")
+  end
+
+  def profile(name)
+    ids = registry.fetch("profiles", {}).fetch(name) { raise Error, "unknown profile: #{name}" }
+    ids.map { |id| find_case(id) }
+  end
+
+  def validate!(path = REGISTRY_PATH)
+    data = registry(path)
+    errors = []
+    registered_cases = data["cases"]
+    minimum = data.fetch("minimum_cases", 10)
+
+    errors << "cases must be an array" unless registered_cases.is_a?(Array)
+    return errors unless registered_cases.is_a?(Array)
+
+    ids = registered_cases.map { |item| item["id"] }.compact
+    errors << "at least #{minimum} cases are required (found #{ids.size})" if ids.size < minimum
+    errors << "case IDs must be unique" unless ids.uniq.size == ids.size
+    data.fetch("profiles", {}).each do |name, profile_ids|
+      errors << "profile #{name} must be an array" unless profile_ids.is_a?(Array)
+      next unless profile_ids.is_a?(Array)
+
+      missing = profile_ids - ids
+      errors << "profile #{name} references missing cases: #{missing.join(", ")}" unless missing.empty?
+    end
+
+    registered_cases.each { |item| validate_case(item, errors) }
+    raise Error, errors.join("\n") unless errors.empty?
+
+    registered_cases
+  rescue Psych::Exception => e
+    raise Error, "invalid YAML: #{e.message}"
+  end
+
+  def validate_case(item, errors)
+    id = item["id"] || "<missing id>"
+    %w[category base_ref prompt_file expected required forbidden graders rubrics].each do |key|
+      errors << "#{id}: missing #{key}" unless item.key?(key)
+    end
+
+    prompt = safe_path(item["prompt_file"], "#{id}: prompt_file", errors)
+    errors << "#{id}: missing prompt #{item["prompt_file"]}" if prompt && !prompt.file?
+    errors << "#{id}: timeout_seconds must be positive" unless item.fetch("timeout_seconds", data_timeout_default).to_i.positive?
+
+    Array(item["graders"]).each do |grader|
+      path = ROOT.join("bin/harness-graders", grader)
+      errors << "#{id}: missing grader #{grader}" unless path.file?
+    end
+
+    Array(item["rubrics"]).each do |rubric|
+      path = ROOT.join("harness/evals/rubrics", "#{rubric}.md")
+      errors << "#{id}: missing rubric #{rubric}" unless path.file?
+    end
+
+    required = item["required"]
+    errors << "#{id}: required must be a mapping" unless required.is_a?(Hash)
+  end
+
+  def data_timeout_default
+    registry.fetch("default_timeout_seconds", 600)
+  end
+
+  def safe_path(value, label, errors)
+    return if value.nil?
+
+    path = ROOT.join(value).expand_path
+    return path if path.to_s.start_with?(ROOT.to_s + File::SEPARATOR)
+
+    errors << "#{label}: path escapes repository"
+    nil
+  end
+
+  def source_files
+    paths = %w[
+      AGENTS.md Makefile docs/DEVELOPMENT.md docs/CONTEXT_MAP.md
+      harness/README.md harness/evals/cases.yml harness/lessons/README.md
+    ]
+    paths += Dir[ROOT.join(".agents/skills/*/SKILL.md").to_s].map do |path|
+      Pathname(path).relative_path_from(ROOT).to_s
+    end
+    paths += Dir[ROOT.join("harness/evals/prompts/*").to_s]
+    paths += Dir[ROOT.join("harness/evals/rubrics/*").to_s]
+    paths += Dir[ROOT.join("bin/harness*").to_s].select { |path| File.file?(path) }
+    paths += Dir[ROOT.join("bin/harness-graders/*").to_s].select { |path| File.file?(path) }
+    paths.map { |path| Pathname(path).expand_path.relative_path_from(ROOT).to_s }.uniq.sort
+  end
+
+  def digest_paths(paths)
+    content = paths.sort.map do |relative_path|
+      path = ROOT.join(relative_path)
+      "#{relative_path}\0#{path.binread}"
+    end.join
+    Digest::SHA256.hexdigest(content)
+  end
+
+  def source_hash
+    digest_paths(source_files)
+  end
+
+  def registry_hash
+    digest_paths([ "harness/evals/cases.yml" ])
+  end
+
+  def prompt_hash(eval_case)
+    Digest::SHA256.hexdigest(ROOT.join(eval_case.fetch("prompt_file")).binread)
+  end
+
+  def grade(case_id:, run_dir:, output: nil)
+    validate!
+    eval_case = find_case(case_id)
+    run_path = Pathname(run_dir).expand_path
+    metadata = metadata_for(run_path)
+    worktree = metadata["worktree"] || run_path.join("worktree").to_s
+    grader_names = eval_case.fetch("graders").dup
+    %w[workflow behavior].each { |grader| grader_names << grader unless grader_names.include?(grader) }
+    results = grader_names.map do |grader|
+      run_grader(grader, case_id, run_path, worktree)
+    end
+    result = {
+      "case_id" => case_id,
+      "run_dir" => run_path.to_s,
+      "passed" => results.all? { |item| item["passed"] == true },
+      "graders" => results
+    }
+    target = Pathname(output || run_path.join("grade.json").to_s)
+    target.dirname.mkpath
+    target.write(JSON.pretty_generate(result) + "\n")
+    result
+  end
+
+  def metadata_for(run_path)
+    path = run_path.join("metadata.json")
+    path.file? ? JSON.parse(path.read) : {}
+  rescue JSON::ParserError => e
+    raise Error, "invalid metadata: #{e.message}"
+  end
+
+  def run_grader(grader, case_id, run_path, worktree)
+    command = [ ROOT.join("bin/harness-graders", grader).to_s,
+               "--case", case_id, "--run-dir", run_path.to_s, "--worktree", worktree ]
+    stdout, stderr, status = Open3.capture3(*command)
+    payload = JSON.parse(stdout)
+    payload["grader"] = grader
+    payload["stderr"] = stderr unless stderr.empty?
+    payload["passed"] = false unless status.success?
+    payload
+  rescue JSON::ParserError
+    { "grader" => grader, "passed" => false, "evidence" => [ stdout, stderr ].reject(&:empty?) }
+  end
+
+  def review(run_dir:, reviewer:, values:)
+    metadata = metadata_for(Pathname(run_dir).expand_path)
+    row = REVIEW_HEADERS.to_h { |header| [ header, "" ] }
+    row.update(
+      "run_id" => metadata.fetch("run_id"),
+      "reviewer" => reviewer,
+      "reviewed_at" => Time.now.utc.iso8601,
+      "task_success" => values.fetch(:task_success),
+      "correctness_score" => values.fetch(:correctness_score),
+      "minimality_score" => values.fetch(:minimality_score),
+      "security_score" => values.fetch(:security_score),
+      "behavior_notes" => values.fetch(:behavior_notes),
+      "human_correction_minutes" => values.fetch(:human_correction_minutes),
+      "notes" => values.fetch(:notes)
+    )
+    REVIEW_HEADERS_PATH.mkpath
+    CSV.open(REVIEWS_PATH, "a") do |csv|
+      csv << REVIEW_HEADERS if !REVIEWS_PATH.file? || REVIEWS_PATH.size.zero?
+      csv << REVIEW_HEADERS.map { |header| row[header] }
+    end
+    row
+  end
+
+  def report(input: RESULTS_PATH, output: ROOT.join("tmp/harness-report.md"))
+    rows = CSV.read(input, headers: true).map(&:to_h)
+    reviews = if REVIEWS_PATH.file?
+                CSV.read(REVIEWS_PATH, headers: true).map(&:to_h).group_by { |row| row["run_id"] }
+    else
+                {}
+    end
+    columns = %w[
+      run_id case_id variant status mechanical_pass workflow_pass behavior_pass
+      timeout_status changed_files unrelated_changed_files gate_status
+      task_success correctness_score minimality_score security_score
+      human_correction_minutes wall_clock_seconds tool_calls input_tokens
+      output_tokens harness_hash base_commit codex_version
+    ]
+    lines = [ "# Harness report", "", "Source: `#{input}`", "", "| #{columns.join(" | ")} |",
+             "| #{columns.map { |_| "---" }.join(" | ")} |" ]
+    rows.each do |row|
+      review_row = reviews.fetch(row["run_id"], []).last || {}
+      merged = row.merge(review_row)
+      lines << "| #{columns.map { |column| markdown_cell(merged[column]) }.join(" | ")} |"
+    end
+    output.dirname.mkpath
+    output.write(lines.join("\n") + "\n")
+    output
+  end
+
+  def markdown_cell(value)
+    value.to_s.empty? ? "unknown" : value.to_s.gsub("|", "\\|")
+  end
+
+  def main(argv)
+    command = argv.shift || "validate"
+    case command
+    when "validate"
+      validate!
+      puts "valid registry: #{cases.size} cases (#{REGISTRY_PATH})"
+    when "list"
+      options = {}
+      parser = OptionParser.new { |opts| opts.on("--profile NAME") { |value| options[:profile] = value } }
+      parser.parse!(argv)
+      selected = options[:profile] ? profile(options[:profile]) : cases
+      puts JSON.pretty_generate("profile" => options[:profile], "cases" => selected.map { |item| item["id"] })
+    when "grade"
+      options = { output: nil }
+      parser = OptionParser.new do |opts|
+        opts.on("--case ID") { |value| options[:case_id] = value }
+        opts.on("--run-dir PATH") { |value| options[:run_dir] = value }
+        opts.on("--output PATH") { |value| options[:output] = value }
+      end
+      parser.parse!(argv)
+      raise Error, "--case and --run-dir are required" unless options[:case_id] && options[:run_dir]
+
+      puts JSON.generate(grade(**options))
+    when "review"
+      options = {
+        task_success: "unknown", correctness_score: "", minimality_score: "",
+        security_score: "", behavior_notes: "", human_correction_minutes: "", notes: ""
+      }
+      parser = OptionParser.new do |opts|
+        opts.on("--run-dir PATH") { |value| options[:run_dir] = value }
+        opts.on("--reviewer NAME") { |value| options[:reviewer] = value }
+        opts.on("--task-success VALUE") { |value| options[:task_success] = value }
+        opts.on("--correctness SCORE") { |value| options[:correctness_score] = value }
+        opts.on("--minimality SCORE") { |value| options[:minimality_score] = value }
+        opts.on("--security SCORE") { |value| options[:security_score] = value }
+        opts.on("--behavior-notes TEXT") { |value| options[:behavior_notes] = value }
+        opts.on("--correction-minutes VALUE") { |value| options[:human_correction_minutes] = value }
+        opts.on("--notes TEXT") { |value| options[:notes] = value }
+      end
+      parser.parse!(argv)
+      raise Error, "--run-dir and --reviewer are required" unless options[:run_dir] && options[:reviewer]
+
+      values = options.reject { |key, _| %i[run_dir reviewer].include?(key) }
+      puts JSON.generate(review(run_dir: options[:run_dir], reviewer: options[:reviewer], values: values))
+    when "report"
+      options = { input: RESULTS_PATH, output: ROOT.join("tmp/harness-report.md") }
+      parser = OptionParser.new do |opts|
+        opts.on("--input PATH") { |value| options[:input] = Pathname(value) }
+        opts.on("--output PATH") { |value| options[:output] = Pathname(value) }
+      end
+      parser.parse!(argv)
+      puts report(**options)
+    else
+      raise Error, "usage: bin/harness-eval [validate|list|grade|review|report]"
+    end
+  rescue OptionParser::ParseError, Error => e
+    warn "harness-eval: #{e.message}"
+    exit 1
+  end
+
+  REVIEW_HEADERS_PATH = REVIEWS_PATH.dirname.freeze
+end
+
+HarnessEval.main(ARGV) if $PROGRAM_NAME == __FILE__

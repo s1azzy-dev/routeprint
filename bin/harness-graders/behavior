@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "support"
+
+begin
+  values = HarnessGraderSupport.options(ARGV)
+  behavior = values.fetch(:case).fetch("behavior", {})
+  changed = HarnessGraderSupport.changed_files(values.fetch(:worktree))
+  failures = []
+
+  files_any = Array(behavior["files_any"])
+  files_all = Array(behavior["files_all"])
+  files_not = Array(behavior["files_not"])
+  unless files_any.empty? || changed.any? { |path| files_any.any? { |pattern| HarnessGraderSupport.matches_path?(pattern, path) } }
+    failures << "missing behavior files_any evidence"
+  end
+  files_all.each do |pattern|
+    failures << "missing behavior file: #{pattern}" unless changed.any? { |path| HarnessGraderSupport.matches_path?(pattern, path) }
+  end
+  files_not.each do |pattern|
+    failures << "forbidden behavior file changed: #{pattern}" if changed.any? { |path| HarnessGraderSupport.matches_path?(pattern, path) }
+  end
+
+  Array(behavior["file_contents"]).each do |check|
+    paths = Dir[values.fetch(:worktree).join(check.fetch("path")).to_s].select { |path| File.file?(path) }
+    content = paths.map { |path| Pathname(path).read }.join("\n")
+    Array(check["contains"]).each { |pattern| failures << "missing content #{pattern} in #{check["path"]}" unless content.include?(pattern) }
+    Array(check["not_contains"]).each { |pattern| failures << "forbidden content #{pattern} in #{check["path"]}" if content.include?(pattern) }
+  end
+
+  verification_path = values.fetch(:run_dir).join("verification.json")
+  verification = verification_path.file? ? JSON.parse(verification_path.read) : []
+  if behavior["verification_commands"] && !verification_path.file?
+    failures << "declared verification commands have no recorded result"
+  end
+  if verification.is_a?(Array)
+    failures.concat(verification.reject { |item| item["passed"] }.map { |item| "verification failed: #{item["command"]}" })
+  end
+
+  HarnessGraderSupport.emit(
+    "passed" => failures.empty?,
+    "status" => behavior.empty? ? "not_configured" : "checked",
+    "changed_files" => changed,
+    "failures" => failures
+  )
+rescue ArgumentError, HarnessEval::Error, JSON::ParserError => e
+  HarnessGraderSupport.emit("passed" => false, "evidence" => [ e.message ])
+  exit 1
+end

@@ -2,6 +2,14 @@
 
 ## 2026-07-12
 
+- Hardened the Codex eval harness after real runs: bounded ephemeral execution,
+  untracked-file-aware grading, structured command exit evidence, workflow and
+  behavior checks, human review records, smoke profiles, and source-stable
+  experiment hashes now prevent false-positive and runaway benchmark results.
+- Added a repository-specific Codex eval harness with 12 registered cases,
+  disposable-worktree JSONL runs, mechanical safety/workflow graders, human
+  rubrics, experiment metrics, and Markdown reporting; raw runs remain under
+  ignored temporary paths.
 - Added weekly Dependabot npm updates with minor/patch grouping; major updates
   remain separate for Context7 or official migration-guide review.
 - Moved the project Codex allow-rule from raw Docker RSpec commands to stable
