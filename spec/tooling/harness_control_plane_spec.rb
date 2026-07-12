@@ -61,6 +61,17 @@ RSpec.describe HarnessControlPlane do
     expect(context_map).not_to include("| Any Routeprint repository task |")
   end
 
+  it "prefers compact agent verification during iteration" do
+    expect(development).to include(
+      "Fast agent verification",
+      "make agent-verify-fast",
+      "Use `make agent-test` and `make agent-verify-fast` during agent iteration"
+    )
+    expect(context_map).to include("make agent-verify-fast")
+    expect(readme).to include("make agent-verify-fast")
+    expect(postgis_skill).to include("make agent-verify-fast")
+  end
+
   it "keeps the routed skills conditional" do
     intake_skill = root.join(".agents/skills/routeprint-sdd-intake-gate/SKILL.md").read
     spec_driven_skill = root.join(".agents/skills/routeprint-spec-driven-change/SKILL.md").read

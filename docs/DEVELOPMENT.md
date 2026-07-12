@@ -371,7 +371,7 @@ or `tsc` on the host for app work. Use the Make target first. Examples:
 - use `make frontend-audit`, not `npm audit`;
 - use `make security`, not host `bundle audit`, `bundler-audit`, or `brakeman`;
 - use `make frontend-build` or `make frontend-verify`, not host `vite`;
-- use `make test`, `make verify-fast`, or a targeted
+- use `make agent-test`, `make agent-verify-fast`, or a targeted
   `docker compose run --rm web ...` spec command, not host `bundle exec rspec`.
 
 The intentional host exceptions are Docker lifecycle and diagnostics
@@ -405,7 +405,8 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Compatibility RuboCop check alias | `make rubocop` | Web container |
 | Full test suite | `make test` | Web container |
 | Security checks | `make security` | Web container |
-| Fast local verification | `make verify-fast` | Web container |
+| Fast agent verification | `make agent-verify-fast` | Web container |
+| Canonical fast verification | `make verify-fast` | Web container |
 | Full local verification | `make verify` | Mixed: host OpenSpec validation plus container gates |
 | CI entrypoint | `make ci` | Web container |
 | Migration skeleton | `make migration NAME=MigrationName` | Web container |
@@ -478,8 +479,9 @@ Container app/runtime commands:
   output is more useful than full logs.
 - RTK-backed RSpec agent targets set `ROUTEPRINT_SKIP_SIMPLECOV=1` so RTK can parse
   clean RSpec JSON output. Use ordinary Make targets for coverage proof.
-- Use the ordinary `make test`, `make verify-fast`, `make verify`, and CI
-  targets as final proof when a task requires the canonical project gate.
+- Use `make agent-test` and `make agent-verify-fast` during agent iteration.
+  Use ordinary `make test`, `make verify-fast`, `make verify`, and CI targets as
+  final proof when a task requires the canonical project gate.
 - Default quality commands should keep output compact without relying on RTK:
   RSpec prints failures plus the final example summary, RuboCop uses its
   simple formatter unless a caller requests another format, frontend linting
@@ -495,15 +497,15 @@ on failure. Disable RTK for one host command with `RTK_DISABLED=1` when needed.
 | Change type | Minimum verification |
 | --- | --- |
 | Docs only | `git diff --check` |
-| Ruby style-only | `make rubocop-check` |
-| ERB/view-only | `make rubocop-check` plus relevant request/system spec when behavior changes |
-| Model/interactor behavior | Narrow spec, then `make test` or `make verify-fast` |
-| Controller/request behavior | Narrow request spec, then `make verify-fast` |
-| Policy/authorization | Policy/request specs, then `make verify-fast` |
-| Migration/schema/PostGIS | Migration/spec path, then `make verify-fast` |
+| Ruby style-only | `make agent-rubocop` for agent feedback; `make rubocop-check` for canonical proof |
+| ERB/view-only | `make agent-rubocop` plus relevant request/system spec when behavior changes |
+| Model/interactor behavior | Narrow spec, then `make agent-test` or `make agent-verify-fast` |
+| Controller/request behavior | Narrow `make agent-rspec` request spec, then `make agent-verify-fast` |
+| Policy/authorization | Narrow `make agent-rspec` policy/request spec, then `make agent-verify-fast` |
+| Migration/schema/PostGIS | Migration/spec path, then `make agent-verify-fast` |
 | Security/auth/uploads/sessions | Relevant specs plus `make security` |
 | Dependency/tooling | Relevant install/check, production asset build when applicable, plus `make verify` |
-| React/Inertia page | Narrow request and component specs, browser smoke when interaction changes, then `make verify-fast` |
+| React/Inertia page | Narrow request and component specs, browser smoke when interaction changes, then `make agent-verify-fast` |
 | Before PR or merge | `make verify` |
 
 If a gate fails for an unrelated existing issue, record the exact failing tool,

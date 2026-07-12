@@ -39,7 +39,7 @@ If the task requires detailed spatial SQL, geometry operations, or migration imp
 3. Keep nearby and bounds logic database-backed and index-aware; do not move spatial filtering into controllers.
 4. Keep map payloads lean and product-shaped: identifiers, names, coordinates, status/visibility, and only fields needed by the UI.
 5. For schema changes, inspect recent migrations, write explicit `up`/`down`, and never edit `db/structure.sql` by hand.
-6. Keep the query or payload contract covered by the relevant request, query, or system spec, then use the matrix-selected gate (normally `make verify-fast`).
+6. Keep the query or payload contract covered by the relevant request, query, or system spec, then use the agent gate (normally `make agent-verify-fast`); reserve `make verify-fast` for canonical local proof.
 
 ## Outputs
 

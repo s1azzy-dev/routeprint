@@ -57,7 +57,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | Level 2–3 feature discovery, OpenSpec, or ADR decision | `$routeprint-spec-driven-change` | Relevant capability spec, active changes, selected app/spec slice | `bin/openspec validate --all --strict` plus project gate |
 | Resume, publish, review, or orient branch state | `$routeprint-workspace-state` | Git status, branch, last commit, compact diff names when needed | Reuse or rerun gate by freshness |
 | Auth, sessions, admin, uploads, privacy, or user-owned data | `$routeprint-authz-security-flow` | `docs/QUALITY_SECURITY.md`, active route/controller/policy/spec slice | Narrow security specs, then `make security` when required |
-| Airports, routes, map payloads, PostGIS, or geospatial performance | `$routeprint-postgis-map-query` | `docs/FOUNDATIONS.md`, geospatial ADR when behavior changes, target query/model/spec | Narrow spec, then `make verify-fast` |
+| Airports, routes, map payloads, PostGIS, or geospatial performance | `$routeprint-postgis-map-query` | `docs/FOUNDATIONS.md`, geospatial ADR when behavior changes, target query/model/spec | Narrow spec, then `make agent-verify-fast`; canonical proof uses `make verify-fast` |
 | Business use case or `app/interactors` change | `$routeprint-yabi-interactor` | `app/interactors/application_interactor.rb`, target interactor/spec, one good neighbor | Narrow interactor/request spec; conventions tooling spec when style rules change; then selected gate |
 
 ## Backend Context

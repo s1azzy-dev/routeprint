@@ -36,7 +36,7 @@ Prefer the Makefile workflow documented in
 ```bash
 make setup
 make doctor
-make verify-fast
+make agent-verify-fast
 ```
 
 Useful local targets:
@@ -53,6 +53,7 @@ Useful local targets:
 - `make frontend-check` - run frontend format, lint, typecheck, test, and build checks
 - `make frontend-verify` - run all frontend quality and build gates, including audit
 - `make harness-check` - check agent paths, skills, Make targets, links, and verification rules
+- `make agent-verify-fast` - run the compact agent verification loop
 - `make verify` - run the full local verification gate
 
 Default host ports:
