@@ -14,15 +14,15 @@ RSpec.describe FrontendFoundationConfiguration do
   it "pins the approved frontend runtime and build dependencies" do
     expect(package.fetch("name")).to eq("routeprint")
     expect(package.fetch("dependencies")).to include(
-      "@inertiajs/react" => "3.6.0",
+      "@inertiajs/react" => "3.6.1",
       "react" => "19.2.7",
       "react-dom" => "19.2.7",
     )
     expect(package.fetch("devDependencies")).to include(
       "@tailwindcss/vite" => "4.3.2",
       "typescript" => "6.0.3",
-      "vite" => "8.1.3",
-      "vitest" => "4.1.9",
+      "vite" => "8.1.4",
+      "vitest" => "4.1.10",
     )
   end
 
@@ -74,5 +74,11 @@ RSpec.describe FrontendFoundationConfiguration do
       "rtk vitest run --coverage --reporter=minimal --passWithNoTests",
       "agent-verify-fast: frontend-install",
     )
+  end
+
+  it "exposes npm dependency freshness through Make" do
+    makefile = root.join("Makefile").read
+
+    expect(makefile).to include("frontend-outdated:", "bin/npm outdated")
   end
 end

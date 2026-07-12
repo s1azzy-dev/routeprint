@@ -10,7 +10,7 @@ AGENT_LOG_LIMIT ?= 20
 AGENT_DOCKER_LOG_LINES ?= 200
 AGENT_DOCKER_SERVICE ?= web
 
-.PHONY: setup openspec-install openspec-update openspec-validate harness-check frontend-install frontend-format frontend-lint frontend-typecheck frontend-test frontend-build frontend-audit frontend-check frontend-verify frontend-outdated agent-state agent-search agent-diff-stat agent-diff-names agent-log agent-docker-logs agent-rtk agent-rtk-gain agent-rtk-gain-daily agent-rtk-gain-history agent-rtk-session agent-rtk-discover agent-host-state agent-host-search agent-host-diff-stat agent-host-diff-names agent-host-log agent-host-docker-logs agent-host-rtk-gain agent-host-rtk-session agent-host-rtk-discover agent-container-rtk agent-container-rtk-gain agent-container-rtk-gain-daily agent-container-rtk-gain-history agent-frontend-format agent-frontend-lint agent-frontend-typecheck agent-frontend-test agent-rubocop agent-rubocop-fix agent-ruby-test agent-rspec agent-test agent-verify-fast install-hooks up down logs shell bash bundle lint rubocop rubocop-check rubocop-fix rubocop-autocorrect ruby-test test security verify verify-fast ci migration doctor bundle-outdated maplibre-outdated outdated
+.PHONY: setup openspec-install openspec-update openspec-validate harness-check frontend-install frontend-format frontend-lint frontend-typecheck frontend-test frontend-build frontend-audit frontend-check frontend-verify frontend-outdated agent-state agent-search agent-diff-stat agent-diff-names agent-log agent-docker-logs agent-rtk agent-rtk-gain agent-rtk-gain-daily agent-rtk-gain-history agent-rtk-session agent-rtk-discover agent-host-state agent-host-search agent-host-diff-stat agent-host-diff-names agent-host-log agent-host-docker-logs agent-host-rtk-gain agent-host-rtk-session agent-host-rtk-discover agent-container-rtk agent-container-rtk-gain agent-container-rtk-gain-daily agent-container-rtk-gain-history agent-frontend-format agent-frontend-lint agent-frontend-typecheck agent-frontend-test agent-rubocop agent-rubocop-fix agent-ruby-test agent-rspec agent-test agent-verify-fast install-hooks up down logs shell bash bundle lint rubocop rubocop-check rubocop-fix rubocop-autocorrect ruby-test test security verify verify-fast ci migration doctor bundle-outdated outdated
 
 setup: openspec-install
 	$(COMPOSE) up --build -d
@@ -237,13 +237,10 @@ doctor:
 	$(APP) bash -lc "ruby -v && bundle -v && rtk --version && bin/rails about"
 
 bundle-outdated:
-	$(APP) bundle outdated
+	$(APP) bundle outdated --strict
 
 frontend-outdated:
 	$(APP) bin/npm outdated
-
-maplibre-outdated:
-	$(APP) bin/check-maplibre-gl
 
 outdated:
 	$(APP) bin/check-outdated
