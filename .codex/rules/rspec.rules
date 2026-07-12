@@ -23,3 +23,10 @@ prefix_rule(
     decision="allow",
     justification="Stable non-destructive Routeprint verification targets",
 )
+
+# Allow RTK-wrapped Make commands for token-efficient agent workflows.
+prefix_rule(
+    pattern=["rtk", "make"],
+    decision="allow",
+    justification="RTK-wrapped Routeprint Make commands",
+)

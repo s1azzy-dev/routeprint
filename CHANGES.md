@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-07-13
+
+- Allowed agents to run RTK-wrapped Make commands through the project Codex
+  rule (`rtk make *`) for token-efficient workflows.
+
 ## 2026-07-12
 
 - Fixed Docker Vite HMR port discovery so the React frontend connects through
