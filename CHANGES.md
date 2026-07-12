@@ -2,6 +2,13 @@
 
 ## 2026-07-12
 
+- Fixed Docker Vite HMR port discovery so the React frontend connects through
+  the published `3038` port instead of the container-only `3036` port.
+- Added the first MapLibre home map shell: a full-viewport RouteMap component
+  on `/` using the same OpenFreeMap vector style as the proven Wildwaters map,
+  with a React reset-view control and focused lifecycle tests. User flight data
+  and visited-country overlays remain deferred; the basemap remains
+  replaceable.
 - Added Routeprint permission governance: stable Make allow targets, trimmed
   shell environment inheritance, dependency-approval grading, external-content
   policy, and a read-only reviewer profile.

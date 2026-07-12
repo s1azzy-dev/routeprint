@@ -35,6 +35,7 @@ services:
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
+      VITE_HMR_CLIENT_PORT: 3038
     ports:
       - "3001:3000"
       - "3038:3036"

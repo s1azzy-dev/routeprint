@@ -84,6 +84,8 @@ The initialized project currently includes:
 - Authentication, sessions, registration, sign-in/sign-out, and password reset
 - Protected dashboard
 - Place and airport reference foundation with PostGIS points and localized names
+- Initial MapLibre home map shell with an OpenFreeMap vector basemap and reset
+  control
 
 The current product surface includes authentication, password reset, a protected
 dashboard, and the airport reference foundation. Manual flight history, import,
