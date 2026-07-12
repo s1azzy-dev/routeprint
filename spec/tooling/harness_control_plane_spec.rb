@@ -203,9 +203,9 @@ RSpec.describe HarnessControlPlane do
     )
   end
 
-  it "allows only stable Make verification targets in the project Codex rule" do
+  it "allows stable Make verification targets and RTK-wrapped Make commands" do
     expect(codex_rules).to include(
-      '"make"',
+      '"make"', '"rtk"',
       '"agent-rspec"',
       '"agent-test"',
       '"agent-verify-fast"',
@@ -213,7 +213,7 @@ RSpec.describe HarnessControlPlane do
       '"verify"',
       '"security"',
       '"openspec-validate"',
-      '"Stable non-destructive Routeprint verification targets"'
+      '"Stable non-destructive Routeprint verification targets"', '"RTK-wrapped Routeprint Make commands"'
     )
     expect(codex_rules).not_to include('"docker"', '"compose"', '"bundle"', '"exec"', '"rspec"')
   end

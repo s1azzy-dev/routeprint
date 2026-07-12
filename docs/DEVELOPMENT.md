@@ -43,7 +43,7 @@ non-obvious constraints, destructive cleanup, publishing, or opening a PR.
 ### Permissions and tool governance
 
 Use the stable Make interface for routine work. The project Codex rules allow
-read/check targets such as `make agent-state`, `make agent-host-search`,
+RTK-wrapped Make commands (`rtk make *`) and read/check targets such as `make agent-state`, `make agent-host-search`,
 `make agent-rspec`, `make agent-frontend-*`, `make agent-rubocop`,
 `make agent-verify-fast`, `make verify-fast`, `make security`,
 `make openspec-validate`, and `make harness-check`. A broad raw container
