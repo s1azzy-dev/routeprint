@@ -2,6 +2,11 @@
 
 ## 2026-07-12
 
+- Added Routeprint permission governance: stable Make allow targets, trimmed
+  shell environment inheritance, dependency-approval grading, external-content
+  policy, and a read-only reviewer profile.
+- Added positive/negative trigger cases for Routeprint skills and shortened the
+  SDD intake skill so clear Level 0–1 work stays on the Fast Path.
 - Prefer compact `make agent-*` commands in agent-facing workflow guidance,
   while retaining ordinary Make targets for canonical final and CI proof.
 - Added adaptive SDD routing: clear Level 0–1 work stays on the Fast Path,

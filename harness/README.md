@@ -49,3 +49,15 @@ render as `unknown`; the harness does not invent measurements.
 Do not commit raw traces or worktrees. Do not place secrets, reset tokens,
 credentials, booking references, or private payloads in prompts, traces,
 rubrics, lessons, or result notes.
+
+## Skill trigger registry
+
+`harness/skills/cases.yml` records positive and negative examples for every
+Routeprint-specific router or domain skill. The mechanical harness check keeps
+skill IDs unique, requires both polarities, and rejects unknown or missing
+skills. Generated OpenSpec command adapters are intentionally outside this
+registry because their own tooling specs validate their command contract.
+
+The project does not add a new skill until its workflow has repeated at least
+three times, has clear positive and negative triggers, cannot be inferred from
+neighboring code, and shows measurable benefit in an eval or lower error rate.

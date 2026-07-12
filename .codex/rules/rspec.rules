@@ -1,11 +1,19 @@
-# Allow Codex to run stable, non-destructive Routeprint verification targets.
+# Allow Codex to run stable, non-destructive Routeprint read/check targets.
 prefix_rule(
     pattern=[
         "make",
         [
+            "agent-state",
+            "agent-host-search",
             "agent-rspec",
             "agent-test",
+            "agent-frontend-format",
+            "agent-frontend-lint",
+            "agent-frontend-typecheck",
+            "agent-frontend-test",
+            "agent-rubocop",
             "agent-verify-fast",
+            "harness-check",
             "verify-fast",
             "verify",
             "security",

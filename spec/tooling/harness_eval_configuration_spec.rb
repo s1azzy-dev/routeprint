@@ -68,8 +68,21 @@ RSpec.describe HarnessEvalConfiguration do
       bin/harness-eval bin/harness-run bin/harness-graders/diff-scope
       bin/harness-graders/no-manual-schema bin/harness-graders/tests
       bin/harness-graders/workflow bin/harness-graders/behavior
+      bin/harness-graders/dependency-approval
     ].each do |relative_path|
       expect(root.join(relative_path)).to be_executable
     end
+  end
+
+  it "hashes skill and permission policy with the eval harness" do
+    load root.join("bin/harness-eval").to_s unless defined?(HarnessEval)
+    source_files = HarnessEval.source_files
+
+    expect(source_files).to include(
+      ".codex/config.toml",
+      ".codex/rules/rspec.rules",
+      ".codex/agents/reviewer.toml",
+      "harness/skills/cases.yml"
+    )
   end
 end

@@ -114,7 +114,10 @@ module HarnessEval
     paths = %w[
       AGENTS.md Makefile docs/DEVELOPMENT.md docs/CONTEXT_MAP.md
       harness/README.md harness/evals/cases.yml harness/lessons/README.md
+      harness/skills/cases.yml .codex/config.toml .github/pull_request_template.md
     ]
+    paths += Dir[ROOT.join(".codex/rules/*").to_s]
+    paths += Dir[ROOT.join(".codex/agents/*.toml").to_s]
     paths += Dir[ROOT.join(".agents/skills/*/SKILL.md").to_s].map do |path|
       Pathname(path).relative_path_from(ROOT).to_s
     end
@@ -152,7 +155,7 @@ module HarnessEval
     metadata = metadata_for(run_path)
     worktree = metadata["worktree"] || run_path.join("worktree").to_s
     grader_names = eval_case.fetch("graders").dup
-    %w[workflow behavior].each { |grader| grader_names << grader unless grader_names.include?(grader) }
+    %w[workflow behavior dependency-approval].each { |grader| grader_names << grader unless grader_names.include?(grader) }
     results = grader_names.map do |grader|
       run_grader(grader, case_id, run_path, worktree)
     end

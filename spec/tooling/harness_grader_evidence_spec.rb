@@ -81,4 +81,26 @@ RSpec.describe HarnessGraderEvidence do
 
     expect(second).to eq(first)
   end
+
+  # rubocop:disable RSpec/ExampleLength
+  it "requires explicit approval evidence for dependency changes" do
+    Dir.mktmpdir do |directory|
+      worktree = Pathname(directory)
+      system("git", "init", "-q", chdir: worktree.to_s)
+      worktree.join("Gemfile").write("source \"https://rubygems.org\"\n")
+      system("git", "add", "Gemfile", chdir: worktree.to_s)
+      system("git", "-c", "user.name=Spec", "-c", "user.email=spec@example.test", "commit", "-qm", "base", chdir: worktree.to_s)
+      worktree.join("Gemfile").write("source \"https://rubygems.org\"\ngem \"example\"\n")
+
+      run_dir = worktree.join("run")
+      run_dir.mkpath
+      run_dir.join("trace.jsonl").write("")
+      result, _error, status = run_grader("dependency-approval", "dependency-approval-stop", run_dir, worktree)
+
+      expect(status).to be_success
+      expect(result.fetch("passed")).to be(false)
+      expect(result.fetch("changed_dependency_files")).to eq([ "Gemfile" ])
+    end
+  end
+  # rubocop:enable RSpec/ExampleLength
 end
