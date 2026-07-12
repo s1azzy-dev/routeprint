@@ -14,6 +14,8 @@ RSpec.describe HarnessControlPlane do
   let(:codex_rules) { root.join(".codex/rules/rspec.rules").read }
   let(:readme) { root.join("README.md").read }
   let(:yabi_skill) { root.join(".agents/skills/routeprint-yabi-interactor/SKILL.md").read }
+  let(:authz_skill) { root.join(".agents/skills/routeprint-authz-security-flow/SKILL.md").read }
+  let(:postgis_skill) { root.join(".agents/skills/routeprint-postgis-map-query/SKILL.md").read }
 
   it "keeps the SDD gate, command routing, and completion proof explicit" do
     expect(development).to include(
@@ -27,6 +29,44 @@ RSpec.describe HarnessControlPlane do
       "Context compacts mid-task",
       "When work is complete, summarize"
     )
+  end
+
+  it "keeps a compact fast path before the detailed workflow reference" do
+    expect(development).to include(
+      "## Fast Path",
+      "Level 0 | no behavior | no approval | git diff --check",
+      "### Command environment",
+      "### Approval stops",
+      "### Verification selector"
+    )
+    expect(context_map).to include(
+      "headings `Fast Path`, `Adaptive SDD Routing`, `Permission Matrix`, `Verification Matrix`"
+    )
+  end
+
+  it "routes intake through the fast path before expanding context" do
+    intake_skill = root.join(".agents/skills/routeprint-sdd-intake-gate/SKILL.md").read
+
+    expect(intake_skill).to include("Read the `Fast Path` heading")
+    expect(intake_skill).not_to include("Read the SDD gate, task router, task levels")
+  end
+
+  it "keeps adaptive SDD routing explicit" do
+    expect(development).to include(
+      "## Adaptive SDD Routing",
+      "The Fast Path is the default for clear Level 0–1 work",
+      "Do not emit a task packet or create OpenSpec/ADR artifacts"
+    )
+    expect(context_map).to include("Unclear level/risk, likely Level 2–3 scope, or compaction handoff")
+    expect(context_map).not_to include("| Any Routeprint repository task |")
+  end
+
+  it "keeps the routed skills conditional" do
+    intake_skill = root.join(".agents/skills/routeprint-sdd-intake-gate/SKILL.md").read
+    spec_driven_skill = root.join(".agents/skills/routeprint-spec-driven-change/SKILL.md").read
+
+    expect(intake_skill).to include("Do not invoke for clear Level 0-1 work")
+    expect(spec_driven_skill).to include("Do not invoke for clear Level 0-1 work")
   end
 
   it "routes core workflows through project-local skills" do
@@ -99,6 +139,12 @@ RSpec.describe HarnessControlPlane do
     expect(development).to include("make agent-state")
   end
 
+  it "wires the mechanical harness check into Make and CI" do
+    expect(root.join("bin/check-agent-harness")).to be_executable
+    expect(makefile).to include("harness-check:", "bin/check-agent-harness")
+    expect(root.join(".github/workflows/ci.yml").read).to include("make harness-check")
+  end
+
   it "defines the explicit fail-fast interactor style in project docs" do
     expect(foundations).to include("explicit, fail-fast pipelines")
     expect(development).to include(
@@ -118,6 +164,12 @@ RSpec.describe HarnessControlPlane do
     )
   end
 
+  it "keeps domain skills focused instead of duplicating the process gate" do
+    expect(yabi_skill).not_to include("Fill the compact task packet", "Update `CHANGES.md` when required")
+    expect(authz_skill).not_to include("For behavior changes, write the failing request/policy/interactor spec first")
+    expect(postgis_skill).not_to include("For behavior changes, write the narrow request/interactor/query/system spec first")
+  end
+
   it "keeps archived feature completion synchronized across project documents" do
     expect(development).to include(
       "## Completion Synchronization Checklist",
@@ -131,6 +183,13 @@ RSpec.describe HarnessControlPlane do
       "Place and airport reference foundation"
     )
     expect(readme).not_to include("auth, and admin product behavior should be added later")
+  end
+
+  it "keeps archive cleanup ownership explicit" do
+    expect(development).to include(
+      "update `docs/CONTEXT_MAP.md` if ownership changed",
+      "remove obsolete skills or rules"
+    )
   end
 
   it "allows only stable Make verification targets in the project Codex rule" do

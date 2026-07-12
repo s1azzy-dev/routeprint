@@ -24,7 +24,8 @@ docs unless explicitly requested.
 
 ## Always-On Rules
 
-- Start every repository task with the SDD gate in `docs/DEVELOPMENT.md`.
+- Start every repository task with the Fast Path in `docs/DEVELOPMENT.md`; use
+  the routed SDD skill only when level, risk, scope, or handoff requires it.
 - Inspect neighboring files before editing and follow the local pattern.
 - Read the related baseline spec before changing established behavior.
 - Behavior-changing work uses red test, minimal code, green test.
@@ -39,8 +40,9 @@ docs unless explicitly requested.
   documented host-only tooling.
 - Use RTK-backed host commands and `make agent-*` targets first for broad
   search, logs, diffs, and diagnostics.
-- Keep `CHANGES.md` current for behavior, schema, dependency, process, or
-  user-facing changes.
+- Keep `CHANGES.md` current for meaningful behavior, schema, dependency,
+  process/harness, or user-facing changes; do not add entries for every typo or
+  micro-edit.
 
 ## Hard Stops
 

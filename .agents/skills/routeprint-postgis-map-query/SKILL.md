@@ -15,7 +15,6 @@ If the task requires detailed spatial SQL, geometry operations, or migration imp
 
 ## Read
 
-- `docs/DEVELOPMENT.md` migration/schema/PostGIS and controller/request verification rules.
 - `docs/CONTEXT_MAP.md` rows for airports/places, travel segments/flights,
   map/GeoJSON, migrations/PostGIS, or models/domain persistence.
 - `docs/FOUNDATIONS.md` data, geospatial, and database boundaries.
@@ -40,8 +39,7 @@ If the task requires detailed spatial SQL, geometry operations, or migration imp
 3. Keep nearby and bounds logic database-backed and index-aware; do not move spatial filtering into controllers.
 4. Keep map payloads lean and product-shaped: identifiers, names, coordinates, status/visibility, and only fields needed by the UI.
 5. For schema changes, inspect recent migrations, write explicit `up`/`down`, and never edit `db/structure.sql` by hand.
-6. For behavior changes, write the narrow request/interactor/query/system spec first.
-7. Verify with the narrow spec and the matrix-required gate, normally `make verify-fast` for query/controller/schema behavior.
+6. Keep the query or payload contract covered by the relevant request, query, or system spec, then use the matrix-selected gate (normally `make verify-fast`).
 
 ## Outputs
 

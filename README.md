@@ -52,6 +52,7 @@ Useful local targets:
 - `make security` - run bundler-audit and Brakeman
 - `make frontend-check` - run frontend format, lint, typecheck, test, and build checks
 - `make frontend-verify` - run all frontend quality and build gates, including audit
+- `make harness-check` - check agent paths, skills, Make targets, links, and verification rules
 - `make verify` - run the full local verification gate
 
 Default host ports:
@@ -90,10 +91,10 @@ SDD/OpenSpec slices.
 
 ## Spec-Driven Changes
 
-Every repository task starts with the SDD gate in
-[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md): classify the task, state the
-OpenSpec/ADR need, choose the command environment, and pick the verification
-path before implementation work.
+Every repository task starts with the Fast Path in
+[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md). Clear Level 0–1 work stays on the
+short route; use the routed SDD/OpenSpec skills when level, risk, scope, or
+handoff is unclear.
 
 | Level | Typical work | Artifacts |
 | --- | --- | --- |

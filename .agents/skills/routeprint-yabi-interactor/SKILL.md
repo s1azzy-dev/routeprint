@@ -7,7 +7,6 @@ description: Use when adding, changing, reviewing, or refactoring Routeprint bus
 
 ## Load
 
-- Read the SDD/task/verification sections of `docs/DEVELOPMENT.md`.
 - Read the "Interactors/use cases" row plus the active domain row in
   `docs/CONTEXT_MAP.md`.
 - Read `docs/FOUNDATIONS.md` architecture boundary.
@@ -50,22 +49,19 @@ Do not scan every interactor or load unrelated ADRs by default.
 
 ## Procedure
 
-1. Fill the compact task packet from `docs/DEVELOPMENT.md`.
-2. Identify the use case boundary and write the public input/output/failure
+1. Identify the use case boundary and write the public input/output/failure
    contract before decomposing implementation steps.
-3. For behavior changes, write or update the failing interactor/request spec
-   first. A contract-preserving refactor may rely on existing behavior specs.
-4. Sketch the happy path as a short sequence of named stages. Make `call` show
+2. Sketch the happy path as a short sequence of named stages. Make `call` show
    that sequence in execution order.
-5. Pass stage values explicitly. Use private methods for local steps; introduce
+3. Pass stage values explicitly. Use private methods for local steps; introduce
    another interactor only when the extraction rule above is satisfied.
-6. Keep transactions around the atomic business boundary. Fail fast and do not
+4. Keep transactions around the atomic business boundary. Fail fast and do not
    continue later records or stages after a failure unless the specification
    explicitly defines partial success.
-7. Inject interactor collaborators through `option`; keep external I/O at a
+5. Inject interactor collaborators through `option`; keep external I/O at a
    narrow boundary.
-8. Run the narrow spec, then the verification selected by
-   `docs/DEVELOPMENT.md`. Update `CHANGES.md` when required.
+6. Keep the public use case covered by its focused interactor/request spec and
+   run `spec/tooling/interactor_conventions_spec.rb` when these conventions change.
 
 ## Canonical shape
 

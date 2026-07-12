@@ -28,6 +28,9 @@ jobs:
       - name: Validate specifications
         run: make openspec-validate
 
+      - name: Check agent harness contracts
+        run: make harness-check
+
   scan_ruby:
     runs-on: ubuntu-latest
 

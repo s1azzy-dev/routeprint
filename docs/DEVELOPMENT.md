@@ -5,6 +5,75 @@ verification. Product and architecture rules live in `docs/FOUNDATIONS.md`.
 Security and testing policy lives in `docs/QUALITY_SECURITY.md`. Task-specific
 context loading lives in `docs/CONTEXT_MAP.md`.
 
+## Fast Path
+
+Use this short gate before loading task-specific context.
+
+### Classification
+
+| Level | Use for | OpenSpec/ADR |
+| --- | --- | --- |
+| 0 | Docs, process, comments, formatting, or harness-only maintenance with no runtime or acceptance change | None |
+| 1 | Narrow copy, visual polish, obvious bug, or contract-preserving refactor | None |
+| 2 | Meaningful behavior, interacting mechanisms, or uncertain requirements | OpenSpec change |
+| 3 | Level 2 plus a durable cross-cutting architecture decision | OpenSpec change plus ADR |
+
+### Packet
+
+- Level 0: `Level 0 | no behavior | no approval | git diff --check`
+- Level 1:
+  `Goal: ... | Behavior change: no/yes | Approval: no/yes | Verification: ...`
+- Level 2–3: use the full packet in the reference section below.
+
+### Command environment
+
+- Host shell: read/search, git, editing, Docker orchestration, OpenSpec wrappers,
+  and host-only harness checks.
+- Make/container: Rails, Ruby, Bundler, RSpec, RuboCop, frontend, security,
+  dependency, migration, and import commands.
+- Prefer `make agent-*` or RTK-backed host commands for broad discovery and
+  compact feedback. Do not run raw host app toolchains.
+
+### Approval stops
+
+Ask before adding dependencies or services, introducing architecture, changing
+auth/session/authorization/upload/secret behavior, adding database procedures or
+non-obvious constraints, destructive cleanup, publishing, or opening a PR.
+
+### Verification selector
+
+| Change | Minimum proof |
+| --- | --- |
+| Docs/process/harness-only | `git diff --check` plus the relevant tooling check |
+| Level 1 behavior | Narrow spec/check, then the matching project gate |
+| Level 2–3 | OpenSpec validation, relevant specs, and the selected project gate |
+| Before PR/merge | `make verify` |
+
+If the task is Level 2 or 3, use the spec-driven lifecycle below. Otherwise,
+load only the task row from `docs/CONTEXT_MAP.md` and the named neighboring
+files.
+
+### Context loading
+
+- Level 0: read only the owning source of truth and the named check.
+- Level 1: read one relevant workflow section and one task-specific context row.
+- Level 2–3: read the selected capability/change artifacts and the required
+  domain slice before implementation.
+- Stop when the next file cannot change the decision, implementation, or proof.
+
+### First action
+
+- Documentation/process: edit the owning source, then run the docs/tooling gate.
+- Tooling: inspect the existing Make target, script, and neighboring tooling spec.
+- Behavior: inspect the baseline spec and write the failing proof first.
+- Uncertain or durable scope: route to the spec-driven lifecycle before edits.
+
+### Handoff
+
+Keep loaded files, checks already run, skipped reads, and the next verification
+visible in the task-local handoff. Do not reload a file or rerun a green check
+unless the files, dependencies, branch, or requested proof changed.
+
 ## SDD Gate
 
 Every repository task starts with SDD classification. Level 0 and Level 1 are
@@ -39,6 +108,30 @@ assumption would create product, security, data, or schema risk.
 After classification, use `docs/CONTEXT_MAP.md` to load the smallest useful file
 set for the task. Do not scan the whole repository unless the task is explicitly
 repository-wide.
+
+## Adaptive SDD Routing
+
+The Fast Path is the default for clear Level 0–1 work. The routed SDD skills are
+escalation tools, not an implicit ceremony for every request.
+
+### Level 0 — non-functional
+
+Classify internally, edit the owning source of truth, and run `git diff --check`.
+Do not emit a task packet or create OpenSpec/ADR artifacts. Update `CHANGES.md`
+only when the change materially alters process or harness behavior.
+
+### Level 1 — direct implementation
+
+Keep the user-facing handoff to `Goal`, `Behavior change`, `Approval`, and
+`Verification`. Inspect the neighbor and baseline spec, use red/green when
+behavior changes, and run the narrow gate.
+
+### Level 2–3 — specified or architectural feature
+
+Use `$routeprint-spec-driven-change`: explore, confirm direction with the user,
+create the required OpenSpec artifacts, review them, apply, verify, and archive.
+Level 3 additionally promotes only the confirmed durable architecture decision
+to an ADR.
 
 ## Spec-Driven Task Levels
 
@@ -103,6 +196,8 @@ When an OpenSpec change is implemented and archived, the same PR must:
 - update `CHANGES.md`;
 - update the runtime status in README's `Current Runtime Foundation` section;
 - remove the corresponding item from `docs/TODO.md`;
+- update `docs/CONTEXT_MAP.md` if ownership changed;
+- remove obsolete skills or rules;
 - run strict OpenSpec validation and the relevant tooling checks.
 
 This keeps archived intent, the human-facing runtime summary, and the deferred
@@ -122,20 +217,41 @@ unless the user explicitly asks for one.
 
 ## Task Packet
 
-For non-trivial work, keep this packet mentally or in the conversation before
-editing. It is the handoff shape to preserve if context compacts.
+Use the smallest packet that preserves the decision and verification path.
+
+Level 0 stays internal:
+
+```text
+Level 0 | no behavior | no approval | git diff --check
+```
+
+Level 1:
+
+```text
+Goal:
+Behavior change:
+Approval:
+Verification:
+```
+
+Level 2–3 keeps the full handoff packet:
 
 ```text
 Task:
 Task type:
-SDD level: 0 | 1 | 2 | 3
-OpenSpec change: none | change-name
+SDD level: 2 | 3
+OpenSpec change: change-name
 ADR: none | required | path
 Behavior change: yes/no
-Risk class: docs_only | low | medium | high
+Risk class: low | medium | high
+Context budget: normal | broad
 Docs loaded:
 Context map entries used:
 Neighboring files inspected:
+Already loaded:
+Do not reload:
+Already checked:
+Skip now because:
 Red test required: yes/no
 Approval required: yes/no
 Planned verification:
@@ -276,6 +392,7 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Install Node/OpenSpec dependencies | `make openspec-install` | Host OpenSpec wrapper |
 | Refresh generated OpenSpec adapters | `make openspec-update` | Host OpenSpec wrapper |
 | Validate all OpenSpec artifacts | `make openspec-validate` | Host OpenSpec wrapper |
+| Check agent harness contracts | `make harness-check` | Host harness tooling |
 | Install locked frontend dependencies | `make frontend-install` | Web container |
 | Run frontend format, lint, typecheck, tests, and build checks | `make frontend-check` | Web container |
 | Run all frontend quality and build gates, including audit | `make frontend-verify` | Web container |
