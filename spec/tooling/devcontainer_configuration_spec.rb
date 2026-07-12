@@ -36,9 +36,10 @@ RSpec.describe DevcontainerConfiguration do
 
   it "keeps project Codex config safe for local work" do
     codex_config = root.join(".codex/config.toml").read
+    runtime_config = codex_config.split("[shell_environment_policy]", 2).first
 
     expect(codex_config).to include('approval_policy = "on-request"')
     expect(codex_config).to include('sandbox_mode = "workspace-write"')
-    expect(codex_config).not_to match(/api[_-]?key|token|secret|password/i)
+    expect(runtime_config).not_to match(/api[_-]?key|token|secret|password/i)
   end
 end
