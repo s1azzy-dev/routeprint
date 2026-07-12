@@ -1,26 +1,28 @@
 ---
 name: routeprint-sdd-intake-gate
-description: Use before starting any Routeprint repository task, before tests, implementation edits, generated artifacts, or task-specific app commands. Classifies SDD Level 0-3, records OpenSpec/ADR need, chooses context from docs/CONTEXT_MAP.md, tracks loaded context and do-not-repeat checks, applies the Make/container command contract, identifies approvals, and states the verification path.
+description: Use for Routeprint tasks with unclear level, data/security/schema risk, likely Level 2-3 scope, or a compaction handoff. Do not invoke for clear Level 0-1 work covered by the DEVELOPMENT.md Fast Path.
 ---
 
 # Routeprint SDD Intake Gate
 
 ## Purpose
 
-Run the project intake gate before doing repository work in Routeprint. This
-skill does not implement the task and does not replace project docs; it turns
-the request into a short, auditable task packet and routes to the correct
-workflow.
+Run the project intake gate when the Fast Path cannot safely route the task.
+This skill does not implement the task and does not replace project docs; it
+turns an uncertain request into a short, auditable packet and routes it to the
+correct workflow.
 
 ## Load The Control Plane
 
 If not already loaded in this turn:
 
 1. Read `AGENTS.md`.
-2. Read the SDD gate, task router, task levels, command contract, permission
-   matrix, verification matrix, and final response contract in
-   `docs/DEVELOPMENT.md`.
-3. Read only the relevant rows from `docs/CONTEXT_MAP.md` after classifying the
+2. Read the `Fast Path` heading in `docs/DEVELOPMENT.md` and classify the task.
+3. For Level 0, read only the owning source of truth and the named check. For
+   Level 1, read one relevant workflow section plus the task-specific row from
+   `docs/CONTEXT_MAP.md`. For Level 2–3, load the full sections and artifacts
+   required by the spec-driven lifecycle.
+4. Read only the relevant rows from `docs/CONTEXT_MAP.md` after classifying the
    task area.
 
 Do not scan the whole repository unless the user asked for repository-wide work
@@ -65,18 +67,24 @@ exception for this task only. Do not treat it as a new default.
 
 ## Emit The Task Packet
 
-For non-trivial work, state this packet before mutation. Keep it factual and
-compact.
+Use the smallest packet that preserves the decision and verification path:
+
+- Level 0: keep `Level 0 | no behavior | no approval | git diff --check`
+  internal; do not emit a packet to the user.
+- Level 1: emit only `Goal`, `Behavior change`, `Approval`, and `Verification`.
+- Level 2–3: emit the full packet below.
+
+For Level 2–3, state this packet before mutation. Keep it factual and compact.
 
 ```text
 Task:
 Task type:
-SDD level: 0 | 1 | 2 | 3
-OpenSpec change: none | change-name | needed
+SDD level: 2 | 3
+OpenSpec change: change-name
 ADR: none | required | path
 Behavior change: yes/no
-Risk class: docs_only | low | medium | high
-Context budget: tiny | normal | broad
+Risk class: low | medium | high
+Context budget: normal | broad
 Docs loaded:
 Context map entries used:
 Neighboring files to inspect:
@@ -100,9 +108,9 @@ generic planning, delivery, coding, review, or frontend-design skills on top of
 this gate for ordinary Routeprint work; route through the SDD level, context
 map, and the narrow project skill instead.
 
-- **Level 0:** edit the owning source of truth, avoid duplicating rules, update
-  `CHANGES.md` when the process, harness, user-facing docs, dependencies, or
-  behavior records change, then run `git diff --check`.
+- **Level 0:** use the Fast Path directly. Edit the owning source of truth and
+  run `git diff --check`; update `CHANGES.md` only for meaningful process or
+  harness behavior.
 - **Level 1:** inspect neighboring files and existing specs, keep the change
   narrow, use a red test when runtime behavior changes, and run the matching
   verification from `docs/DEVELOPMENT.md`.

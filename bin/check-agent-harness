@@ -1,0 +1,154 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+
+ROOT = Pathname(__dir__).parent.expand_path
+errors = []
+
+def path_like?(value)
+  value = value.strip
+  return false if value.empty? || value.include?(" ") || value.include?("*")
+
+  value.match?(/\A(?:[A-Za-z0-9_.-]+\/.+|[A-Za-z0-9_.-]+\.(?:md|rb|sql|yml|yaml|json|toml))\z/)
+end
+
+def check_code_paths(root, source, errors, skip_once_present: false)
+  source.read.lines.each_with_index do |line, index|
+    next if skip_once_present && line.match?(/once present/i)
+
+    line.scan(/`([^`]+)`/).flatten.each do |candidate|
+      next unless path_like?(candidate)
+
+      target = root.join(candidate).cleanpath
+      next if target.exist?
+
+      errors << "#{source.relative_path_from(root)}:#{index + 1}: missing path #{candidate}"
+    end
+  end
+end
+
+def make_targets(makefile)
+  makefile.lines.map do |line|
+    match = line.match(/\A([A-Za-z0-9_.-]+)\s*:/)
+    match && match[1]
+  end.compact.to_set
+end
+
+def referenced_make_targets(paths)
+  paths.flat_map do |path|
+    path.read.lines.flat_map do |line|
+      snippets = line.scan(/`([^`]+)`/).flatten
+      snippets << line.strip if line.match?(/\A\s*make\s+[a-z]/)
+      snippets << line if line.match?(/\brun:\s+make\s+[a-z]/)
+
+      snippets.flat_map do |snippet|
+        snippet.scan(/(?:\A|[^\w])make\s+([a-z][a-z0-9]*(?:-[a-z0-9]+)*)(?![\w-])/).flatten
+      end
+    end
+  end.uniq
+end
+
+def check_make_references(root, errors)
+  require "set"
+
+  makefile = root.join("Makefile")
+  targets = make_targets(makefile.read)
+  sources = [
+    root.join("AGENTS.md"),
+    root.join("README.md"),
+    root.join("docs/DEVELOPMENT.md"),
+    root.join("docs/CONTEXT_MAP.md"),
+    root.join(".github/pull_request_template.md"),
+    *root.join(".agents/skills").glob("**/*.md")
+  ]
+
+  referenced_make_targets(sources).each do |target|
+    next if target == "..."
+    next if targets.include?(target)
+
+    errors << "missing Make target #{target}"
+  end
+end
+
+def check_skill_names(root, errors)
+  names = {}
+
+  root.join(".agents/skills").glob("*/SKILL.md").each do |path|
+    frontmatter = path.read[/\A---\s*\n(.*?)\n---/m, 1]
+    name = frontmatter&.lines&.map do |line|
+      match = line.match(/\Aname:\s*(\S+)/)
+      match && match[1]
+    end&.compact&.first
+
+    if name.nil?
+      errors << "#{path.relative_path_from(root)}: missing frontmatter name"
+      next
+    end
+
+    errors << "duplicate skill name #{name}" if names.key?(name)
+    errors << "#{path.relative_path_from(root)}: directory does not match #{name}" unless path.dirname.basename.to_s == name
+    names[name] = path
+  end
+end
+
+def check_codex_rules(root, errors)
+  banned = %w[docker compose bundle exec rspec]
+
+  root.join(".codex/rules").glob("**/*").select(&:file?).each do |path|
+    banned.each do |token|
+      next unless path.read.match?(/(?<![\w-])#{Regexp.escape(token)}(?![\w-])/)
+
+      errors << "#{path.relative_path_from(root)}: stale raw command token #{token}"
+    end
+  end
+end
+
+def verification_target?(name)
+  name.match?(/(?:verify|check|test|security|rubocop)/) && !name.match?(/(?:fix|autocorrect)/)
+end
+
+def check_verification_targets(root, errors)
+  current_target = nil
+
+  root.join("Makefile").read.lines.each_with_index do |line, index|
+    target = line.match(/\A([A-Za-z0-9_.-]+)\s*:/)&.[](1)
+    current_target = target if target
+    next unless current_target && verification_target?(current_target)
+    next unless line.match?(/(?:^|\s)(?:-A|--autocorrect|--autocorrect-all|--fix|-a)(?:\s|$)/)
+
+    errors << "Makefile:#{index + 1}: autocorrect flag in verification target #{current_target}"
+  end
+end
+
+def check_markdown_links(root, errors)
+  sources = [ root.join("README.md"), root.join("docs/TODO.md"), *root.join("openspec").glob("**/*.md") ]
+
+  sources.each do |source|
+    source.read.scan(/\]\(([^)\s]+)(?:\s+[^)]*)?\)/).flatten.each do |link|
+      next if link.match?(/\A(?:https?:|mailto:|#)/)
+
+      target = source.dirname.join(link).cleanpath
+      next if target.exist?
+
+      errors << "#{source.relative_path_from(root)}: missing link target #{link}"
+    end
+  end
+end
+
+check_code_paths(ROOT, ROOT.join("AGENTS.md"), errors)
+check_code_paths(ROOT, ROOT.join("docs/CONTEXT_MAP.md"), errors, skip_once_present: true)
+check_skill_names(ROOT, errors)
+check_make_references(ROOT, errors)
+check_codex_rules(ROOT, errors)
+check_verification_targets(ROOT, errors)
+check_markdown_links(ROOT, errors)
+
+if errors.empty?
+  puts "Agent harness checks passed"
+  exit 0
+end
+
+warn "Agent harness checks failed:"
+errors.each { |error| warn "- #{error}" }
+exit 1

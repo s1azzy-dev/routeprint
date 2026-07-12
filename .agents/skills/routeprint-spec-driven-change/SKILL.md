@@ -1,6 +1,6 @@
 ---
 name: routeprint-spec-driven-change
-description: Use when a Routeprint request may need feature discovery, an OpenSpec change, or an ADR; when task size is uncertain; or when implementation learning may require revising an approved specification.
+description: Use for Routeprint Level 2-3 work, or when task size, risk, or scope is uncertain and may require feature discovery, an OpenSpec change, or an ADR. Do not invoke for clear Level 0-1 work.
 ---
 
 # Routeprint Spec-Driven Change
@@ -10,6 +10,9 @@ description: Use when a Routeprint request may need feature discovery, an OpenSp
 Select the lightest correct workflow and keep OpenSpec on top of the existing
 Routeprint harness. Do not replace `AGENTS.md`, project docs, domain skills,
 RSpec, or Make verification.
+
+The `DEVELOPMENT.md` Fast Path handles clear Level 0-1 work. This skill owns
+discovery and confirmation only when Level 2-3 artifacts may be needed.
 
 ## Classify First
 

@@ -53,11 +53,11 @@ workflow. Load only the routed skill plus the rows named by this map.
 
 | Trigger | Skill | Read first | Verification |
 | --- | --- | --- | --- |
-| Any Routeprint repository task | `$routeprint-sdd-intake-gate` | `AGENTS.md`, SDD/command/permission/verification sections of `docs/DEVELOPMENT.md`, relevant row here | Gate-selected check |
-| Feature discovery, OpenSpec, or ADR decision | `$routeprint-spec-driven-change` | Relevant capability spec, active changes, selected app/spec slice | `bin/openspec validate --all --strict` plus project gate |
+| Unclear level/risk, likely Level 2–3 scope, or compaction handoff | `$routeprint-sdd-intake-gate` | `AGENTS.md`, `docs/DEVELOPMENT.md` headings `Fast Path`, `Adaptive SDD Routing`, `Permission Matrix`, `Verification Matrix`, relevant row here | Gate-selected check |
+| Level 2–3 feature discovery, OpenSpec, or ADR decision | `$routeprint-spec-driven-change` | Relevant capability spec, active changes, selected app/spec slice | `bin/openspec validate --all --strict` plus project gate |
 | Resume, publish, review, or orient branch state | `$routeprint-workspace-state` | Git status, branch, last commit, compact diff names when needed | Reuse or rerun gate by freshness |
 | Auth, sessions, admin, uploads, privacy, or user-owned data | `$routeprint-authz-security-flow` | `docs/QUALITY_SECURITY.md`, active route/controller/policy/spec slice | Narrow security specs, then `make security` when required |
-| Airports, routes, map payloads, PostGIS, or geospatial performance | `$routeprint-postgis-map-query` | `docs/FOUNDATIONS.md`, geospatial ADR when behavior changes, target query/model/spec | Narrow spec, then `make verify-fast` |
+| Airports, routes, map payloads, PostGIS, or geospatial performance | `$routeprint-postgis-map-query` | `docs/FOUNDATIONS.md`, geospatial ADR when behavior changes, target query/model/spec | Narrow spec, then `make agent-verify-fast`; canonical proof uses `make verify-fast` |
 | Business use case or `app/interactors` change | `$routeprint-yabi-interactor` | `app/interactors/application_interactor.rb`, target interactor/spec, one good neighbor | Narrow interactor/request spec; conventions tooling spec when style rules change; then selected gate |
 
 ## Backend Context
@@ -84,7 +84,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | Frontend architecture or runtime boundary | `docs/adr/0002-business-frontend-architecture.md`, relevant OpenSpec capability/change | `app/frontend/`, `app/views/layouts/inertia.html.erb`, matching request/component/system specs |
 | Frontend UI kit or design workflow | `docs/adr/0004-ui-component-foundation.md`, `docs/frontend/DESIGN_GUIDE.md`, relevant OpenSpec capability/change | `app/frontend/components/ui/`, `app/frontend/components/routeprint/`, relevant page/component tests |
 | Inertia page or layout | `app/views/layouts/inertia.html.erb`, relevant page in `app/frontend/pages/` | Rails controller/request spec, page prop types, React Testing Library test, routing/system coverage |
-| Auth screens | Relevant page in `app/frontend/pages/Sessions/`, `app/frontend/pages/Registrations/`, or `app/frontend/pages/PasswordResets/` | Auth controller/request specs, React page tests, locale files |
+| Auth screens | Relevant page in `app/frontend/pages/Auth/` or `app/frontend/pages/PasswordResets/` | Auth controller/request specs, React page tests, locale files |
 | Flight pages | Relevant page in `app/frontend/pages/Flights/` once present | Flight controller, flight presenter/query, request/system specs |
 | Travel map UI | Relevant page in `app/frontend/pages/Map/` and MapLibre helper once present | Map/GeoJSON controller, MapLibre ADR, map system/request specs, local MapLibre assets |
 | UI components | `docs/frontend/DESIGN_GUIDE.md`, relevant `app/frontend/components/*` TypeScript files | Matching React component/page tests, neighboring component APIs, ADR 0002 and ADR 0004 when shared patterns change |
@@ -105,7 +105,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | Policy specs | `spec/support/pundit.rb`, relevant file in `spec/policies/` |
 | React component tests | Relevant file in `app/frontend/test/`, page/component source, `app/frontend/test/setup.ts` |
 | Job/mailer specs | Relevant file in `spec/jobs/` or `spec/mailers/` |
-| Tooling/bin specs | Relevant file in `spec/bin/`, `spec/tooling/`, or `spec/lib/` |
+| Tooling/bin specs | Relevant file in `spec/bin/`, `spec/tooling/`, `spec/lib/`, or `bin/check-agent-harness` |
 | External fixtures | Relevant file in `spec/fixtures/` only when the spec uses it |
 
 ## Source of Truth

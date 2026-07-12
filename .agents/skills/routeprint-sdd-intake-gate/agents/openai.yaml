@@ -1,4 +1,4 @@
 interface:
   display_name: "Routeprint SDD Intake Gate"
   short_description: "Classify Routeprint tasks before work starts"
-  default_prompt: "Use $routeprint-sdd-intake-gate before changing the Routeprint repository."
+  default_prompt: "Use $routeprint-sdd-intake-gate when Routeprint task level, risk, scope, or handoff is unclear."

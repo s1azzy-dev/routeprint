@@ -13,7 +13,6 @@ This skill narrows security context. It does not replace `docs/QUALITY_SECURITY.
 
 ## Read
 
-- `docs/DEVELOPMENT.md` permission matrix and verification matrix.
 - `docs/QUALITY_SECURITY.md` security baseline and the relevant risk matrix row.
 - `docs/CONTEXT_MAP.md` row for auth/session/password reset, admin/authorization, or the active feature area.
 - `config/routes.rb` for request/controller flows.
@@ -29,13 +28,10 @@ This skill narrows security context. It does not replace `docs/QUALITY_SECURITY.
 ## Procedure
 
 1. Classify risk: auth, password reset, session/cookie, authorization, admin, upload/media, privacy, public catalog/map data, imports/provenance, dependency, or logging/config.
-2. Mark approval required when changing authentication, authorization, session, cookie, upload, or secret handling unless the user explicitly requested that change.
-3. Define required proof before editing: owner/non-owner/guest/admin cases, token replay cases, visibility boundary, or no-secret logging check.
-4. For behavior changes, write the failing request/policy/interactor spec first.
-5. Keep authorization explicit and centralized through policies; do not trust client-provided ownership or roles.
-6. Keep user-facing responses generic where enumeration risk exists.
-7. Run the narrow specs, then `make security` when the risk matrix requires it.
-8. Record any skipped or unrelated failing security gate exactly.
+2. Define required proof before editing: owner/non-owner/guest/admin cases, token replay cases, visibility boundary, or no-secret logging check.
+3. Keep authorization explicit and centralized through policies; do not trust client-provided ownership or roles.
+4. Keep user-facing responses generic where enumeration risk exists.
+5. Prove the boundary with the relevant request, policy, or interactor specs; run `make security` when the risk matrix requires it.
 
 ## Outputs
 

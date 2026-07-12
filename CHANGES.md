@@ -2,6 +2,15 @@
 
 ## 2026-07-12
 
+- Prefer compact `make agent-*` commands in agent-facing workflow guidance,
+  while retaining ordinary Make targets for canonical final and CI proof.
+- Added adaptive SDD routing: clear Level 0–1 work stays on the Fast Path,
+  while intake and spec-driven skills activate for uncertainty, risk, Level 2–3
+  scope, or compaction handoff; archive checks now cover context ownership and
+  obsolete skill/rule cleanup.
+- Added a compact context-engineering path, level-specific intake packets, and
+  mechanical agent-harness checks wired into Make and CI; domain skills now keep
+  only their workflow-specific guidance.
 - Hardened the Codex eval harness after real runs: bounded ephemeral execution,
   untracked-file-aware grading, structured command exit evidence, workflow and
   behavior checks, human review records, smoke profiles, and source-stable
