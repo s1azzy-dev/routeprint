@@ -3,18 +3,18 @@ if ENV["ROUTEPRINT_SKIP_SIMPLECOV"] != "1" && Dir.glob(File.expand_path("**/*_sp
 
   SimpleCov.start "rails" do
     minimum_coverage 90
-    add_filter "/bin/"
-    add_filter "/config/"
-    add_filter "/db/"
-    add_filter "/spec/"
-    add_filter "/app/helpers/application_helper.rb"
-    add_filter "/app/jobs/application_job.rb"
-    add_filter "/app/models/application_record.rb"
-    add_filter "/app/controllers/application_controller.rb"
-    add_filter "/app/mailers/application_mailer.rb"
-    add_filter "/app/contracts/application_contract.rb"
-    add_filter "/app/interactors/application_interactor.rb"
-    add_filter "/app/policies/application_policy.rb"
+    skip "/bin/"
+    skip "/config/"
+    skip "/db/"
+    skip "/spec/"
+    skip "/app/helpers/application_helper.rb"
+    skip "/app/jobs/application_job.rb"
+    skip "/app/models/application_record.rb"
+    skip "/app/controllers/application_controller.rb"
+    skip "/app/mailers/application_mailer.rb"
+    skip "/app/contracts/application_contract.rb"
+    skip "/app/interactors/application_interactor.rb"
+    skip "/app/policies/application_policy.rb"
   end
 end
 

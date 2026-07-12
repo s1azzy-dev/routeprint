@@ -19,7 +19,7 @@ RSpec.describe OpenSpecConfiguration do
 
     expect(root.join(".tool-versions").read).to include("nodejs 24.18.0")
     expect(package.dig("engines", "node")).to eq("24.18.0")
-    expect(package.dig("devDependencies", "@fission-ai/openspec")).to eq("1.5.0")
+    expect(package.dig("devDependencies", "@fission-ai/openspec")).to eq("1.6.0")
   end
 
   it "layers feature specifications over the repository harness" do

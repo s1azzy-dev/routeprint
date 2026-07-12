@@ -439,7 +439,6 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Start approved import operation | Admin Service Actions page | Web container jobs after admin enqueue |
 | Ruby dependency freshness | `make bundle-outdated` | Web container |
 | Frontend dependency freshness | `make frontend-outdated` | Web container |
-| MapLibre dependency freshness | `make maplibre-outdated` | Web container |
 | Dependency freshness | `make outdated` | Web container |
 
 Use narrower `docker compose run --rm web ...` commands only when faster

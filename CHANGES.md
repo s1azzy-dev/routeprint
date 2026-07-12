@@ -28,6 +28,12 @@
   remain separate for Context7 or official migration-guide review.
 - Moved the project Codex allow-rule from raw Docker RSpec commands to stable
   Make verification targets; raw Docker commands remain outside the allowlist.
+- Completed `make outdated`: it now aggregates strict Bundler and npm freshness
+  checks, runs both checks before returning, and reports a failing status when
+  any dependency is outdated.
+- Updated all compatible Bundler and npm dependencies. ESLint 10, TypeScript 7,
+  and `@vitejs/plugin-react` 6.0.3 remain deferred because the current peer
+  graph does not support them without incompatible overrides.
 
 ## 2026-07-11
 
