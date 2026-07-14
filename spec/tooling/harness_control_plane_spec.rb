@@ -8,7 +8,6 @@ end
 RSpec.describe HarnessControlPlane do
   let(:root) { Pathname(__dir__).join("../..").expand_path }
   let(:development) { root.join("docs/DEVELOPMENT.md").read }
-  let(:agents) { root.join("AGENTS.md").read }
   let(:foundations) { root.join("docs/FOUNDATIONS.md").read }
   let(:context_map) { root.join("docs/CONTEXT_MAP.md").read }
   let(:makefile) { root.join("Makefile").read }
@@ -151,7 +150,9 @@ RSpec.describe HarnessControlPlane do
     expect(development).to include("make agent-state")
   end
 
-  it "routes frontend formatter mutations through the explicit Make target" do
+  it "routes frontend formatter guidance through the explicit Make target" do
+    agents = root.join("AGENTS.md").read
+
     expect(agents).to include(
       "make agent-frontend-format-fix FILES=",
       "Never run raw `prettier --write` commands"
@@ -160,10 +161,10 @@ RSpec.describe HarnessControlPlane do
       "Fix frontend formatting explicitly",
       "make agent-frontend-format-fix FILES="
     )
-    expect(makefile).to include(
-      "agent-frontend-format-fix:",
-      "FILES is required"
-    )
+  end
+
+  it "requires the frontend formatter fix target to declare files" do
+    expect(makefile).to include("agent-frontend-format-fix:", "FILES is required")
     expect(codex_rules).to include('"agent-frontend-format-fix"')
   end
 

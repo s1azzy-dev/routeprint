@@ -38,6 +38,11 @@ docs unless explicitly requested.
 - Run app/runtime commands through Make/container targets; use the host shell
   only for file search, git inspection, editing, Docker orchestration, and
   documented host-only tooling.
+- For Git and GitHub operations, use direct Bash `git` and `gh` commands. Never
+  use Python or `subprocess` wrappers for GitHub operations.
+- Never copy or export GitHub or Codex tokens into Python or repository
+  environment variables. Keep authentication in the OS credential store and
+  verify GitHub access with direct `gh auth status`.
 - For frontend formatting, use `make agent-frontend-format` for checks and
   `make agent-frontend-format-fix FILES='path/to/file.tsx ...'` for explicit
   fixes. Never run raw `prettier --write` commands.

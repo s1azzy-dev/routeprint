@@ -2,6 +2,8 @@
 
 ## 2026-07-14
 
+- Documented direct Bash `git`/`gh` usage and prohibited token transfer into
+  Python or repository environment variables.
 - Routed agent frontend formatter fixes through the explicit Make target
   `agent-frontend-format-fix`, with raw `prettier --write` commands prohibited.
 - Added an admin-only airport catalog workspace with pagination, editing,
