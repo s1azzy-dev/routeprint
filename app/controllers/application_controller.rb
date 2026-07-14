@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include Pundit::Authorization
 
   layout "inertia"
 
@@ -11,12 +12,15 @@ class ApplicationController < ActionController::Base
       shell: {
         authenticated: authenticated?,
         labels: {
+          admin: t("layouts.header.admin"),
           accountMenu: t("layouts.header.account_menu"),
           brandName: t("routeprint"),
+          mainPage: t("layouts.header.main_page"),
           signIn: t("layouts.header.sign_in"),
           signOut: t("layouts.header.sign_out")
         },
         urls: {
+          admin: current_user&.admin? ? admin_root_path : nil,
           home: root_path,
           signIn: sign_in_path,
           signOut: sign_out_path

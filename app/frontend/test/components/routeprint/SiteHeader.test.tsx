@@ -6,13 +6,16 @@ import SiteHeader from "../../../components/routeprint/site-header"
 import { renderInertiaPage } from "../../inertia"
 
 const labels = {
+  admin: "Admin",
   accountMenu: "Account",
   brandName: "Routeprint",
+  mainPage: "Main page",
   signIn: "Sign in",
   signOut: "Sign out",
 }
 
 const urls = {
+  admin: "/admin/airports",
   home: "/",
   signIn: "/sign_in",
   signOut: "/sign_out",
@@ -51,5 +54,36 @@ describe("SiteHeader", () => {
 
     expect(screen.getByRole("menuitem", { name: "Sign out" })).toBeVisible()
     expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull()
+  })
+
+  it("offers the admin link only when Rails provides it", async () => {
+    const user = userEvent.setup()
+
+    renderInertiaPage(SiteHeader, {
+      authenticated: true,
+      labels,
+      urls,
+    })
+
+    await user.click(screen.getByRole("button", { name: "Account" }))
+
+    expect(screen.getByRole("menuitem", { name: "Admin" })).toHaveAttribute(
+      "href",
+      "/admin/airports",
+    )
+  })
+
+  it("does not render an admin action for a member", async () => {
+    const user = userEvent.setup()
+
+    renderInertiaPage(SiteHeader, {
+      authenticated: true,
+      labels,
+      urls: { ...urls, admin: undefined },
+    })
+
+    await user.click(screen.getByRole("button", { name: "Account" }))
+
+    expect(screen.queryByRole("menuitem", { name: "Admin" })).toBeNull()
   })
 })

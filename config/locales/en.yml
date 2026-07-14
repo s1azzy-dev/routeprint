@@ -30,9 +30,85 @@
 en:
   layouts:
     header:
+      admin: Admin
       account_menu: Account
+      main_page: Main page
       sign_in: Sign in
       sign_out: Sign out
+  admin:
+    authorization:
+      required: You are not allowed to access that page.
+    shell:
+      toolbar_label: Admin
+    navigation:
+      airports: Airports
+    airports:
+      actions:
+        cancel: Cancel
+        delete: Delete
+        edit: Edit
+      edit:
+        back: Back to airports
+        description: Update the canonical airport record used by Routeprint maps and flight history.
+        fields:
+          country_code:
+            label: Country code
+            placeholder: GB
+          icao_code:
+            label: ICAO code
+            placeholder: EGLL
+          iata_code:
+            label: IATA code
+            placeholder: LHR
+          municipality_name:
+            label: Municipality
+            placeholder: London
+          name:
+            label: Airport name
+            placeholder: London Heathrow Airport
+          operational_status:
+            label: Operational status
+            placeholder: Active
+          region_code:
+            label: Region code
+            placeholder: GB-ENG
+          time_zone:
+            label: Time zone
+            placeholder: Europe/London
+        form_heading: Airport details
+        heading: Edit airport
+        submit: Save airport
+        title: Edit airport
+      flash:
+        deleted: Airport deleted.
+        delete_restricted: This airport cannot be deleted while import provenance references it.
+        updated: Airport updated.
+      index:
+        actions:
+          delete: Delete
+          edit: Edit
+        columns:
+          actions: Actions
+          airport: Airport
+          codes: Codes
+          country: Country
+          status: Status
+          time_zone: Time zone
+        description: Maintain the canonical airport catalog used across Routeprint.
+        empty_description: No canonical airports are available yet.
+        empty_title: No airports found
+        heading: Airports
+        pagination:
+          label: Airport pages
+          next: Next
+          previous: Previous
+          summary: Showing %{from}-%{to} of %{count} airports
+        table_caption: Canonical airports
+        title: Airports
+      statuses:
+        active: Active
+        closed: Closed
+        unknown: Unknown
   auth:
     fields:
       email: Email
