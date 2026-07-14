@@ -147,7 +147,7 @@ end
 
 def check_governance_contract(root, errors)
   rules = root.join(".codex/rules").glob("**/*").select(&:file?).map(&:read).join("\n")
-  %w[agent-state agent-host-search agent-rspec agent-frontend-format agent-rubocop agent-verify-fast harness-check verify-fast security openspec-validate].each do |target|
+  %w[agent-state agent-host-search agent-rspec agent-frontend-format agent-frontend-format-fix agent-rubocop agent-verify-fast harness-check verify-fast security openspec-validate].each do |target|
     errors << "Codex rules missing stable Make target #{target}" unless rules.include?("\"#{target}\"")
   end
 

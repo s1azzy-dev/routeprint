@@ -150,6 +150,24 @@ RSpec.describe HarnessControlPlane do
     expect(development).to include("make agent-state")
   end
 
+  it "routes frontend formatter guidance through the explicit Make target" do
+    agents = root.join("AGENTS.md").read
+
+    expect(agents).to include(
+      "make agent-frontend-format-fix FILES=",
+      "Never run raw `prettier --write` commands"
+    )
+    expect(development).to include(
+      "Fix frontend formatting explicitly",
+      "make agent-frontend-format-fix FILES="
+    )
+  end
+
+  it "requires the frontend formatter fix target to declare files" do
+    expect(makefile).to include("agent-frontend-format-fix:", "FILES is required")
+    expect(codex_rules).to include('"agent-frontend-format-fix"')
+  end
+
   it "wires the mechanical harness check into Make and CI" do
     expect(root.join("bin/check-agent-harness")).to be_executable
     expect(makefile).to include("harness-check:", "bin/check-agent-harness")
