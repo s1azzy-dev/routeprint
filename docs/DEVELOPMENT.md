@@ -42,12 +42,15 @@ non-obvious constraints, destructive cleanup, publishing, or opening a PR.
 
 ### Permissions and tool governance
 
-Use the stable Make interface for routine work. The project Codex rules allow
-RTK-wrapped Make commands (`rtk make *`) and read/check targets such as `make agent-state`, `make agent-host-search`,
-`make agent-rspec`, `make agent-frontend-*`, `make agent-rubocop`,
-`make agent-verify-fast`, `make verify-fast`, `make security`,
-`make openspec-validate`, and `make harness-check`. A broad raw container
-prefix is not an approved shortcut.
+Use `make agent-*` directly for routine iteration; these targets already wrap
+container commands with RTK where useful. Use `rtk make <approved non-agent
+target>` for ordinary Make checks such as `verify`, `security`, or
+`openspec-validate`. Use `rtk proxy make <approved non-agent target>` only when
+the full output of an already-approved check is needed; `rtk proxy` does not
+add permissions and is not an alternative for `make agent-*`. For host
+discovery, use read-only wrappers such as `rtk rg`,
+`rtk sed -n`, and `rtk git diff`. A broad raw container prefix is not an
+approved shortcut.
 
 Classify actions before running them:
 

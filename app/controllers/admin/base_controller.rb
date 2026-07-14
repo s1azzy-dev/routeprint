@@ -19,6 +19,19 @@ module Admin
                 current: current == "airports"
               )
             ]
+          },
+          {
+            key: "imports",
+            label: t("admin.navigation.imports.label"),
+            items: [
+              admin_navigation_item(
+                key: "import_airports",
+                icon: "airports",
+                label: t("admin.navigation.imports.airports"),
+                url: admin_imports_airports_path,
+                current: current == "imports/airports"
+              )
+            ]
           }
         ]
       }

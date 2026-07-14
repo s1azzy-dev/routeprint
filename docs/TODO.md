@@ -27,7 +27,6 @@ Before starting an item:
 8. Add authentication abuse protection/rate limiting for public auth endpoints.
 9. Add mandatory email verification before public launch, email import, or
    OAuth account linking.
-10. Add admin import operations visibility.
 
 ## P3: Post-MVP Expansion
 

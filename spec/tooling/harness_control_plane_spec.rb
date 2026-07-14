@@ -221,9 +221,9 @@ RSpec.describe HarnessControlPlane do
     )
   end
 
-  it "allows stable Make verification targets and RTK-wrapped Make commands" do
+  it "allows direct Make agent targets and non-agent RTK checks" do
     expect(codex_rules).to include(
-      '"make"', '"rtk"',
+      '"make"', '"agent-container-rtk"',
       '"agent-rspec"',
       '"agent-test"',
       '"agent-verify-fast"',
@@ -231,9 +231,19 @@ RSpec.describe HarnessControlPlane do
       '"verify"',
       '"security"',
       '"openspec-validate"',
-      '"Stable non-destructive Routeprint verification targets"', '"RTK-wrapped Routeprint Make commands"'
+      '"Direct Routeprint agent Make targets"',
+      '"RTK-wrapped non-agent Routeprint Make commands"'
     )
-    expect(codex_rules).not_to include('"docker"', '"compose"', '"bundle"', '"exec"', '"rspec"')
+  end
+
+  it "scopes RTK proxy and host wrappers" do
+    expect(codex_rules).to include(
+      '"rtk"',
+      '"RTK passthrough approved non-agent Routeprint Make targets"'
+    )
+    expect(codex_rules).not_to include('pattern=["rtk", "make"]')
+    expect(codex_rules).not_to include('pattern=["rtk", "proxy"]')
+    expect(codex_rules).not_to include('pattern=["rtk", "git"]')
   end
 
   it "defines the trimmed shell environment policy" do

@@ -42,6 +42,43 @@ en:
       toolbar_label: Admin
     navigation:
       airports: Airports
+      imports:
+        label: Imports
+        airports: Airports
+    imports:
+      airports:
+        actions:
+          start: Start import
+        flash:
+          start_already_active: An airport import is already queued or running.
+          start_failed: The airport import could not be started.
+          start_unavailable: The airport import source is not available.
+          started: Airport import started.
+        index:
+          columns:
+            mode: Mode
+            parameters: Parameters
+            progress: Progress
+            source: Source
+            status: Status
+            timestamps: Timestamps
+          description: Review the history and status of the canonical airport catalog imports.
+          empty_description: Start an import to populate or refresh the airport catalog.
+          empty_title: No airport imports yet
+          heading: Airport imports
+          pagination:
+            label: Airport import pages
+            next: Next
+            previous: Previous
+            summary: Showing %{from}-%{to} of %{count} airport imports
+          table_caption: OurAirports airport imports
+          title: Airport imports
+        statuses:
+          failed: Failed
+          partially_failed: Partially failed
+          queued: Queued
+          running: Running
+          succeeded: Succeeded
     airports:
       actions:
         cancel: Cancel

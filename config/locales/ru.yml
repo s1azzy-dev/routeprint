@@ -13,6 +13,43 @@ ru:
       toolbar_label: Админка
     navigation:
       airports: Аэропорты
+      imports:
+        label: Импорты
+        airports: Аэропорты
+    imports:
+      airports:
+        actions:
+          start: Запустить импорт
+        flash:
+          start_already_active: Импорт аэропортов уже поставлен в очередь или выполняется.
+          start_failed: Не удалось запустить импорт аэропортов.
+          start_unavailable: Источник импорта аэропортов недоступен.
+          started: Импорт аэропортов запущен.
+        index:
+          columns:
+            mode: Режим
+            parameters: Параметры
+            progress: Прогресс
+            source: Источник
+            status: Статус
+            timestamps: Время
+          description: История и статусы импортов канонического каталога аэропортов.
+          empty_description: Запустите импорт, чтобы заполнить или обновить каталог аэропортов.
+          empty_title: Импортов аэропортов пока нет
+          heading: Импорты аэропортов
+          pagination:
+            label: Страницы импортов аэропортов
+            next: Далее
+            previous: Назад
+            summary: Показано %{from}–%{to} из %{count} импортов аэропортов
+          table_caption: Импорты аэропортов OurAirports
+          title: Импорты аэропортов
+        statuses:
+          failed: Ошибка
+          partially_failed: Частично с ошибками
+          queued: В очереди
+          running: Выполняется
+          succeeded: Успешно
     airports:
       actions:
         cancel: Отмена
