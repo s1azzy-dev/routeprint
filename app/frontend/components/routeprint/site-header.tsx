@@ -1,16 +1,20 @@
-import { Link } from "@inertiajs/react"
+import { Link, usePage } from "@inertiajs/react"
 import {
   ChevronDownIcon,
   CircleUserRoundIcon,
+  HouseIcon,
   LogOutIcon,
   PlaneTakeoffIcon,
+  ShieldIcon,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -55,6 +59,9 @@ export default function SiteHeader({
 }
 
 function AccountMenu({ labels, urls }: Pick<ShellProps, "labels" | "urls">) {
+  const { url } = usePage()
+  const isAdminArea = url.startsWith("/admin")
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -70,6 +77,25 @@ function AccountMenu({ labels, urls }: Pick<ShellProps, "labels" | "urls">) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuGroup>
+          {urls.admin && !isAdminArea ? (
+            <DropdownMenuItem asChild>
+              <Link href={urls.admin}>
+                <ShieldIcon aria-hidden="true" data-icon="inline-start" />
+                {labels.admin}
+              </Link>
+            </DropdownMenuItem>
+          ) : null}
+          {urls.admin && isAdminArea ? (
+            <DropdownMenuItem asChild>
+              <Link href={urls.home}>
+                <HouseIcon aria-hidden="true" data-icon="inline-start" />
+                {labels.mainPage}
+              </Link>
+            </DropdownMenuItem>
+          ) : null}
+        </DropdownMenuGroup>
+        {urls.admin ? <DropdownMenuSeparator /> : null}
         <DropdownMenuItem asChild>
           <Link as="button" href={urls.signOut} method="delete" type="button">
             <LogOutIcon aria-hidden="true" data-icon="inline-start" />

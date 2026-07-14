@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-07-14
+
+- Added an admin-only airport catalog workspace with pagination, editing,
+  deletion safeguards, and Wild Waters-inspired navigation.
+
 ## 2026-07-13
 
 - Added a shared Routeprint header to every Inertia page with a branded icon,
@@ -155,3 +160,6 @@
   `config/openspec/config.json`.
 - Started the authentication foundation change with ADR 0005 and OpenSpec
   artifacts for staged Wildwaters auth transfer.
+# 2026-07-14
+
+- Added an admin-only airport catalog workspace with pagination, editing, deletion safeguards, and Wild Waters-inspired navigation.

@@ -5,12 +5,15 @@ import SiteHeader from "./site-header"
 export type ShellProps = {
   authenticated: boolean
   labels: {
+    admin: string
     accountMenu: string
     brandName: string
+    mainPage: string
     signIn: string
     signOut: string
   }
   urls: {
+    admin?: string
     home: string
     signIn: string
     signOut: string

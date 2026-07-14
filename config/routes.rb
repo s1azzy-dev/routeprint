@@ -16,5 +16,10 @@ Rails.application.routes.draw do
   get "password-reset/:token" => "password_resets#edit", as: :edit_password_reset_token
   patch "password-reset/:token" => "password_resets#update", as: :password_reset_token
 
+  namespace :admin do
+    root "airports#index"
+    resources :airports, only: %i[index edit update destroy], param: :place_id
+  end
+
   get "dashboard" => "dashboard#show", as: :dashboard
 end

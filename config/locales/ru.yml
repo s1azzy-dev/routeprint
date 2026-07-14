@@ -1,9 +1,85 @@
 ru:
   layouts:
     header:
+      admin: Админка
       account_menu: Аккаунт
+      main_page: Главная
       sign_in: Войти
       sign_out: Выйти
+  admin:
+    authorization:
+      required: У вас нет доступа к этой странице.
+    shell:
+      toolbar_label: Админка
+    navigation:
+      airports: Аэропорты
+    airports:
+      actions:
+        cancel: Отмена
+        delete: Удалить
+        edit: Изменить
+      edit:
+        back: К списку аэропортов
+        description: Измените каноническую запись аэропорта для карт и истории полетов Routeprint.
+        fields:
+          country_code:
+            label: Код страны
+            placeholder: RU
+          icao_code:
+            label: Код ICAO
+            placeholder: UUEE
+          iata_code:
+            label: Код IATA
+            placeholder: SVO
+          municipality_name:
+            label: Населенный пункт
+            placeholder: Москва
+          name:
+            label: Название аэропорта
+            placeholder: Шереметьево
+          operational_status:
+            label: Статус работы
+            placeholder: Работает
+          region_code:
+            label: Код региона
+            placeholder: RU-MOW
+          time_zone:
+            label: Часовой пояс
+            placeholder: Europe/Moscow
+        form_heading: Данные аэропорта
+        heading: Изменить аэропорт
+        submit: Сохранить аэропорт
+        title: Изменение аэропорта
+      flash:
+        deleted: Аэропорт удален.
+        delete_restricted: Нельзя удалить аэропорт, пока на него ссылаются данные импорта.
+        updated: Аэропорт обновлен.
+      index:
+        actions:
+          delete: Удалить
+          edit: Изменить
+        columns:
+          actions: Действия
+          airport: Аэропорт
+          codes: Коды
+          country: Страна
+          status: Статус
+          time_zone: Часовой пояс
+        description: Управляйте каноническим каталогом аэропортов Routeprint.
+        empty_description: Канонических аэропортов пока нет.
+        empty_title: Аэропорты не найдены
+        heading: Аэропорты
+        pagination:
+          label: Страницы аэропортов
+          next: Далее
+          previous: Назад
+          summary: Показано %{from}–%{to} из %{count} аэропортов
+        table_caption: Канонические аэропорты
+        title: Аэропорты
+      statuses:
+        active: Работает
+        closed: Закрыт
+        unknown: Неизвестен
   auth:
     fields:
       email: Email
