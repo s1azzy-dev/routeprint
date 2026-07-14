@@ -8,18 +8,18 @@ RSpec.describe Admin::AirportPolicy, type: :policy do
   let(:role) { "admin" }
 
   it "permits administrators to manage airports" do
-    expect(policy.index?).to be(true)
-    expect(policy.update?).to be(true)
-    expect(policy.destroy?).to be(true)
+    expect(policy).to be_index
+    expect(policy).to be_update
+    expect(policy).to be_destroy
   end
 
   context "when the user is a member" do
     let(:role) { "member" }
 
     it "denies every airport action" do
-      expect(policy.index?).to be(false)
-      expect(policy.update?).to be(false)
-      expect(policy.destroy?).to be(false)
+      expect(policy).not_to be_index
+      expect(policy).not_to be_update
+      expect(policy).not_to be_destroy
     end
   end
 
@@ -27,9 +27,9 @@ RSpec.describe Admin::AirportPolicy, type: :policy do
     let(:user) { nil }
 
     it "denies every airport action" do
-      expect(policy.index?).to be(false)
-      expect(policy.update?).to be(false)
-      expect(policy.destroy?).to be(false)
+      expect(policy).not_to be_index
+      expect(policy).not_to be_update
+      expect(policy).not_to be_destroy
     end
   end
 end

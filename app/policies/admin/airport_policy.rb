@@ -11,11 +11,5 @@ module Admin
     def destroy?
       admin?
     end
-
-    private
-
-    def admin?
-      user&.admin? == true
-    end
   end
 end
