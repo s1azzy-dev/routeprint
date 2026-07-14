@@ -8,6 +8,7 @@ end
 RSpec.describe HarnessControlPlane do
   let(:root) { Pathname(__dir__).join("../..").expand_path }
   let(:development) { root.join("docs/DEVELOPMENT.md").read }
+  let(:agents) { root.join("AGENTS.md").read }
   let(:foundations) { root.join("docs/FOUNDATIONS.md").read }
   let(:context_map) { root.join("docs/CONTEXT_MAP.md").read }
   let(:makefile) { root.join("Makefile").read }
@@ -148,6 +149,22 @@ RSpec.describe HarnessControlPlane do
       "git diff --name-status"
     )
     expect(development).to include("make agent-state")
+  end
+
+  it "routes frontend formatter mutations through the explicit Make target" do
+    expect(agents).to include(
+      "make agent-frontend-format-fix FILES=",
+      "Never run raw `prettier --write` commands"
+    )
+    expect(development).to include(
+      "Fix frontend formatting explicitly",
+      "make agent-frontend-format-fix FILES="
+    )
+    expect(makefile).to include(
+      "agent-frontend-format-fix:",
+      "FILES is required"
+    )
+    expect(codex_rules).to include('"agent-frontend-format-fix"')
   end
 
   it "wires the mechanical harness check into Make and CI" do

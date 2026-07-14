@@ -69,6 +69,17 @@ RSpec.describe QualityOutputConfiguration do
     expect(verification_targets).not_to include("-A")
   end
 
+  it "keeps frontend formatting checks separate from explicit fixes" do
+    makefile = root.join("Makefile").read
+
+    expect(makefile).to include(
+      "agent-frontend-format:",
+      "rtk prettier $(RTK_FRONTEND_FORMAT_ARGS)",
+      "agent-frontend-format-fix:",
+      "rtk prettier --write --log-level warn $(FILES)"
+    )
+  end
+
   it "keeps the CI RuboCop check non-mutating" do
     expect(ci_workflow).to include("run: bin/rubocop -f github")
     expect(ci_workflow).not_to include("bin/rubocop -A")

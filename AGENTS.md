@@ -38,6 +38,9 @@ docs unless explicitly requested.
 - Run app/runtime commands through Make/container targets; use the host shell
   only for file search, git inspection, editing, Docker orchestration, and
   documented host-only tooling.
+- For frontend formatting, use `make agent-frontend-format` for checks and
+  `make agent-frontend-format-fix FILES='path/to/file.tsx ...'` for explicit
+  fixes. Never run raw `prettier --write` commands.
 - Use RTK-backed host commands and `make agent-*` targets first for broad
   search, logs, diffs, and diagnostics.
 - Keep `CHANGES.md` current for meaningful behavior, schema, dependency,

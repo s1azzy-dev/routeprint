@@ -2,6 +2,8 @@
 
 ## 2026-07-14
 
+- Routed agent frontend formatter fixes through the explicit Make target
+  `agent-frontend-format-fix`, with raw `prettier --write` commands prohibited.
 - Added an admin-only airport catalog workspace with pagination, editing,
   deletion safeguards, and Wild Waters-inspired navigation.
 

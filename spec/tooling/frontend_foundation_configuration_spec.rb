@@ -79,6 +79,9 @@ RSpec.describe FrontendFoundationConfiguration do
       "ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test rtk rspec $(SPEC)",
       "agent-frontend-test:",
       "rtk vitest run --coverage --reporter=minimal --passWithNoTests",
+      "agent-frontend-format-fix:",
+      "FILES is required",
+      "rtk prettier --write --log-level warn $(FILES)",
       "agent-verify-fast: frontend-install",
     )
   end

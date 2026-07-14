@@ -423,6 +423,7 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Run frontend format, lint, typecheck, tests, and build checks | `make frontend-check` | Web container |
 | Run all frontend quality and build gates, including audit | `make frontend-verify` | Web container |
 | Run one frontend gate | `make frontend-format`, `make frontend-lint`, `make frontend-typecheck`, `make frontend-test`, `make frontend-build`, or `make frontend-audit` | Web container |
+| Fix frontend formatting explicitly | `make agent-frontend-format-fix FILES='path/to/file.tsx path/to/test.tsx'` | Web container; mutating |
 | Install gems | `make bundle` | Web container |
 | Rails console | `make shell` | Web container |
 | Container shell | `make bash` | Web container |
@@ -489,7 +490,11 @@ Container app/runtime commands:
 
 - Use `make agent-rspec SPEC=path/to/spec.rb` for targeted RSpec feedback.
 - Use `make agent-test` for the Rails test path with compact RSpec output.
-- Use `make agent-frontend-format`, `make agent-frontend-lint`,
+- Use `make agent-frontend-format` for a non-mutating formatting check. When
+  formatting specific files is requested, use
+  `make agent-frontend-format-fix FILES='path/to/file.tsx path/to/test.tsx'`.
+  Do not run raw `prettier --write` commands.
+- Use `make agent-frontend-lint`,
   `make agent-frontend-typecheck`, and `make agent-frontend-test` for focused
   frontend gates.
 - Do not parallelize targets that run `frontend-install` with focused frontend

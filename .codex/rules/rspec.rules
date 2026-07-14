@@ -30,3 +30,10 @@ prefix_rule(
     decision="allow",
     justification="RTK-wrapped Routeprint Make commands",
 )
+
+# Allow the explicit, user-scoped frontend formatter mutation target.
+prefix_rule(
+    pattern=["make", "agent-frontend-format-fix"],
+    decision="allow",
+    justification="Explicit Routeprint frontend formatter fix",
+)
