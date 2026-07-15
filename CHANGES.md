@@ -1,5 +1,21 @@
 # Changes
 
+## 2026-07-15
+
+- Restricted approval-free `rtk proxy` passthrough to the same allow-listed
+  non-agent Routeprint Make checks as `rtk make`; arbitrary proxy commands and
+  `rtk proxy make agent-*` do not bypass policy.
+- Clarified the command policy: use `make agent-*` directly, reserve `rtk make`
+  for allow-listed non-agent checks, and use `rtk proxy make` only for the same
+  already-approved targets when full output is required.
+- Moved OurAirports source configuration into typed application settings with an
+  ENV override for the source URL; the admin controller now passes only the
+  current initiator to the source-specific start interactor.
+
+- Added the protected admin Imports/Airports workspace with paginated
+  OurAirports run history, sanitized parameters and statuses, progress counters,
+  translated feedback, and a guarded full-import start action.
+
 ## 2026-07-14
 
 - Documented direct Bash `git`/`gh` usage and prohibited token transfer into
@@ -14,8 +30,6 @@
 - Added a shared Routeprint header to every Inertia page with a branded icon,
   sign-in action for guests, and an authenticated account dropdown containing
   sign-out.
-- Allowed agents to run RTK-wrapped Make commands through the project Codex
-  rule (`rtk make *`) for token-efficient workflows.
 
 ## 2026-07-12
 

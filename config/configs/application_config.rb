@@ -18,6 +18,13 @@ class ApplicationConfig
     setting :service, constructor: StorageService
   end
 
+  setting :imports do
+    setting :ourairports do
+      setting :source_key, constructor: Types::String.constrained(filled: true)
+      setting :source_url, constructor: Types::String.constrained(filled: true)
+    end
+  end
+
   def self.default_url_options
     options = {
       host: config.urls.host,

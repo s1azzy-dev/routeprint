@@ -85,13 +85,15 @@ The initialized project currently includes:
 - Protected dashboard
 - Place and airport reference foundation with PostGIS points and localized names
 - Admin-only airport catalog with pagination, editing, and safe deletion
+- Admin-only OurAirports airport import history with a guarded start action
 - Initial MapLibre home map shell with an OpenFreeMap vector basemap and reset
   control
 
 The current product surface includes authentication, password reset, a protected
-dashboard, the airport reference foundation, and the first admin airport catalog
-screen. Manual flight history, import, map, statistics, export, and broader admin
-product behavior remain future SDD/OpenSpec slices.
+dashboard, the airport reference foundation, the admin airport catalog, and the
+admin reference-import operations screen. User-owned flight history/import,
+map overlays, statistics, export, and broader admin product behavior remain
+future SDD/OpenSpec slices.
 
 ## Spec-Driven Changes
 

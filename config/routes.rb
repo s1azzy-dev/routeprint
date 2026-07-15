@@ -19,6 +19,10 @@ Rails.application.routes.draw do
   namespace :admin do
     root "airports#index"
     resources :airports, only: %i[index edit update destroy], param: :place_id
+
+    namespace :imports do
+      resources :airports, only: %i[index create], controller: "airports"
+    end
   end
 
   get "dashboard" => "dashboard#show", as: :dashboard

@@ -36,4 +36,9 @@ ApplicationConfig.configure do |config|
   config.urls.port = ENV["APP_PORT"]
   config.urls.protocol = ENV.fetch("APP_PROTOCOL", "http")
   config.storage.service = ENV.fetch("ACTIVE_STORAGE_SERVICE", :local)
+  config.imports.ourairports.source_key = "ourairports_airports"
+  config.imports.ourairports.source_url = ENV.fetch(
+    "OURAIRPORTS_AIRPORTS_SOURCE_URL",
+    "https://ourairports.com/data/airports.csv"
+  )
 end
