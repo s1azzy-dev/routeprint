@@ -8,6 +8,9 @@
 - Clarified the command policy: use `make agent-*` directly, reserve `rtk make`
   for allow-listed non-agent checks, and use `rtk proxy make` only for the same
   already-approved targets when full output is required.
+- Moved OurAirports source configuration into typed application settings with an
+  ENV override for the source URL; the admin controller now passes only the
+  current initiator to the source-specific start interactor.
 
 - Added the protected admin Imports/Airports workspace with paginated
   OurAirports run history, sanitized parameters and statuses, progress counters,

@@ -4,9 +4,6 @@ module Admin
       include Pagy::Method
 
       PAGE_SIZE = 25
-      SOURCE_KEY = "ourairports_airports"
-      SOURCE_URL = "https://ourairports.com/data/airports.csv"
-      PARSER_VERSION = "1"
 
       def index
         pagy, runs = pagy(:offset, runs_scope, limit: PAGE_SIZE)
@@ -15,7 +12,7 @@ module Admin
       end
 
       def create
-        result = ::Imports::StartRun.call(input: start_input)
+        result = ::Imports::OurAirports::StartRun.call(input: { initiated_by_user_id: current_user.id })
 
         if result.success?
           redirect_to admin_imports_airports_path, notice: t("admin.imports.airports.flash.started"), status: :see_other
@@ -29,28 +26,9 @@ module Admin
       def runs_scope
         ::Imports::Run
           .joins(:source)
-          .where(import_sources: { key: SOURCE_KEY })
+          .where(import_sources: { key: ApplicationConfig.config.imports.ourairports.source_key })
           .includes(:source)
           .order(created_at: :desc, id: :desc)
-      end
-
-      def start_input
-        {
-          source_key: SOURCE_KEY,
-          mode: "full",
-          params: {
-            "source_url" => SOURCE_URL,
-            "parser_version" => PARSER_VERSION
-          },
-          items: [
-            {
-              item_kind: "file",
-              item_key: "all",
-              params: { "source_url" => SOURCE_URL }
-            }
-          ],
-          initiated_by_user_id: current_user.id
-        }
       end
 
       def index_props(pagy:, runs:)

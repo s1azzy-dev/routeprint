@@ -12,7 +12,8 @@ RSpec.describe ApplicationConfig do
       "APP_HOST" => "routeprint.test",
       "APP_PORT" => "3100",
       "APP_PROTOCOL" => "https",
-      "ACTIVE_STORAGE_SERVICE" => "test"
+      "ACTIVE_STORAGE_SERVICE" => "test",
+      "OURAIRPORTS_AIRPORTS_SOURCE_URL" => "https://data.example.test/airports.csv"
     ) do
       load_settings!
 
@@ -42,6 +43,8 @@ RSpec.describe ApplicationConfig do
       expect(described_class.config.urls.port).to eq(3100)
       expect(described_class.config.urls.protocol).to eq("https")
       expect(described_class.config.storage.service).to eq(:test)
+      expect(described_class.config.imports.ourairports.source_key).to eq("ourairports_airports")
+      expect(described_class.config.imports.ourairports.source_url).to eq("https://data.example.test/airports.csv")
       expect(described_class.default_url_options).to eq(
         host: "routeprint.test",
         port: 3100,
