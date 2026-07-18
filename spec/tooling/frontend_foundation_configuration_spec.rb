@@ -19,9 +19,9 @@ RSpec.describe FrontendFoundationConfiguration do
       "react-dom" => "19.2.7",
     )
     expect(package.fetch("devDependencies")).to include(
-      "@tailwindcss/vite" => "4.3.2",
+      "@tailwindcss/vite" => "4.3.3",
       "typescript" => "6.0.3",
-      "vite" => "8.1.4",
+      "vite" => "8.1.5",
       "vitest" => "4.1.10",
     )
   end

@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-07-18
+
+- Refreshed compatible Bundler and npm dependencies. ESLint 10 and TypeScript
+  7 remain deferred because their major upgrades require peer-graph review.
+
 ## 2026-07-16
 
 - Added the airport-territory country catalog: canonical countries and localized
