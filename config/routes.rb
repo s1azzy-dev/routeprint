@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
     namespace :imports do
       resources :airports, only: %i[index create], controller: "airports"
+      resources :countries, only: %i[index create], controller: "countries"
     end
   end
 

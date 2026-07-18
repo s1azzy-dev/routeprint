@@ -34,4 +34,18 @@ RSpec.describe Imports::Source, type: :model do
     expect(source.key).to eq("ourairports_airports")
     expect(source.provider_key).to eq("ourairports")
   end
+
+  it "accepts the country catalog source provenance metadata" do
+    source = described_class.new(
+      key: "country_catalog",
+      provider_key: "routeprint",
+      dataset_key: "country_catalog",
+      target_kind: "country",
+      fetch_mode: "remote_dump",
+      license_key: "multiple",
+      attribution_text: "OurAirports (Public Domain); Unicode CLDR (Unicode License v3)"
+    )
+
+    expect(source).to be_valid
+  end
 end

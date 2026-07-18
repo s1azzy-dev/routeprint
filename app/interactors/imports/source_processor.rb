@@ -6,7 +6,8 @@ module Imports
   # @param input [Hash] import run and run item
   class SourceProcessor < ApplicationInteractor
     option :input
-    option :processor, default: -> { Imports::OurAirports::Airports::Processor }
+    option :airport_processor, default: -> { Imports::OurAirports::Airports::Processor }
+    option :country_catalog_processor, default: -> { Imports::Countries::Processor }
 
     class ValidationContract < ApplicationContract
       params do
@@ -17,14 +18,11 @@ module Imports
 
     def call
       run = input.fetch(:run)
-      if run.source.key == "ourairports_airports"
-        return processor.call(input:)
+      case run.source.key
+      when "ourairports_airports" then airport_processor.call(input:)
+      when "country_catalog" then country_catalog_processor.call(input:)
+      else Failure(code: :source_processor_not_implemented, errors: { source_key: [ run.source.key ] })
       end
-
-      Failure(
-        code: :source_processor_not_implemented,
-        errors: { source_key: [ run.source.key ] }
-      )
     end
   end
 end

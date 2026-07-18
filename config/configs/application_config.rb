@@ -23,6 +23,13 @@ class ApplicationConfig
       setting :source_key, constructor: Types::String.constrained(filled: true)
       setting :source_url, constructor: Types::String.constrained(filled: true)
     end
+
+    setting :countries do
+      setting :source_key, constructor: Types::String.constrained(filled: true)
+      setting :ourairports_source_url, constructor: Types::String.constrained(filled: true)
+      setting :cldr_release, constructor: Types::String.constrained(filled: true)
+      setting :cldr_source_url_template, constructor: Types::String.constrained(filled: true)
+    end
   end
 
   def self.default_url_options

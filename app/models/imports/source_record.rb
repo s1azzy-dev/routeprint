@@ -8,6 +8,8 @@ module Imports
     has_many :snapshots, class_name: "Imports::RecordSnapshot", foreign_key: :source_record_id, inverse_of: :source_record, dependent: :restrict_with_exception
     has_many :issues, class_name: "Imports::Issue", foreign_key: :source_record_id, inverse_of: :source_record, dependent: :nullify
     has_one :airport_source_link, class_name: "Imports::AirportSourceLink", foreign_key: :source_record_id, inverse_of: :source_record, dependent: :restrict_with_exception
+    has_one :country_source_link, class_name: "Imports::CountrySourceLink", foreign_key: :source_record_id, inverse_of: :source_record, dependent: :restrict_with_exception
+    has_one :country_name_source_link, class_name: "Imports::CountryNameSourceLink", foreign_key: :source_record_id, inverse_of: :source_record, dependent: :restrict_with_exception
 
     enum :status, STATUSES.index_with(&:itself), prefix: true
 

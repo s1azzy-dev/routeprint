@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe Imports::OurAirports::Airports::Processor, type: :interactor do
   let!(:run) { create(:imports_run, status: "running", mode: "full") }
   let!(:item) { create(:imports_run_item, run:, status: "running", item_kind: "file", item_key: "airports") }
+  let!(:country) { create(:country, code: "SB", name: "Solomon Islands", continent_code: "OC") }
   let(:fixture_path) { Rails.root.join("spec/fixtures/imports/ourairports_airports.csv") }
   let!(:artifact) do
     Imports::CaptureArtifact.call(
