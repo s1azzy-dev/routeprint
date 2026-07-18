@@ -30,6 +30,13 @@ module Admin
                 label: t("admin.navigation.imports.airports"),
                 url: admin_imports_airports_path,
                 current: current == "imports/airports"
+              ),
+              admin_navigation_item(
+                key: "import_countries",
+                icon: "airports",
+                label: t("admin.navigation.imports.countries"),
+                url: admin_imports_countries_path,
+                current: current == "imports/countries"
               )
             ]
           }

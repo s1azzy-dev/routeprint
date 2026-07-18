@@ -30,10 +30,11 @@ module Imports
         private
 
         def apply_source_record(source_record:, normalized:)
+          country = yield find_country(normalized.fetch("country_code"))
           link = source_record.airport_source_link
           airport, strategy = link ? [ link.airport, link.match_strategy ] : find_or_build_airport(normalized)
 
-          update_canonical_records!(airport, normalized)
+          update_canonical_records!(airport, normalized, country:)
           persist_source_link(source_record:, airport:, strategy:) unless link
           source_record.update!(status: "applied")
 
@@ -69,12 +70,20 @@ module Imports
           scopes.flat_map(&:to_a).uniq { |airport| airport.place_id }
         end
 
-        def update_canonical_records!(airport, normalized)
+        def find_country(code)
+          country = Country.find_by(code:)
+          return Success(country) if country
+
+          fail_with(code: :country_not_found, errors: { country_code: [ code ] })
+        end
+
+        def update_canonical_records!(airport, normalized, country:)
           place = airport.place
           place.assign_attributes(
             kind: "airport",
             name: normalized.fetch("name"),
             municipality_name: normalized["municipality_name"],
+            country:,
             country_code: normalized.fetch("country_code"),
             region_code: normalized["region_code"],
             continent_code: normalized["continent_code"],

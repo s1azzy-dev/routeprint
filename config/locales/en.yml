@@ -45,7 +45,40 @@ en:
       imports:
         label: Imports
         airports: Airports
+        countries: Countries
     imports:
+      countries:
+        actions:
+          start: Start refresh
+        flash:
+          start_failed: The country catalog refresh could not be started.
+          start_unavailable: Both country catalog sources must be available.
+          started: Country catalog refresh started.
+        index:
+          columns:
+            mode: Mode
+            parameters: Parameters
+            progress: Progress
+            source: Source
+            status: Status
+            timestamps: Timestamps
+          description: Review the paired OurAirports and CLDR source runs for the country catalog.
+          empty_description: Start a refresh to populate or update countries and localized names.
+          empty_title: No country catalog refreshes yet
+          heading: Country catalog imports
+          pagination:
+            label: Country import pages
+            next: Next
+            previous: Previous
+            summary: Showing %{from}-%{to} of %{count} country source runs
+          table_caption: Country catalog source runs
+          title: Country catalog imports
+        statuses:
+          failed: Failed
+          partially_failed: Partially failed
+          queued: Queued
+          running: Running
+          succeeded: Succeeded
       airports:
         actions:
           start: Start import

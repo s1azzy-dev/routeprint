@@ -1,5 +1,16 @@
 # Changes
 
+## 2026-07-16
+
+- Added the airport-territory country catalog: canonical countries and localized
+  English/Russian names, import provenance links, staged place association, and
+  audited legacy-code backfill support.
+- Added a composite admin country refresh: one catalog run captures the
+  OurAirports membership CSV plus pinned CLDR locale artifacts, applies only
+  after the complete package succeeds, and retains provider-level provenance.
+- Added Admin Imports/Countries with the same protected run-history and start
+  workflow as airport imports; airport writes now resolve canonical countries.
+
 ## 2026-07-15
 
 - Restricted approval-free `rtk proxy` passthrough to the same allow-listed

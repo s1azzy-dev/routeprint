@@ -1,6 +1,7 @@
 class Place < ApplicationRecord
   KINDS = %w[airport].freeze
 
+  belongs_to :country, optional: true
   has_many :place_names, dependent: :destroy
   has_one :airport, dependent: :destroy
 

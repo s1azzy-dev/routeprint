@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe Imports::OurAirports::Airports::Processor, type: :interactor do
   let!(:run) { create(:imports_run, status: "running") }
   let!(:item) { create(:imports_run_item, run:, status: "running") }
+  let!(:country) { create(:country, code: "GB", name: "United Kingdom", continent_code: "EU") }
   let!(:artifact) do
     Imports::CaptureArtifact.call(
       input: {

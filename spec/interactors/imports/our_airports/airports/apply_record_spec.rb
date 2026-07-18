@@ -4,6 +4,7 @@ RSpec.describe Imports::OurAirports::Airports::ApplyRecord, type: :interactor do
   subject(:result) { described_class.call(input: { source_record: }) }
 
   let!(:source) { create(:imports_source) }
+  let!(:country) { create(:country, code: "GB") }
   let(:source_record) do
     create(
       :imports_source_record,
@@ -43,6 +44,7 @@ RSpec.describe Imports::OurAirports::Airports::ApplyRecord, type: :interactor do
     expect(source_record.airport_source_link.match_strategy).to eq("created_from_source")
     expect(airport.place.location.longitude).to be_within(0.000001).of(-0.461941)
     expect(airport.place.location.latitude).to be_within(0.000001).of(51.4706)
+    expect(airport.place.country).to eq(country)
   end
 
   it "reuses an existing link on reimport" do
@@ -61,5 +63,13 @@ RSpec.describe Imports::OurAirports::Airports::ApplyRecord, type: :interactor do
     expect(result.failure.fetch(:code)).to eq(:ambiguous_code_match)
     expect(source_record.reload).to be_status_staged
     expect(source_record.airport_source_link).to be_nil
+  end
+
+  it "keeps an airport record staged when its country is absent from the catalog" do
+    country.destroy!
+
+    expect(result).to be_failure
+    expect(result.failure[:code]).to eq(:country_not_found)
+    expect(source_record.reload).to be_status_staged
   end
 end

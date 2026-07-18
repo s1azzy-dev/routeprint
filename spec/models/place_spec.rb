@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe Place, type: :model do
   describe "associations" do
+    it { is_expected.to belong_to(:country).optional }
     it { is_expected.to have_many(:place_names).dependent(:destroy) }
     it { is_expected.to have_one(:airport).dependent(:destroy) }
   end

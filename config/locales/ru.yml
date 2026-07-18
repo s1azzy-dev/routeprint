@@ -16,7 +16,40 @@ ru:
       imports:
         label: Импорты
         airports: Аэропорты
+        countries: Страны
     imports:
+      countries:
+        actions:
+          start: Запустить обновление
+        flash:
+          start_failed: Не удалось запустить обновление справочника стран.
+          start_unavailable: Оба источника справочника стран должны быть доступны.
+          started: Обновление справочника стран запущено.
+        index:
+          columns:
+            mode: Режим
+            parameters: Параметры
+            progress: Прогресс
+            source: Источник
+            status: Статус
+            timestamps: Время
+          description: История парных запусков OurAirports и CLDR для справочника стран.
+          empty_description: Запустите обновление, чтобы заполнить или обновить страны и переводы.
+          empty_title: Обновлений справочника стран пока нет
+          heading: Импорты справочника стран
+          pagination:
+            label: Страницы импортов стран
+            next: Далее
+            previous: Назад
+            summary: Показано %{from}–%{to} из %{count} запусков источников стран
+          table_caption: Запуски источников справочника стран
+          title: Импорты справочника стран
+        statuses:
+          failed: Ошибка
+          partially_failed: Частично с ошибками
+          queued: В очереди
+          running: Выполняется
+          succeeded: Успешно
       airports:
         actions:
           start: Запустить импорт
