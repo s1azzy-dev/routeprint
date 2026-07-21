@@ -16,7 +16,7 @@ gem "puma", ">= 5.0"
 # Build the application-owned frontend with Vite.
 gem "vite_rails", "3.11.0"
 # Deliver React pages through Rails routes and controllers.
-gem "inertia_rails", "3.21.2"
+gem "inertia_rails", "3.22.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 gem "pagy", "~> 43.5"
