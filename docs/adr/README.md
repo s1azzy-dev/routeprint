@@ -39,6 +39,7 @@ code and RSpec.
 - [ADR 0006: Time Zone And Flight Schedule Time Handling](0006-time-zone-and-flight-schedule-time-handling.md)
 - [ADR 0007: Airport Reference Catalog Boundary](0007-airport-reference-catalog-boundary.md)
 - [ADR 0008: Country Reference Catalog And Boundary Delivery](0008-country-reference-catalog-and-boundary-delivery.md)
+- [ADR 0009: Airline Reference Identity And Moderation](0009-airline-reference-identity-and-moderation.md)
 
 ## Header Format
 
