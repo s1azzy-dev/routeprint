@@ -15,8 +15,8 @@ RSpec.describe FrontendFoundationConfiguration do
     expect(package.fetch("name")).to eq("routeprint")
     expect(package.fetch("dependencies")).to include(
       "@inertiajs/react" => "3.6.1",
-      "react" => "19.2.7",
-      "react-dom" => "19.2.7",
+      "react" => "19.2.8",
+      "react-dom" => "19.2.8",
     )
     expect(package.fetch("devDependencies")).to include(
       "@tailwindcss/vite" => "4.3.3",

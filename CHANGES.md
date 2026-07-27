@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-07-27
+
+- Refreshed compatible Bundler and npm dependencies. `@vitejs/plugin-react`
+  6.0.4 remains deferred because its optional Rolldown Babel peer requires
+  Babel 8; major npm upgrades remain subject to their migration paths.
+
 ## 2026-07-18
 
 - Refreshed compatible Bundler and npm dependencies. ESLint 10 and TypeScript
