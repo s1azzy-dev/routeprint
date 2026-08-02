@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-08-02
+
+- Refreshed compatible Bundler and npm dependencies, including Rails 8.1.3.1,
+  and applied the non-breaking npm audit fixes. `@vitejs/plugin-react` remains
+  deferred pending a compatible Rolldown/Babel peer graph; major npm upgrades
+  remain separate migrations.
+
 ## 2026-07-27
 
 - Refreshed compatible Bundler and npm dependencies. `@vitejs/plugin-react`
