@@ -9,23 +9,23 @@
 
 ## 2. Persistence Red-Green Slice
 
-- [ ] 2.1 Add factories and red model/schema specs for airlines, designator
+- [x] 2.1 Add factories and red model/schema specs for airlines, designator
   assignments, submission audit, source links, review/operation independence,
   code collisions, optional dates/country, and merge-target integrity.
-- [ ] 2.2 Add the SQL-forward reversible migration with Routeprint UUID,
+- [x] 2.2 Add the SQL-forward reversible migration with Routeprint UUID,
   timestamptz, foreign-key, required-column, within-airline designator
   uniqueness, pending-fingerprint, and lookup index boundaries.
-- [ ] 2.3 Implement the Airline, AirlineDesignator, submission-audit, and import
+- [x] 2.3 Implement the Airline, AirlineDesignator, submission-audit, and import
   link models with application-level normalization and lifecycle validation;
   run the narrow model specs until green and generate schema through the
   documented Make/container path.
 
 ## 3. Protected Unknown Airline
 
-- [ ] 3.1 Add red interactor/model specs proving idempotent creation and
+- [x] 3.1 Add red interactor/model specs proving idempotent creation and
   rejection of ordinary edit, moderation, merge, delete, and import mutation
   for `unknown_airline`.
-- [ ] 3.2 Implement the idempotent bootstrap and stable-key resolver used by
+- [x] 3.2 Implement the idempotent bootstrap and stable-key resolver used by
   future flight interactors; verify it without a hard-coded database UUID
   default.
 

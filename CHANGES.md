@@ -6,6 +6,9 @@
   and applied the non-breaking npm audit fixes. `@vitejs/plugin-react` remains
   deferred pending a compatible Rolldown/Babel peer graph; major npm upgrades
   remain separate migrations.
+- Added the airline catalog persistence foundation: provider-neutral airline
+  identities, non-global historical designators, submission/import provenance,
+  lifecycle integrity, and an idempotent protected `unknown_airline` record.
 
 ## 2026-07-27
 
