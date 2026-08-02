@@ -21,7 +21,7 @@ RSpec.describe FrontendFoundationConfiguration do
     expect(package.fetch("devDependencies")).to include(
       "@tailwindcss/vite" => "4.3.3",
       "typescript" => "6.0.3",
-      "vite" => "8.1.5",
+      "vite" => "8.2.0",
       "vitest" => "4.1.10",
     )
   end
