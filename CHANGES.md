@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-08-07
+
+- Restored Active Storage Vips initialization after the Rails 8.1.3.1 security
+  update by declaring the Ruby adapter and installing libvips in development
+  and CI environments.
+
 ## 2026-08-02
 
 - Refreshed compatible Bundler and npm dependencies, including Rails 8.1.3.1,
