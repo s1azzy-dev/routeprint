@@ -35,6 +35,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   chromium-headless-shell \
   git \
   libpq-dev \
+  libvips \
   libyaml-dev \
   pkg-config \
   postgresql-client-18 \

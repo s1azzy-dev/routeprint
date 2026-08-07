@@ -4,6 +4,15 @@ class User < ApplicationRecord
 
   has_many :user_identities, dependent: :destroy
   has_many :user_sessions, dependent: :destroy
+  has_many :airline_submissions,
+    foreign_key: :submitted_by_user_id,
+    inverse_of: :submitted_by_user,
+    dependent: :nullify
+  has_many :reviewed_airlines,
+    class_name: "Airline",
+    foreign_key: :reviewed_by_user_id,
+    inverse_of: :reviewed_by,
+    dependent: :nullify
 
   normalizes :primary_email, with: ->(value) { EmailNormalizer.normalize(value) }
   normalizes :display_name, with: ->(value) { value.to_s.squish.presence }

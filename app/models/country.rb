@@ -4,6 +4,11 @@ class Country < ApplicationRecord
   has_many :country_source_links,
     class_name: "Imports::CountrySourceLink",
     dependent: :restrict_with_exception
+  has_many :airlines, dependent: :restrict_with_exception
+  has_many :airline_submissions,
+    foreign_key: :submitted_country_id,
+    inverse_of: :submitted_country,
+    dependent: :restrict_with_exception
 
   normalizes :code, with: ->(value) { value.to_s.strip.upcase.presence }
   normalizes :name, with: ->(value) { value.to_s.squish.presence }

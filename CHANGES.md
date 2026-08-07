@@ -1,11 +1,20 @@
 # Changes
 
+## 2026-08-07
+
+- Restored Active Storage Vips initialization after the Rails 8.1.3.1 security
+  update by declaring the Ruby adapter and installing libvips in development
+  and CI environments.
+
 ## 2026-08-02
 
 - Refreshed compatible Bundler and npm dependencies, including Rails 8.1.3.1,
   and applied the non-breaking npm audit fixes. `@vitejs/plugin-react` remains
   deferred pending a compatible Rolldown/Babel peer graph; major npm upgrades
   remain separate migrations.
+- Added the airline catalog persistence foundation: provider-neutral airline
+  identities, non-global historical designators, submission/import provenance,
+  lifecycle integrity, and an idempotent protected `unknown_airline` record.
 
 ## 2026-07-27
 
