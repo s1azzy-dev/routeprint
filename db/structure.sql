@@ -1697,6 +1697,7 @@ ALTER TABLE ONLY public.user_sessions
 SET search_path TO "$user", public, tiger, topology;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260807160000'),
 ('20260802120000'),
 ('20260716100000'),
 ('20260711131500'),

@@ -175,6 +175,35 @@ source records, normalizes names, countries, designators, operating evidence,
 and validity evidence, and applies accepted records through an airline
 interactor.
 
+Source profiling fixed version 1 as a SPARQL-results JSON projection over
+direct `instance of: airline` records (`P31 = Q46970`), without subclass
+closure. It emits one identity/evidence row per QID and non-deprecated country,
+inception, dissolution, IATA, or ICAO statement so repeated claims do not form
+a Cartesian product. Country evidence includes both the Wikidata country QID
+and any available ISO 3166-1 alpha-2 value (`P297`). An English label is
+required for trusted automatic publication; a row without one remains raw
+diagnostic evidence. All other fields remain optional.
+
+Acquisition pages the direct-instance set with a server-defined maximum page
+size and a validated QID cursor. Each query selects QIDs whose canonical entity
+URI sorts after the previous page's final QID, then returns all evidence rows
+for that bounded QID set. Page responses are captured as separate private raw
+artifacts under one run item. The importer stops only after a short or empty
+page, rejects invalid or non-advancing cursors, and caps the number of pages so
+upstream drift or a malformed response cannot create an unbounded request loop.
+The cursor is acquisition state, never canonical airline identity.
+
+Wikidata time values carry explicit precision. The importer retains inception
+and dissolution values and precision in source evidence; those values determine
+operational state but do not add canonical airline date columns. A concrete past
+dissolution statement can establish inactive operation, but a missing
+dissolution statement does not establish active operation and therefore
+normalizes to unknown unless stronger evidence is introduced through a reviewed
+source-contract change. Designator validity qualifiers are sparse: only day
+precision (`11`) may populate canonical `valid_from` or `valid_until`; month
+(`10`), year (`9`), unknown, and unsupported precision stay nullable
+canonically.
+
 QID is the only upstream identity. Names and designators are match candidates,
 never import keys. A new structurally valid unambiguous QID is published as an
 approved trusted-source airline. A linked QID updates only source-governed
@@ -264,6 +293,5 @@ unknown-airline row is never deleted independently.
 
 ## Open Questions
 
-- Source profiling must confirm the final versioned Wikidata query shape and
-  which date qualifiers are sufficiently reliable to populate assignment
-  validity. Missing evidence remains nullable and does not reopen product scope.
+None for the version 1 source shape. Missing or coarse evidence remains
+nullable and does not reopen product scope.
