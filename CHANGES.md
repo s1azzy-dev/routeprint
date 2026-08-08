@@ -1,5 +1,13 @@
 # Changes
 
+## 2026-08-08
+
+- Added authenticated bounded airline lookup by normalized name and public
+  designator, with historical date ranking and an allowlisted localized picker
+  payload for approved and visibly pending catalog records.
+- Added explicit authenticated pending-airline submission with exact candidate
+  reuse, submitter audit, code inference, and a bilingual reusable picker form.
+
 ## 2026-08-07
 
 - Added the bounded, paginated Wikidata airline import pipeline with frozen
