@@ -2,6 +2,9 @@
 
 ## 2026-08-07
 
+- Added the bounded, paginated Wikidata airline import pipeline with frozen
+  query/fixture provenance, QID-backed identity, private raw pages, fail-fast
+  canonical apply, ambiguity diagnostics, snapshots, and full-run reconciliation.
 - Restored Active Storage Vips initialization after the Rails 8.1.3.1 security
   update by declaring the Ruby adapter and installing libvips in development
   and CI environments.

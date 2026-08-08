@@ -1,0 +1,116 @@
+PREFIX p: <http://www.wikidata.org/prop/>
+PREFIX pqv: <http://www.wikidata.org/prop/qualifier/value/>
+PREFIX ps: <http://www.wikidata.org/prop/statement/>
+PREFIX psv: <http://www.wikidata.org/prop/statement/value/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+
+# Version 1 returns one identity/evidence row at a time so repeated country,
+# date, and designator statements never create a Cartesian product. The
+# importer groups rows by the QID in ?airline. The two named format tokens are
+# rendered only after the cursor and page size pass application validation.
+SELECT
+  ?airline
+  ?name
+  ?rowKind
+  ?value
+  ?item
+  ?rank
+  ?precision
+  ?start
+  ?startPrecision
+  ?end
+  ?endPrecision
+WHERE {
+  {
+    SELECT ?airline
+    WHERE {
+      # Direct instances only are the trusted-source eligibility boundary for
+      # v1. Subclass closure would make eligibility depend on a mutable class
+      # hierarchy outside Routeprint's source contract.
+      ?airline wdt:P31 wd:Q46970.
+      FILTER(STR(?airline) > "%<after_qid_uri>s")
+    }
+    ORDER BY STR(?airline)
+    LIMIT %<page_size>d
+  }
+
+  OPTIONAL {
+    ?airline rdfs:label ?name.
+    FILTER(LANG(?name) = "en")
+  }
+
+  {
+    {
+      BIND("identity" AS ?rowKind)
+    }
+    UNION
+    {
+      ?airline p:P17 ?statement.
+      ?statement ps:P17 ?item;
+        wikibase:rank ?rank.
+      FILTER(?rank != wikibase:DeprecatedRank)
+      OPTIONAL { ?item wdt:P297 ?value. }
+      BIND("country" AS ?rowKind)
+    }
+    UNION
+    {
+      ?airline p:P571 ?statement.
+      ?statement psv:P571 ?timeNode;
+        wikibase:rank ?rank.
+      ?timeNode wikibase:timeValue ?value;
+        wikibase:timePrecision ?precision.
+      FILTER(?rank != wikibase:DeprecatedRank)
+      BIND("inception" AS ?rowKind)
+    }
+    UNION
+    {
+      ?airline p:P576 ?statement.
+      ?statement psv:P576 ?timeNode;
+        wikibase:rank ?rank.
+      ?timeNode wikibase:timeValue ?value;
+        wikibase:timePrecision ?precision.
+      FILTER(?rank != wikibase:DeprecatedRank)
+      BIND("dissolved" AS ?rowKind)
+    }
+    UNION
+    {
+      ?airline p:P229 ?statement.
+      ?statement ps:P229 ?value;
+        wikibase:rank ?rank.
+      FILTER(?rank != wikibase:DeprecatedRank && isLiteral(?value))
+      OPTIONAL {
+        ?statement pqv:P580 ?startNode.
+        ?startNode wikibase:timeValue ?start;
+          wikibase:timePrecision ?startPrecision.
+      }
+      OPTIONAL {
+        ?statement pqv:P582 ?endNode.
+        ?endNode wikibase:timeValue ?end;
+          wikibase:timePrecision ?endPrecision.
+      }
+      BIND("iata_designator" AS ?rowKind)
+    }
+    UNION
+    {
+      ?airline p:P230 ?statement.
+      ?statement ps:P230 ?value;
+        wikibase:rank ?rank.
+      FILTER(?rank != wikibase:DeprecatedRank && isLiteral(?value))
+      OPTIONAL {
+        ?statement pqv:P580 ?startNode.
+        ?startNode wikibase:timeValue ?start;
+          wikibase:timePrecision ?startPrecision.
+      }
+      OPTIONAL {
+        ?statement pqv:P582 ?endNode.
+        ?endNode wikibase:timeValue ?end;
+          wikibase:timePrecision ?endPrecision.
+      }
+      BIND("icao_designator" AS ?rowKind)
+    }
+  }
+}
+ORDER BY STR(?airline) ?rowKind STR(?item) STR(?value)

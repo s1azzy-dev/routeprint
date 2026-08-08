@@ -67,12 +67,15 @@ trusted-source publication, and the shared moderation lifecycle are durable
 cross-cutting architecture decisions. A dedicated ADR is required; observable
 behavior and implementation tasks remain in this OpenSpec change.
 
-## Assumptions And Unresolved Questions
+## Assumptions And Source Proof
 
 - The in-progress country reference catalog lands before airline-country links
   become required by implementation.
-- Wikidata source profiling will confirm a bounded query/export shape and the
-  exact fields available for operational dates and designator validity.
+- Wikidata source profiling confirmed a versioned SPARQL-results JSON export
+  over direct `airline` instances. QID and a usable English label are required
+  for automatic publication; country, designators, and dates remain optional.
+  Date precision is retained, and only day-precise designator evidence is
+  promoted to canonical validity columns.
 - No product decision remains open for the catalog and moderation behavior
   described here; source-field gaps must degrade to nullable evidence and
   explicit diagnostics rather than broaden scope.

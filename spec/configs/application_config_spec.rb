@@ -39,6 +39,12 @@ RSpec.describe ApplicationConfig do
       expect(described_class.config.storage.service).to eq(:test)
       expect(described_class.config.imports.ourairports.source_key).to eq("ourairports_airports")
       expect(described_class.config.imports.ourairports.source_url).to eq("https://data.example.test/airports.csv")
+      expect(described_class.config.imports.wikidata_airlines).to have_attributes(
+        source_key: "wikidata_airlines",
+        endpoint_url: "https://query.wikidata.org/sparql",
+        page_size: 125,
+        max_pages: 20
+      )
       expect(described_class.config.imports.countries).to have_attributes(
         source_key: "country_catalog",
         ourairports_source_url: "https://data.example.test/countries.csv",
@@ -57,6 +63,8 @@ RSpec.describe ApplicationConfig do
     {
       "APP_HOST" => "routeprint.test", "APP_PORT" => "3100", "APP_PROTOCOL" => "https", "ACTIVE_STORAGE_SERVICE" => "test",
       "OURAIRPORTS_AIRPORTS_SOURCE_URL" => "https://data.example.test/airports.csv",
+      "WIKIDATA_AIRLINES_ENDPOINT_URL" => "https://query.wikidata.org/sparql",
+      "WIKIDATA_AIRLINES_PAGE_SIZE" => "125", "WIKIDATA_AIRLINES_MAX_PAGES" => "20",
       "OURAIRPORTS_COUNTRIES_SOURCE_URL" => "https://data.example.test/countries.csv", "CLDR_RELEASE" => "48.2.1-test",
       "CLDR_TERRITORIES_SOURCE_URL_TEMPLATE" => "https://data.example.test/%{release}/%{locale}.json"
     }

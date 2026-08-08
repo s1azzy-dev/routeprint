@@ -24,6 +24,13 @@ class ApplicationConfig
       setting :source_url, constructor: Types::String.constrained(filled: true)
     end
 
+    setting :wikidata_airlines do
+      setting :source_key, constructor: Types::String.constrained(filled: true)
+      setting :endpoint_url, constructor: Types::String.constrained(filled: true)
+      setting :page_size, constructor: Types::Params::Integer.constrained(gteq: 1, lteq: 500)
+      setting :max_pages, constructor: Types::Params::Integer.constrained(gteq: 1, lteq: 100)
+    end
+
     setting :countries do
       setting :source_key, constructor: Types::String.constrained(filled: true)
       setting :ourairports_source_url, constructor: Types::String.constrained(filled: true)

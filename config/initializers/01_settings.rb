@@ -41,6 +41,13 @@ ApplicationConfig.configure do |config|
     "OURAIRPORTS_AIRPORTS_SOURCE_URL",
     "https://ourairports.com/data/airports.csv"
   )
+  config.imports.wikidata_airlines.source_key = "wikidata_airlines"
+  config.imports.wikidata_airlines.endpoint_url = ENV.fetch(
+    "WIKIDATA_AIRLINES_ENDPOINT_URL",
+    "https://query.wikidata.org/sparql"
+  )
+  config.imports.wikidata_airlines.page_size = ENV.fetch("WIKIDATA_AIRLINES_PAGE_SIZE", 250)
+  config.imports.wikidata_airlines.max_pages = ENV.fetch("WIKIDATA_AIRLINES_MAX_PAGES", 40)
   config.imports.countries.source_key = "country_catalog"
   config.imports.countries.ourairports_source_url = ENV.fetch(
     "OURAIRPORTS_COUNTRIES_SOURCE_URL",

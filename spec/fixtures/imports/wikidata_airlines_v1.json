@@ -1,0 +1,174 @@
+{
+  "head": {
+    "vars": [
+      "airline",
+      "name",
+      "rowKind",
+      "value",
+      "item",
+      "rank",
+      "precision",
+      "start",
+      "startPrecision",
+      "end",
+      "endPrecision"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q100153989" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Tradewinds Airlines" },
+        "item": { "type": "uri", "value": "http://www.wikidata.org/entity/Q30" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "country" },
+        "value": { "type": "literal", "value": "US" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q100153989" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Tradewinds Airlines" },
+        "rowKind": { "type": "literal", "value": "identity" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208211" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Union of Burma Airways" },
+        "item": { "type": "uri", "value": "http://www.wikidata.org/entity/Q836" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "country" },
+        "value": { "type": "literal", "value": "MM" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208211" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Union of Burma Airways" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "dissolved" },
+        "value": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "1972-12-01T00:00:00Z" },
+        "precision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "10" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208211" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Union of Burma Airways" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "iata_designator" },
+        "value": { "type": "literal", "value": "UB" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208211" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Union of Burma Airways" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "icao_designator" },
+        "value": { "type": "literal", "value": "UBA" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208211" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Union of Burma Airways" },
+        "rowKind": { "type": "literal", "value": "identity" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208211" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Union of Burma Airways" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "inception" },
+        "value": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "1948-12-15T00:00:00Z" },
+        "precision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "11" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208285" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Myanmar National Airlines" },
+        "item": { "type": "uri", "value": "http://www.wikidata.org/entity/Q836" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "country" },
+        "value": { "type": "literal", "value": "MM" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208285" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Myanmar National Airlines" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "iata_designator" },
+        "value": { "type": "literal", "value": "UB" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208285" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Myanmar National Airlines" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "icao_designator" },
+        "value": { "type": "literal", "value": "UBA" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208285" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Myanmar National Airlines" },
+        "rowKind": { "type": "literal", "value": "identity" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q101208285" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Myanmar National Airlines" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "inception" },
+        "value": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "2014-12-01T00:00:00Z" },
+        "precision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "10" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q102428077" },
+        "item": { "type": "uri", "value": "http://www.wikidata.org/entity/Q142" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "country" },
+        "value": { "type": "literal", "value": "FR" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q102428077" },
+        "rowKind": { "type": "literal", "value": "identity" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q1156345" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Meridiana" },
+        "item": { "type": "uri", "value": "http://www.wikidata.org/entity/Q38" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "country" },
+        "value": { "type": "literal", "value": "IT" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q1156345" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Meridiana" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "dissolved" },
+        "value": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "2018-02-28T00:00:00Z" },
+        "precision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "11" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q1156345" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Meridiana" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "iata_designator" },
+        "value": { "type": "literal", "value": "IG" },
+        "end": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "2018-02-28T00:00:00Z" },
+        "endPrecision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "11" },
+        "start": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "1991-01-01T00:00:00Z" },
+        "startPrecision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "9" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q1156345" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Meridiana" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "icao_designator" },
+        "value": { "type": "literal", "value": "ISS" },
+        "end": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "2018-02-28T00:00:00Z" },
+        "endPrecision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "11" },
+        "start": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "1991-01-01T00:00:00Z" },
+        "startPrecision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "9" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q1156345" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Meridiana" },
+        "rowKind": { "type": "literal", "value": "identity" }
+      },
+      {
+        "airline": { "type": "uri", "value": "http://www.wikidata.org/entity/Q1156345" },
+        "name": { "xml:lang": "en", "type": "literal", "value": "Meridiana" },
+        "rank": { "type": "uri", "value": "http://wikiba.se/ontology#NormalRank" },
+        "rowKind": { "type": "literal", "value": "inception" },
+        "value": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTime", "type": "literal", "value": "1991-05-03T00:00:00Z" },
+        "precision": { "datatype": "http://www.w3.org/2001/XMLSchema#integer", "type": "literal", "value": "11" }
+      }
+    ]
+  }
+}

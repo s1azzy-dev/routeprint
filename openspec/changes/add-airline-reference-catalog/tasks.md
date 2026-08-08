@@ -3,7 +3,7 @@
 - [ ] 1.1 Review proposed ADR 0009 against the implemented identity,
   designator, moderation, trusted-source, and unknown-airline boundaries; promote
   it to Accepted only when the implementation matches.
-- [ ] 1.2 Profile a bounded Wikidata airline export, freeze the source query and
+- [x] 1.2 Profile a bounded Wikidata airline export, freeze the source query and
   fixture, document CC0 attribution, and update the OpenSpec artifacts first if
   the available fields invalidate any confirmed assumption.
 
@@ -31,14 +31,15 @@
 
 ## 4. Wikidata Import
 
-- [ ] 4.1 Add red fixture-backed import specs for QID source identity, valid
-  automatic publication, active/closed records, missing optional evidence,
+- [x] 4.1 Add red fixture-backed import specs for QID source identity, valid
+  automatic publication, unknown/closed records, missing optional evidence,
   ambiguous code/name candidates, malformed rows, and country-resolution
   diagnostics.
-- [ ] 4.2 Register the `wikidata_airlines` source and implement acquisition,
-  parsing, normalization, QID source-record/link persistence, and fail-fast
-  canonical apply through the existing Imports orchestration.
-- [ ] 4.3 Add red/green idempotency, changed-snapshot, duplicate-delivery,
+- [x] 4.2 Register the `wikidata_airlines` source and implement bounded
+  QID-cursor acquisition, parsing, normalization, QID source-record/link
+  persistence, and fail-fast canonical apply through the existing Imports
+  orchestration.
+- [x] 4.3 Add red/green idempotency, changed-snapshot, duplicate-delivery,
   retry-successor, and full-snapshot missing-upstream reconciliation coverage.
 
 ## 5. Authenticated Catalog Selection

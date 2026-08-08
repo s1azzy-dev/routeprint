@@ -8,6 +8,7 @@ module Imports
     option :input
     option :airport_processor, default: -> { Imports::OurAirports::Airports::Processor }
     option :country_catalog_processor, default: -> { Imports::Countries::Processor }
+    option :airline_catalog_processor, default: -> { Imports::Wikidata::Airlines::Processor }
 
     class ValidationContract < ApplicationContract
       params do
@@ -21,6 +22,7 @@ module Imports
       case run.source.key
       when "ourairports_airports" then airport_processor.call(input:)
       when "country_catalog" then country_catalog_processor.call(input:)
+      when "wikidata_airlines" then airline_catalog_processor.call(input:)
       else Failure(code: :source_processor_not_implemented, errors: { source_key: [ run.source.key ] })
       end
     end

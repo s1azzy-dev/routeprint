@@ -21,4 +21,14 @@ RSpec.describe Imports::SourceProcessor, type: :interactor do
     expect(result).to be_success
     expect(country_catalog_processor).to have_received(:call).with(input: { run:, item: })
   end
+
+  it "dispatches the Wikidata airline catalog processor" do
+    run.source.update!(key: "wikidata_airlines", provider_key: "wikidata", dataset_key: "airlines", target_kind: "airline", fetch_mode: "api")
+    airline_catalog_processor = class_double(Imports::Wikidata::Airlines::Processor, call: Dry::Monads::Success(stats: {}))
+
+    result = described_class.call(input: { run:, item: }, airline_catalog_processor:)
+
+    expect(result).to be_success
+    expect(airline_catalog_processor).to have_received(:call).with(input: { run:, item: })
+  end
 end
