@@ -44,17 +44,17 @@
 
 ## 5. Authenticated Catalog Selection
 
-- [ ] 5.1 Add red request/query specs for authenticated bounded search by name
+- [x] 5.1 Add red request/query specs for authenticated bounded search by name
   and both designator systems, candidate collisions, approved-before-pending
   ordering, historical date ranking, closed-airline selection, and exclusion of
   rejected/merged/system rows.
-- [ ] 5.2 Implement the indexed airline lookup and allowlisted picker presenter
+- [x] 5.2 Implement the indexed airline lookup and allowlisted picker presenter
   with one preferred code, country display, and exceptional inactive/pending
   labels but no submission/import/review evidence.
-- [ ] 5.3 Add red interactor/request specs for explicit pending submission,
+- [x] 5.3 Add red interactor/request specs for explicit pending submission,
   name-only input, code-system inference, malformed input, exact pending reuse,
   legitimate shared-code confirmation, and submitter audit.
-- [ ] 5.4 Implement the pending-submission interactor and authenticated
+- [x] 5.4 Implement the pending-submission interactor and authenticated
   endpoint/component flow using standard shadcn selection/form primitives and
   bilingual copy.
 

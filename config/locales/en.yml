@@ -28,6 +28,41 @@
 #       enabled: "ON"
 
 en:
+  airlines:
+    picker:
+      add_action: Add airline
+      add_description: Add a shared unverified airline when no result matches.
+      add_title: Add missing airline
+      cancel: Back to search
+      confirmation: I checked the search results
+      create_action: Add airline
+      creating: Adding airline…
+      dialog_description: Search approved and unverified airlines.
+      dialog_title: Choose airline
+      fields:
+        code:
+          description: Enter two characters or three letters.
+          label: Airline code
+        country:
+          label: Country
+          none: Not specified
+        name:
+          label: Airline name
+      inactive: Inactive
+      no_results: No airlines found
+      pending: Unverified
+      search_action: Search airlines
+      search_error: Could not search. Try again.
+      search_label: Airline name or code
+      search_placeholder: Start typing
+      searching: Searching…
+      submit_error: Could not add the airline. Check the fields and try again.
+      trigger_placeholder: Choose airline
+      validation:
+        code: Use a two-character or three-letter code.
+        confirmation: Confirm that you checked the results.
+        country: Choose a valid country.
+        name: Enter an airline name.
   layouts:
     header:
       admin: Admin
