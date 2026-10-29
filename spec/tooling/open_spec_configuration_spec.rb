@@ -17,9 +17,9 @@ RSpec.describe OpenSpecConfiguration do
   it "pins Node and OpenSpec versions" do
     package = JSON.parse(root.join("package.json").read)
 
-    expect(root.join(".tool-versions").read).to include("nodejs 24.18.0")
-    expect(package.dig("engines", "node")).to eq("24.18.0")
-    expect(package.dig("devDependencies", "@fission-ai/openspec")).to eq("1.7.0")
+    expect(root.join(".tool-versions").read).to include("nodejs 26.13.0")
+    expect(package.dig("engines", "node")).to eq("26.13.0")
+    expect(package.dig("devDependencies", "@fission-ai/openspec")).to eq("1.15.0")
   end
 
   it "layers feature specifications over the repository harness" do
@@ -54,13 +54,14 @@ RSpec.describe OpenSpecConfiguration do
 
   it "tracks the OpenSpec command delivery profile" do
     expect(tool_config.fetch("profile")).to eq("custom")
-    expect(tool_config.fetch("delivery")).to eq("commands")
+    expect(tool_config.fetch("delivery")).to eq("skills")
     expect(tool_config.fetch("workflows")).to contain_exactly(
       "propose",
       "explore",
       "apply",
       "sync",
-      "archive"
+      "archive",
+      "verify"
     )
   end
 

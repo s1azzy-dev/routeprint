@@ -3,29 +3,29 @@ source "https://rubygems.org"
 ruby file: ".ruby-version"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.1"
+gem "rails", "~> 8.1.4"
 # Ruby 4 ships CSV as a separately bundled default gem.
-gem "csv", "~> 3.3"
+gem "csv", "~> 3.3", ">= 3.3.7"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.7"
 gem "activerecord-postgis-adapter"
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
+gem "puma", ">= 8.0.2"
 # Build the application-owned frontend with Vite.
-gem "vite_rails", "3.11.0"
+gem "vite_rails", "3.11.1"
 # Deliver React pages through Rails routes and controllers.
-gem "inertia_rails", "3.21.2"
+gem "inertia_rails", "3.23.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-gem "pagy", "~> 43.5"
+gem "pagy", "~> 43.8"
 gem "pundit"
 gem "dry-configurable"
 gem "dry-types"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.22"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem.
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -46,8 +46,8 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 2.0"
-gem "ruby-vips", "~> 2.0"
+gem "image_processing", "~> 2.2"
+gem "ruby-vips", "~> 2.3"
 
 group :development, :test do
   gem "dotenv-rails"
@@ -86,4 +86,4 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "yabi", "~> 0.1.2"
+gem "yabi", "~> 0.2.0"

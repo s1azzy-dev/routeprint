@@ -1,7 +1,10 @@
 # home-map-shell Specification
 
 ## Purpose
-TBD - created by archiving change add-maplibre-home-map. Update Purpose after archive.
+
+Provide the public home page with a full-viewport MapLibre map, application-owned
+frontend assets, and cleanup when the React component unmounts.
+
 ## Requirements
 ### Requirement: Home route provides a full-viewport map shell
 

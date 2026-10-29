@@ -14,16 +14,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
-          node-version: "24.18.0"
+          node-version: "26.13.0"
           cache: npm
 
       - name: Install OpenSpec
-        run: npm ci
+        run: npm install --global npm@12.2.1 && npm ci
 
       - name: Validate specifications
         run: make openspec-validate
@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Install PostgreSQL 18 client
         run: |
@@ -47,7 +47,7 @@ jobs:
           sudo apt-get install --no-install-recommends -y postgresql-client-18
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.335.0
         with:
           bundler-cache: true
 
@@ -62,16 +62,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
-          node-version: "24.18.0"
+          node-version: "26.13.0"
           cache: npm
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm install --global npm@12.2.1 && npm ci
 
       - name: Check frontend formatting
         run: npm run frontend:format
@@ -97,10 +97,10 @@ jobs:
       RUBOCOP_CACHE_ROOT: tmp/rubocop
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.335.0
         with:
           bundler-cache: true
 
@@ -122,7 +122,7 @@ jobs:
 
     services:
       postgres:
-        image: postgis/postgis:18-3.6
+        image: postgis/postgis:18-3.6@sha256:4a43e3c3e5d55b9208240fc71db543b79c638766280c625a425bd0a2390989c4
         env:
           # Rails creates routeprint_test before loading db/structure.sql.
           POSTGRES_DB: postgres
@@ -147,7 +147,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Install libvips
         run: |
@@ -155,18 +155,18 @@ jobs:
           sudo apt-get install --no-install-recommends -y libvips-tools
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.335.0
         with:
           bundler-cache: true
 
       - name: Set up Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.1.0
         with:
-          node-version: "24.18.0"
+          node-version: "26.13.0"
           cache: npm
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm install --global npm@12.2.1 && npm ci
 
       - name: Prepare test database
         run: bin/rails db:prepare

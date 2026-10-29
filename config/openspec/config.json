@@ -1,12 +1,13 @@
 {
   "featureFlags": {},
   "profile": "custom",
-  "delivery": "commands",
+  "delivery": "skills",
   "workflows": [
     "propose",
     "explore",
     "apply",
     "sync",
-    "archive"
+    "archive",
+    "verify"
   ]
 }

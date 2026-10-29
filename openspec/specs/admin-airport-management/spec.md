@@ -1,7 +1,10 @@
 # admin-airport-management Specification
 
 ## Purpose
-TBD - created by archiving change add-admin-airport-management. Update Purpose after archive.
+
+Provide administrators with a protected, paginated airport catalog for browsing,
+editing canonical airport data, and deleting records subject to referential integrity.
+
 ## Requirements
 ### Requirement: Admin area is restricted to administrators
 

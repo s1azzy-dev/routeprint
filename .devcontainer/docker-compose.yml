@@ -4,4 +4,4 @@ services:
       context: .
       dockerfile: Dockerfile.devcontainer
       args:
-        NODE_VERSION: "24.18.0"
+        NODE_VERSION: "26.13.0"

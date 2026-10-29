@@ -27,10 +27,15 @@ RSpec.describe DevcontainerConfiguration do
   it "keeps Ruby and Node versions aligned across container tooling" do
     dockerfiles = %w[Dockerfile Dockerfile.dev Dockerfile.devcontainer].map { |path| root.join(path).read }
 
-    expect(root.join(".ruby-version").read.strip).to eq("ruby-4.0.5")
-    expect(root.join(".tool-versions").read).to include("ruby 4.0.5", "nodejs 24.18.0")
-    expect(dockerfiles).to all(include("ARG RUBY_VERSION=4.0.5"))
-    expect(dockerfiles).to all(include("ARG RUBYGEMS_VERSION=4.0.15"))
+    expect(root.join(".ruby-version").read.strip).to eq("ruby-4.0.9")
+    expect(root.join(".tool-versions").read).to include("ruby 4.0.9", "nodejs 26.13.0")
+    expect(dockerfiles).to all(include(
+      "ARG RUBY_VERSION=4.0.9",
+      "ARG NODE_VERSION=26.13.0",
+      "ARG RUBYGEMS_VERSION=4.0.23",
+      "ARG NPM_VERSION=12.2.1",
+      "trixie-slim",
+    ))
     expect(devcontainer_compose.dig("services", "web", "build", "dockerfile")).to eq("Dockerfile.devcontainer")
   end
 
