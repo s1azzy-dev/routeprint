@@ -27,6 +27,7 @@ module Routeprint
 
     config.add_autoload_paths_to_load_path = false
     config.active_record.schema_format = :sql
+    config.solid_queue.connects_to = { database: { writing: :queue } }
     config.i18n.available_locales = %i[en ru]
     config.i18n.default_locale = :en
     config.generators do |g|

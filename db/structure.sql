@@ -1694,9 +1694,10 @@ ALTER TABLE ONLY public.user_sessions
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public, tiger, topology;
+SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261029090000'),
 ('20260807160000'),
 ('20260802120000'),
 ('20260716100000'),

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
-import maplibregl from "maplibre-gl"
+import * as maplibregl from "maplibre-gl"
+import mapWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url"
 import "maplibre-gl/dist/maplibre-gl.css"
 
 const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty"
@@ -15,6 +16,8 @@ export function RouteMap() {
     if (!containerRef.current) {
       return
     }
+
+    maplibregl.setWorkerUrl(mapWorkerUrl)
 
     const map = new maplibregl.Map({
       attributionControl: false,

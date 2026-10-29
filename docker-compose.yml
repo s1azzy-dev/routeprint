@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgis/postgis:18-3.6
+    image: postgis/postgis:18-3.6@sha256:4a43e3c3e5d55b9208240fc71db543b79c638766280c625a425bd0a2390989c4
     platform: linux/amd64
     environment:
       POSTGRES_USER: postgres
@@ -21,8 +21,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       args:
-        RUBY_VERSION: "4.0.5"
-        NODE_VERSION: "24.18.0"
+        RUBY_VERSION: "4.0.9"
+        NODE_VERSION: "26.13.0"
     command: >
       bash -lc "npm ci &&
       bundle install &&
@@ -58,8 +58,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
       args:
-        RUBY_VERSION: "4.0.5"
-        NODE_VERSION: "24.18.0"
+        RUBY_VERSION: "4.0.9"
+        NODE_VERSION: "26.13.0"
     command: >
       bash -lc "bundle install &&
       bin/rails db:prepare &&

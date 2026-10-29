@@ -8,12 +8,15 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=4.0.5
-ARG RUBYGEMS_VERSION=4.0.15
-ARG NODE_VERSION=24.18.0
-FROM docker.io/library/node:$NODE_VERSION-bookworm-slim AS node
+ARG RUBY_VERSION=4.0.9
+ARG RUBYGEMS_VERSION=4.0.23
+ARG NODE_VERSION=26.13.0
+ARG NPM_VERSION=12.2.1
+FROM docker.io/library/node:$NODE_VERSION-trixie-slim AS node
+ARG NPM_VERSION
+RUN npm install --global npm@${NPM_VERSION} && npm cache clean --force
 
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+FROM docker.io/library/ruby:$RUBY_VERSION-slim-trixie AS base
 ARG RUBYGEMS_VERSION
 
 # Rails app lives here
@@ -21,7 +24,14 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    apt-get install --no-install-recommends -y ca-certificates curl gnupg && \
+    install -d /usr/share/postgresql-common/pgdg && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+      | gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg && \
+    echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] http://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo \"$VERSION_CODENAME\")-pgdg main" \
+      > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y libjemalloc2 libvips postgresql-client-18 && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 

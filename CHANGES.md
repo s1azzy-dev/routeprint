@@ -1,5 +1,31 @@
 # Changes
 
+## 2026-10-29
+
+- Refreshed all resolvable gem/npm dependencies and both lockfiles, including
+  Rails 8.1.4, Ruby 4.0.9, RubyGems/Bundler 4.0.23, Node 26.13.0 LTS,
+  npm 12.2.1, React 19.3.1, Vite 8.3.5, Vitest 5.0.5, and yabi 0.2.0.
+- Aligned Docker, devcontainer, CI, runtime pins, and configuration specs;
+  application containers now use Debian 13, development uses RTK 1.1.0, and
+  the devcontainer pins Codex CLI 0.165.0. All containers use PostgreSQL 18 clients.
+  PostgreSQL 18.6/PostGIS 3.6.4 uses one immutable image digest in Compose and
+  CI. A migration upgrades installed PostGIS SQL extensions; downgrading requires
+  a database backup restore.
+- Migrated MapLibre to 6.16.0 ESM imports and a Vite-managed worker asset, and
+  updated the country import default/examples to CLDR 49.0.0.
+- Updated OpenSpec to 1.15.0, its supported skills delivery profile, and generated
+  workflow references while retaining compact Routeprint wrappers. Replaced two
+  archived capability Purpose placeholders required by the new strict validator.
+- Connected Solid Queue worker records to the existing separate queue database,
+  fixing worker startup against the primary database.
+- Included libvips and RTK in the devcontainer so Rails boots with its declared
+  image adapter and the documented agent targets are available.
+- Retained TypeScript 6.0.3 and ESLint 9.39.5 because current upstream plugin
+  peers do not support TypeScript 7/ESLint 10. Transitive diff-lcs 2, marcel 2,
+  net-ssh 8, and prism 2 remain blocked by RSpec, Rails, Kamal, and
+  Minitest/RuboCop constraints. The latest shadcn still depends on deepmerge
+  affected by low-severity GHSA-gcqx-w48m-w2h4; no current fixed release exists.
+
 ## 2026-08-08
 
 - Added authenticated bounded airline lookup by normalized name and public

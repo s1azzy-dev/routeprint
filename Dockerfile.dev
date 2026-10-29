@@ -1,12 +1,15 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1
 
-ARG RUBY_VERSION=4.0.5
-ARG RUBYGEMS_VERSION=4.0.15
-ARG NODE_VERSION=24.18.0
-ARG RTK_VERSION=0.43.0
-FROM node:${NODE_VERSION}-bookworm-slim AS node
+ARG RUBY_VERSION=4.0.9
+ARG RUBYGEMS_VERSION=4.0.23
+ARG NODE_VERSION=26.13.0
+ARG NPM_VERSION=12.2.1
+ARG RTK_VERSION=1.1.0
+FROM node:${NODE_VERSION}-trixie-slim AS node
+ARG NPM_VERSION
+RUN npm install --global npm@${NPM_VERSION} && npm cache clean --force
 
-FROM ruby:${RUBY_VERSION}-slim
+FROM ruby:${RUBY_VERSION}-slim-trixie
 ARG RUBYGEMS_VERSION
 ARG RTK_VERSION
 ARG TARGETARCH

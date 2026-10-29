@@ -188,7 +188,8 @@ Completed on 2026-07-07.
 
 - Rails scaffold generated with Rails 8.1.3 from the Wild Waters container
   bundle.
-- Ruby is pinned to 4.0.5 and Node to 24.18.0 in project/container tooling.
+- At bootstrap, Ruby was pinned to 4.0.5 and Node to 24.18.0. Current versions
+  are maintained in README's `Current Runtime Foundation` section.
 - PostgreSQL/PostGIS runs through Docker Compose with host port `5433`.
 - Rails serves on host port `3001`; Vite dev server is mapped to `3038`.
 - Root page renders the `Home/Show` Inertia React component with Routeprint-only

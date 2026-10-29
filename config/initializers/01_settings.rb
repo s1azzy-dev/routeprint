@@ -53,7 +53,7 @@ ApplicationConfig.configure do |config|
     "OURAIRPORTS_COUNTRIES_SOURCE_URL",
     "https://ourairports.com/data/countries.csv"
   )
-  config.imports.countries.cldr_release = ENV.fetch("CLDR_RELEASE", "48.2.1")
+  config.imports.countries.cldr_release = ENV.fetch("CLDR_RELEASE", "49.0.0")
   config.imports.countries.cldr_source_url_template = ENV.fetch(
     "CLDR_TERRITORIES_SOURCE_URL_TEMPLATE",
     "https://raw.githubusercontent.com/unicode-org/cldr-json/%{release}/cldr-json/cldr-localenames-full/main/%{locale}/territories.json"

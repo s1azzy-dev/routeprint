@@ -7,6 +7,7 @@ const {
   mapConstructor,
   mapInstance,
   navigationControlConstructor,
+  setWorkerUrl,
 } = vi.hoisted(() => {
   const eventHandlers = new globalThis.Map<string, () => void>()
   const mapInstance = {
@@ -26,15 +27,15 @@ const {
     }),
     mapInstance,
     navigationControlConstructor: vi.fn(function NavigationControl() {}),
+    setWorkerUrl: vi.fn(),
   }
 })
 
 vi.mock("maplibre-gl", () => ({
-  default: {
-    AttributionControl: attributionControlConstructor,
-    Map: mapConstructor,
-    NavigationControl: navigationControlConstructor,
-  },
+  AttributionControl: attributionControlConstructor,
+  Map: mapConstructor,
+  NavigationControl: navigationControlConstructor,
+  setWorkerUrl,
 }))
 
 import { RouteMap } from "../../../components/routeprint/route-map"
@@ -59,6 +60,9 @@ describe("RouteMap", () => {
       compact: true,
     })
     expect(navigationControlConstructor).toHaveBeenCalledOnce()
+    expect(setWorkerUrl).toHaveBeenCalledWith(
+      expect.stringContaining("maplibre-gl-worker"),
+    )
 
     eventHandlers.get("style.load")?.()
 

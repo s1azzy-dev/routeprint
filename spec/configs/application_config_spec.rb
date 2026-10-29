@@ -31,6 +31,14 @@ RSpec.describe ApplicationConfig do
     end
   end
 
+  it "defaults country imports to the stable CLDR release" do
+    with_env("CLDR_RELEASE" => nil) do
+      load_settings!
+
+      expect(described_class.config.imports.countries.cldr_release).to eq("49.0.0")
+    end
+  end
+
   def expect_application_settings!
     aggregate_failures do
       expect(described_class.config.urls.host).to eq("routeprint.test")
