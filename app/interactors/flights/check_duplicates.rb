@@ -6,6 +6,7 @@ module Flights
   # @param input [Hash] current user, normalized segment values, confirmation, optional excluded flight
   class CheckDuplicates < ApplicationInteractor
     option :input
+    option :history_query, default: -> { Flights::HistoryQuery }
 
     class ValidationContract < ApplicationContract
       params do
@@ -26,7 +27,7 @@ module Flights
       scope = user.travel_segments.where(attributes.slice(:departure_date, :departure_place, :arrival_place))
       scope = scope.where.not(id: exclude_id) if exclude_id
       scope = scope.where.not(creation_request_key: exclude_request_key) if exclude_request_key
-      candidates = scope.with_display_references.order(id: :desc).limit(5).to_a
+      candidates = history_query.preload_references(scope).order(id: :desc).limit(5).to_a
       return Success() if candidates.empty? || ActiveModel::Type::Boolean.new.cast(confirmed)
 
       Failure(code: :duplicate_candidates, errors: {}, candidates:)

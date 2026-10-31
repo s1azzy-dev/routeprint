@@ -9,12 +9,11 @@ RSpec.describe TravelSegment do
     expect(flight.flight_detail).to be_present
   end
 
-  it "rejects identical endpoints and incomplete ownership" do
-    flight = build(:travel_segment)
-    flight.arrival_place = flight.departure_place
-    flight.user = nil
-    expect(flight).not_to be_valid
-    expect(flight.errors.attribute_names).to include(:user, :arrival_place)
+  it "enforces required ownership at the database boundary" do
+    flight = create(:travel_segment)
+    expect do
+      described_class.transaction(requires_new: true) { flight.update_columns(user_id: nil) }
+    end.to raise_error(ActiveRecord::NotNullViolation)
   end
 
   it "protects referenced airport places from deletion" do

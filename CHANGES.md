@@ -2,6 +2,11 @@
 
 ## 2026-10-31
 
+- Kept flight models focused on persistence: manual-entry business validation
+  and normalization belong to the interactor boundary. Extracted page props and
+  reference/history queries from the flight controller without changing its UI
+  contract, and clarified this ownership rule in Foundations.
+
 - Added private manual flight history with date-only entry, bounded airport
   search, airline selection, create/detail/edit/delete pages, and owner policies.
 - Preserved airport-local schedule evidence and conservative DST resolution;

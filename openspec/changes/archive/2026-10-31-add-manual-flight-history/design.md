@@ -26,6 +26,9 @@ optional flight number, and historical marketing designator.
 Use additive SQL-forward migrations with explicit up/down, uuidv7 identities,
 matching foreign keys, required columns, and a unique segment/detail association.
 Generate structure.sql through Rails. Create/update segment and detail atomically.
+Models hold persistence associations; PrepareEntry owns route, flight-number,
+and chronology validation before persistence. HistoryQuery owns read scopes;
+page/form presenters own Inertia props and translated field errors.
 Protect referenced airport Places and airlines from deletion, including through
 existing admin airport deletion. Deleting a flight removes its detail only.
 A single flights table conflicts with the existing movement-root boundary.

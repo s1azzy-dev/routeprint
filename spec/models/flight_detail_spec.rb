@@ -1,18 +1,17 @@
 require "rails_helper"
 
 RSpec.describe FlightDetail do
-  it "requires a marketing carrier and normalizes optional flight number" do
-    detail = build(:flight_detail, flight_number: " ab123 ")
-    expect(detail).to be_valid
-    expect(detail.flight_number).to eq("AB123")
-    detail.marketing_airline = nil
-    expect(detail).not_to be_valid
+  it "stores carrier and observed-number evidence with an optional operator" do
+    detail = create(:travel_segment).flight_detail
+    detail.update!(flight_number: "AB123", marketing_designator: "OLD", operating_airline: nil)
+    expect(detail.reload).to have_attributes(flight_number: "AB123", marketing_designator: "OLD", operating_airline_id: nil)
   end
 
-  it "rejects malformed or oversized flight numbers" do
-    [ "AB-123", "A" * 17 ].each do |number|
-      expect(build(:flight_detail, flight_number: number)).not_to be_valid
-    end
+  it "requires the marketing carrier at the database boundary" do
+    detail = create(:travel_segment).flight_detail
+    expect do
+      described_class.transaction(requires_new: true) { detail.update_columns(marketing_airline_id: nil) }
+    end.to raise_error(ActiveRecord::NotNullViolation)
   end
 
   it "protects referenced airlines from ordinary deletion" do

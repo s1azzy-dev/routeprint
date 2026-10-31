@@ -28,8 +28,10 @@ module Flights
     def call
       values = EntryAttributes.normalize(input.fetch(:attributes))
       flight = input[:flight]
+      yield validate_flight_number(values[:flight_number])
       departure = yield airport(values[:departure_place_id], :departure_place_id)
       arrival = yield airport(values[:arrival_place_id], :arrival_place_id)
+      yield validate_route(departure:, arrival:)
       departure_date = yield calendar_date(values[:departure_date], :departure_date)
       arrival_date = yield calendar_date(values[:arrival_date], :arrival_date, optional: true)
       yield validate_schedule(values, departure:, departure_date:, arrival_date:)
@@ -42,6 +44,18 @@ module Flights
     end
 
     private
+
+    def validate_route(departure:, arrival:)
+      return invalid(:arrival_place_id) if departure.id == arrival.id
+
+      Success()
+    end
+
+    def validate_flight_number(number)
+      return Success() if number.nil? || number.match?(/\A[A-Z0-9]{1,16}\z/)
+
+      invalid(:flight_number)
+    end
 
     def airport(id, field)
       place = Place.joins(:airport).find_by(id:)

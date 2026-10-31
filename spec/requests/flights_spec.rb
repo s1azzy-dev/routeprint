@@ -72,6 +72,14 @@ RSpec.describe "Private manual flights", type: :request do
     expect(inertia.props.dig(:formErrors, :departure_date)).to be_present
   end
 
+  it "retains selected references when submitted UUIDs use uppercase letters" do
+    authenticate_member(user)
+    post "/flights", params: { flight: attributes.merge(departure_place_id: attributes[:departure_place_id].upcase,
+      arrival_time: "12:30") }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(inertia.props.dig(:selected, :departure, :id)).to eq(attributes[:departure_place_id])
+  end
+
   it "renders a fresh form and owned edit values in the user's locale" do
     user.update!(locale: "ru")
     flight = create(:travel_segment, user:)
