@@ -6,6 +6,10 @@ class Airline < ApplicationRecord
   UNKNOWN_SYSTEM_KEY = "unknown_airline"
 
   belongs_to :country, optional: true
+  has_many :marketed_flights, class_name: "FlightDetail", foreign_key: :marketing_airline_id,
+    inverse_of: :marketing_airline, dependent: :restrict_with_exception
+  has_many :operated_flights, class_name: "FlightDetail", foreign_key: :operating_airline_id,
+    inverse_of: :operating_airline, dependent: :restrict_with_exception
   belongs_to :merged_into, class_name: "Airline", optional: true
   belongs_to :reviewed_by,
     class_name: "User",

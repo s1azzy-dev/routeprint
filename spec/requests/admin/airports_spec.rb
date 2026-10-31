@@ -122,6 +122,15 @@ RSpec.describe "Admin airports", type: :request do
   end
 
   describe "DELETE /admin/airports/:place_id" do
+    it "keeps an airport referenced by private flight history" do
+      flight = create(:travel_segment, departure_place: airport.place)
+      delete admin_airport_path(airport.place_id)
+      expect(response).to redirect_to(admin_airports_path)
+      expect(airport.reload).to be_present
+      expect(flight.reload.departure_place_id).to eq(airport.place_id)
+      expect(flash[:alert]).to be_present
+    end
+
     it "deletes an unlinked airport and its place" do
       place_id = airport.place_id
 

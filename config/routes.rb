@@ -20,6 +20,11 @@ Rails.application.routes.draw do
     get :search, on: :collection
   end
 
+  resources :airports, only: [] do
+    get :search, on: :collection
+  end
+  resources :flights
+
   namespace :admin do
     root "airports#index"
     resources :airports, only: %i[index edit update destroy], param: :place_id

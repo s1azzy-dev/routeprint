@@ -22,6 +22,17 @@ const urls = {
 }
 
 describe("SiteHeader", () => {
+  it("links members to their private flight history", () => {
+    renderInertiaPage(SiteHeader, {
+      authenticated: true,
+      labels: { ...labels, flights: "My flights" },
+      urls: { ...urls, flights: "/flights" },
+    })
+    expect(screen.getByRole("link", { name: "My flights" })).toHaveAttribute(
+      "href",
+      "/flights",
+    )
+  })
   it("offers sign in to anonymous visitors", () => {
     renderInertiaPage(SiteHeader, {
       authenticated: false,

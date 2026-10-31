@@ -18,6 +18,12 @@ class Country < ApplicationRecord
   validates :name, :continent_code, presence: true
 
   def name_for(locale)
-    country_names.find_by(locale: locale.to_s.strip.downcase)&.name || name
+    normalized_locale = locale.to_s.strip.downcase
+    localized = if country_names.loaded?
+      country_names.find { |translation| translation.locale == normalized_locale }
+    else
+      country_names.find_by(locale: normalized_locale)
+    end
+    localized&.name || name
   end
 end

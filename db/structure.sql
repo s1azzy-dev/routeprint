@@ -291,6 +291,22 @@ CREATE TABLE public.country_names (
 
 
 --
+-- Name: flight_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.flight_details (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    travel_segment_id uuid NOT NULL,
+    marketing_airline_id uuid NOT NULL,
+    operating_airline_id uuid,
+    flight_number text,
+    marketing_designator text,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
 -- Name: import_airline_source_links; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -699,6 +715,35 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: travel_segments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.travel_segments (
+    id uuid DEFAULT uuidv7() NOT NULL,
+    user_id uuid NOT NULL,
+    transport_mode text DEFAULT 'flight'::text NOT NULL,
+    departure_place_id uuid NOT NULL,
+    arrival_place_id uuid NOT NULL,
+    departure_date date NOT NULL,
+    arrival_date date,
+    departure_local_at timestamp without time zone,
+    arrival_local_at timestamp without time zone,
+    departure_time_zone text,
+    arrival_time_zone text,
+    departure_at timestamp with time zone,
+    arrival_at timestamp with time zone,
+    departure_offset_seconds integer,
+    arrival_offset_seconds integer,
+    departure_resolution text NOT NULL,
+    arrival_resolution text NOT NULL,
+    creation_request_key uuid NOT NULL,
+    creation_digest text NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
 -- Name: user_identities; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -860,6 +905,22 @@ ALTER TABLE ONLY public.country_names
 
 
 --
+-- Name: flight_details flight_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flight_details
+    ADD CONSTRAINT flight_details_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flight_details flight_details_travel_segment_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flight_details
+    ADD CONSTRAINT flight_details_travel_segment_id_key UNIQUE (travel_segment_id);
+
+
+--
 -- Name: import_airline_source_links import_airline_source_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -977,6 +1038,14 @@ ALTER TABLE ONLY public.places
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: travel_segments travel_segments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.travel_segments
+    ADD CONSTRAINT travel_segments_pkey PRIMARY KEY (id);
 
 
 --
@@ -1113,6 +1182,20 @@ CREATE UNIQUE INDEX index_countries_on_code ON public.countries USING btree (cod
 --
 
 CREATE INDEX index_country_names_on_country_id ON public.country_names USING btree (country_id);
+
+
+--
+-- Name: index_flight_details_on_marketing_airline_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_flight_details_on_marketing_airline_id ON public.flight_details USING btree (marketing_airline_id);
+
+
+--
+-- Name: index_flight_details_on_operating_airline_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_flight_details_on_operating_airline_id ON public.flight_details USING btree (operating_airline_id);
 
 
 --
@@ -1305,6 +1388,13 @@ CREATE UNIQUE INDEX index_import_sources_on_key ON public.import_sources USING b
 
 
 --
+-- Name: index_place_names_on_locale_picker_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_place_names_on_locale_picker_name ON public.place_names USING btree (locale, lower(name) text_pattern_ops);
+
+
+--
 -- Name: index_place_names_on_place_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1330,6 +1420,41 @@ CREATE INDEX index_places_on_country_id ON public.places USING btree (country_id
 --
 
 CREATE INDEX index_places_on_location ON public.places USING gist (location);
+
+
+--
+-- Name: index_places_on_picker_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_places_on_picker_name ON public.places USING btree (lower(name) text_pattern_ops);
+
+
+--
+-- Name: index_travel_segments_on_arrival_place_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_travel_segments_on_arrival_place_id ON public.travel_segments USING btree (arrival_place_id);
+
+
+--
+-- Name: index_travel_segments_on_departure_place_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_travel_segments_on_departure_place_id ON public.travel_segments USING btree (departure_place_id);
+
+
+--
+-- Name: index_travel_segments_on_user_and_departure; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_travel_segments_on_user_and_departure ON public.travel_segments USING btree (user_id, departure_date DESC, id DESC);
+
+
+--
+-- Name: index_travel_segments_on_user_and_request; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_travel_segments_on_user_and_request ON public.travel_segments USING btree (user_id, creation_request_key);
 
 
 --
@@ -1480,6 +1605,30 @@ ALTER TABLE ONLY public.airports
 
 ALTER TABLE ONLY public.country_names
     ADD CONSTRAINT country_names_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id) ON DELETE CASCADE;
+
+
+--
+-- Name: flight_details flight_details_marketing_airline_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flight_details
+    ADD CONSTRAINT flight_details_marketing_airline_id_fkey FOREIGN KEY (marketing_airline_id) REFERENCES public.airlines(id);
+
+
+--
+-- Name: flight_details flight_details_operating_airline_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flight_details
+    ADD CONSTRAINT flight_details_operating_airline_id_fkey FOREIGN KEY (operating_airline_id) REFERENCES public.airlines(id);
+
+
+--
+-- Name: flight_details flight_details_travel_segment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.flight_details
+    ADD CONSTRAINT flight_details_travel_segment_id_fkey FOREIGN KEY (travel_segment_id) REFERENCES public.travel_segments(id);
 
 
 --
@@ -1667,6 +1816,30 @@ ALTER TABLE ONLY public.places
 
 
 --
+-- Name: travel_segments travel_segments_arrival_place_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.travel_segments
+    ADD CONSTRAINT travel_segments_arrival_place_id_fkey FOREIGN KEY (arrival_place_id) REFERENCES public.places(id);
+
+
+--
+-- Name: travel_segments travel_segments_departure_place_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.travel_segments
+    ADD CONSTRAINT travel_segments_departure_place_id_fkey FOREIGN KEY (departure_place_id) REFERENCES public.places(id);
+
+
+--
+-- Name: travel_segments travel_segments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.travel_segments
+    ADD CONSTRAINT travel_segments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: user_identities user_identities_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1697,6 +1870,8 @@ ALTER TABLE ONLY public.user_sessions
 SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20261030110000'),
+('20261030100000'),
 ('20261029090000'),
 ('20260807160000'),
 ('20260802120000'),

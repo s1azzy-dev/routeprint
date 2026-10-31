@@ -61,8 +61,9 @@ Stable architecture rules:
 
 - Prefer current Rails conventions and existing project patterns.
 - Controllers orchestrate HTTP only.
-- Models own persistence, associations, scopes, normalization, and local
-  invariants.
+- Models own persistence and associations. Business input validation,
+  normalization, route rules, and chronology belong in use-case contracts and
+  interactors; read-query composition belongs in queries.
 - Business use cases live in `app/interactors` and use the canonical `yabi`
   style.
 - Business use cases are explicit, fail-fast pipelines: validate real input,

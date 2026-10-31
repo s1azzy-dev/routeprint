@@ -68,7 +68,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | Admin/authorization | `docs/QUALITY_SECURITY.md`, `app/policies/application_policy.rb` | Once present: admin base controller, matching controller/request/policy specs, and neighboring admin flows |
 | Places/airports | `docs/FOUNDATIONS.md`, `docs/adr/0001-map-and-geospatial-stack.md`, `docs/adr/0006-time-zone-and-flight-schedule-time-handling.md` | Once present: place/airport models, airport factories, airport search/import specs, relevant migrations |
 | Airlines | `docs/FOUNDATIONS.md` | Once present: airline model, airline factories/import specs, relevant migrations |
-| Travel segments/flights | `docs/FOUNDATIONS.md`, `docs/adr/0006-time-zone-and-flight-schedule-time-handling.md`, `config/routes.rb` | Once present: travel segment and flight detail models, flight interactors/queries/presenters, request/system/interactor specs |
+| Travel segments/flights | `docs/FOUNDATIONS.md`, `docs/adr/0006-time-zone-and-flight-schedule-time-handling.md`, `config/routes.rb` | `app/models/travel_segment.rb`, `app/models/flight_detail.rb`, `app/interactors/flights/`, `app/services/time_zones/`, flight policies/presenters and matching request/system/interactor specs |
 | Imports/App in the Air/CSV | `docs/FOUNDATIONS.md`, `docs/adr/0003-import-architecture.md`, `docs/QUALITY_SECURITY.md` | Once present: import models, import interactors/jobs, parser fixtures, import specs |
 | Models/domain persistence | Relevant model and matching factory/spec | Neighboring models, relevant migrations, related interactors |
 | Interactors/use cases | `app/interactors/application_interactor.rb`, relevant interactor | Matching interactor spec, neighboring interactor in same namespace, relevant contract/model |
@@ -85,7 +85,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | Frontend UI kit or design workflow | `docs/adr/0004-ui-component-foundation.md`, `docs/frontend/DESIGN_GUIDE.md`, relevant OpenSpec capability/change | `app/frontend/components/ui/`, `app/frontend/components/routeprint/`, relevant page/component tests |
 | Inertia page or layout | `app/views/layouts/inertia.html.erb`, relevant page in `app/frontend/pages/` | Rails controller/request spec, page prop types, React Testing Library test, routing/system coverage |
 | Auth screens | Relevant page in `app/frontend/pages/Auth/` or `app/frontend/pages/PasswordResets/` | Auth controller/request specs, React page tests, locale files |
-| Flight pages | Relevant page in `app/frontend/pages/Flights/` once present | Flight controller, flight presenter/query, request/system specs |
+| Flight pages | `app/frontend/pages/Flights/`, including the shared form, airport picker, history and detail | Flight controller, flight presenter/query, request/system specs |
 | Travel map UI | Relevant page in `app/frontend/pages/Map/` and MapLibre helper once present | Map/GeoJSON controller, MapLibre ADR, map system/request specs, local MapLibre assets |
 | UI components | `docs/frontend/DESIGN_GUIDE.md`, relevant `app/frontend/components/*` TypeScript files | Matching React component/page tests, neighboring component APIs, ADR 0002 and ADR 0004 when shared patterns change |
 | Styles/design tokens | `app/frontend/styles/design_tokens.css`, `app/frontend/entrypoints/application.css`, `docs/frontend/DESIGN_GUIDE.md` | Relevant React page/component, component/system specs, production Vite manifest |

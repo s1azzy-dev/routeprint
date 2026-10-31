@@ -12,7 +12,7 @@ RSpec.describe SecurityLoggingConfiguration do
     logging_config = root.join("config/initializers/filter_parameter_logging.rb").read
     expected_filters = %i[
       passw email secret token _key crypt salt certificate otp ssn cvv cvc
-      authorization booking_reference raw_payload signed_id
+      authorization booking_reference raw_payload signed_id flight
     ]
 
     expected_filters.each do |filter|
