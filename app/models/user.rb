@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   has_many :user_identities, dependent: :destroy
   has_many :user_sessions, dependent: :destroy
+  has_many :travel_segments, dependent: :restrict_with_exception
   has_many :airline_submissions,
     foreign_key: :submitted_by_user_id,
     inverse_of: :submitted_by_user,

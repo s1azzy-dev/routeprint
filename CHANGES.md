@@ -1,5 +1,20 @@
 # Changes
 
+## 2026-10-31
+
+- Added private manual flight history with date-only entry, bounded airport
+  search, airline selection, create/detail/edit/delete pages, and owner policies.
+- Preserved airport-local schedule evidence and conservative DST resolution;
+  unknown times stay absent and unresolved supplied times remain saveable.
+- Added deliberate duplicate confirmation, database-backed creation replay
+  protection, protected catalog references, and flight-side carrier relinking
+  for future moderation integration.
+- Enabled keyboard search/selection in airport and airline pickers, filtered
+  private flight parameters from request logs, and bounded display queries with
+  preloaded localized reference data.
+- Updated Rack from 3.2.7 to 3.2.8 after the final security gate identified the
+  newly published Rack advisories; no other locked dependency changed.
+
 ## 2026-10-29
 
 - Refreshed all resolvable gem/npm dependencies and both lockfiles, including

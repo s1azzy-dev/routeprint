@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {
   Command,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
@@ -31,14 +32,9 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldTitle,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group"
 import {
   Select,
   SelectContent,
@@ -94,6 +90,7 @@ export type AirlinePickerCopy = {
 type CountryOption = { id: string; name: string }
 
 type AirlinePickerProps = {
+  triggerId?: string
   copy: AirlinePickerCopy
   countries: CountryOption[]
   flightDate?: string
@@ -106,6 +103,7 @@ type AirlinePickerProps = {
 type Mode = "search" | "add"
 
 export default function AirlinePicker({
+  triggerId,
   copy,
   countries,
   flightDate,
@@ -132,6 +130,7 @@ export default function AirlinePicker({
 
   async function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    event.stopPropagation()
     setSearching(true)
     setSearchFailed(false)
 
@@ -165,6 +164,7 @@ export default function AirlinePicker({
 
   async function handleSubmission(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    event.stopPropagation()
     setCreating(true)
     setSubmissionErrorFields([])
 
@@ -216,8 +216,25 @@ export default function AirlinePicker({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline">
-          {value ? choiceLabel(value) : copy.triggerPlaceholder}
+        <Button
+          id={triggerId}
+          type="button"
+          variant="outline"
+          aria-describedby={triggerId ? `${triggerId}-selection` : undefined}
+          className="h-auto min-h-10 flex-wrap whitespace-normal"
+        >
+          <span
+            id={triggerId ? `${triggerId}-selection` : undefined}
+            className="flex flex-wrap items-center gap-2"
+          >
+            {value ? choiceLabel(value) : copy.triggerPlaceholder}
+            {value?.pending ? (
+              <Badge variant="secondary">{copy.pending}</Badge>
+            ) : null}
+            {value?.inactive ? (
+              <Badge variant="outline">{copy.inactive}</Badge>
+            ) : null}
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
@@ -241,7 +258,11 @@ export default function AirlinePicker({
             searched={searched}
             searching={searching}
             searchFailed={searchFailed}
-            setQuery={setQuery}
+            setQuery={(value) => {
+              setQuery(value)
+              setResults([])
+              setSearched(false)
+            }}
           />
         ) : (
           <form
@@ -389,64 +410,64 @@ function SearchPanel({
   setQuery,
 }: SearchPanelProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <Command
+      label={copy.searchLabel}
+      shouldFilter={false}
+      className="flex flex-col gap-4"
+    >
       <form
         onSubmit={(event) => {
           void onSearch(event)
         }}
       >
         <Field data-invalid={searchFailed}>
-          <FieldLabel htmlFor="airline-search">{copy.searchLabel}</FieldLabel>
-          <InputGroup>
-            <InputGroupInput
-              aria-invalid={searchFailed}
-              id="airline-search"
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={copy.searchPlaceholder}
-              value={query}
-            />
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton
-                disabled={searching || query.trim() === ""}
-                type="submit"
-              >
-                {searching ? <Spinner data-icon="inline-start" /> : null}
-                {searching ? copy.searching : copy.searchAction}
-              </InputGroupButton>
-            </InputGroupAddon>
-          </InputGroup>
+          <FieldTitle>{copy.searchLabel}</FieldTitle>
+          <CommandInput
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && results.length === 0) {
+                event.preventDefault()
+                event.stopPropagation()
+                if (!searching && query.trim())
+                  event.currentTarget.form?.requestSubmit()
+              }
+            }}
+            aria-invalid={searchFailed}
+            onValueChange={setQuery}
+            placeholder={copy.searchPlaceholder}
+            value={query}
+          />
+          <Button disabled={searching || query.trim() === ""} type="submit">
+            {searching ? <Spinner data-icon="inline-start" /> : null}
+            {searching ? copy.searching : copy.searchAction}
+          </Button>
           {searchFailed ? <FieldError>{copy.searchError}</FieldError> : null}
         </Field>
       </form>
 
-      {results.length > 0 ? (
-        <Command shouldFilter={false}>
-          <CommandList>
-            <CommandGroup>
-              {results.map((airline) => (
-                <CommandItem
-                  key={airline.id}
-                  onSelect={() => onSelect(airline)}
-                  value={airline.id}
-                >
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="truncate font-medium">{airline.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {choiceDetails(airline)}
-                    </span>
-                  </span>
-                  {airline.pending ? (
-                    <Badge variant="secondary">{copy.pending}</Badge>
-                  ) : null}
-                  {airline.inactive ? (
-                    <Badge variant="outline">{copy.inactive}</Badge>
-                  ) : null}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      ) : null}
+      <CommandList>
+        <CommandGroup>
+          {results.map((airline) => (
+            <CommandItem
+              key={airline.id}
+              onSelect={() => onSelect(airline)}
+              value={airline.id}
+            >
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="truncate font-medium">{airline.name}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {choiceDetails(airline)}
+                </span>
+              </span>
+              {airline.pending ? (
+                <Badge variant="secondary">{copy.pending}</Badge>
+              ) : null}
+              {airline.inactive ? (
+                <Badge variant="outline">{copy.inactive}</Badge>
+              ) : null}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
 
       {searched && results.length === 0 ? (
         <Empty>
@@ -461,7 +482,7 @@ function SearchPanel({
           </EmptyContent>
         </Empty>
       ) : null}
-    </div>
+    </Command>
   )
 }
 

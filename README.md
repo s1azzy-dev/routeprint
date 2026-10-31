@@ -84,6 +84,9 @@ The initialized project currently includes:
 - RTK 1.1.0 agent/verification commands
 - Authentication, sessions, registration, sign-in/sign-out, and password reset
 - Protected dashboard
+- Private manual flight history: date-only or optional local schedule entry,
+  bounded airport lookup, airline selection, duplicate confirmation, and
+  owner-only detail/edit/delete pages at `/flights`
 - Place and airport reference foundation with PostGIS points and localized names
 - Admin-only airport catalog with pagination, editing, and safe deletion
 - Admin-only OurAirports airport import history with a guarded start action
@@ -92,9 +95,11 @@ The initialized project currently includes:
 
 The current product surface includes authentication, password reset, a protected
 dashboard, the airport reference foundation, the admin airport catalog, and the
-admin reference-import operations screen. User-owned flight history/import,
-map overlays, statistics, export, and broader admin product behavior remain
-future SDD/OpenSpec slices.
+admin reference-import operations screen. Private manual flight history is
+implemented. User flight-history import, map overlays, statistics, export, and
+broader admin product behavior remain future
+SDD/OpenSpec slices. Airline moderation UI remains part of its active catalog
+change; this slice supplies only the flight-side relinking boundary.
 
 ## Spec-Driven Changes
 
@@ -137,7 +142,7 @@ make openspec-update
 Do not start with feature enthusiasm. The intended order is:
 
 ```text
-manual flights -> map -> CSV import -> App in the Air import -> export -> launch
+manual flights (implemented) -> map -> CSV import -> App in the Air import -> export -> launch
 ```
 
 `docs/TODO.md` is the queue, not acceptance criteria. Each business slice should

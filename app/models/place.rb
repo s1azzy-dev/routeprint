@@ -4,6 +4,10 @@ class Place < ApplicationRecord
   belongs_to :country, optional: true
   has_many :place_names, dependent: :destroy
   has_one :airport, dependent: :destroy
+  has_many :departing_segments, class_name: "TravelSegment", foreign_key: :departure_place_id,
+    inverse_of: :departure_place, dependent: :restrict_with_exception
+  has_many :arriving_segments, class_name: "TravelSegment", foreign_key: :arrival_place_id,
+    inverse_of: :arrival_place, dependent: :restrict_with_exception
 
   normalizes :name, with: ->(value) { value.to_s.squish.presence }
   normalizes :kind, with: ->(value) { value.to_s.strip.downcase.presence }

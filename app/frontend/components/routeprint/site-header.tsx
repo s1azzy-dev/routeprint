@@ -44,7 +44,12 @@ export default function SiteHeader({
           </span>
         </Link>
 
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          {authenticated && urls.flights ? (
+            <Button asChild variant="ghost">
+              <Link href={urls.flights}>{labels.flights}</Link>
+            </Button>
+          ) : null}
           {authenticated ? (
             <AccountMenu labels={labels} urls={urls} />
           ) : (

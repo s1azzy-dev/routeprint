@@ -9,12 +9,14 @@ export type ShellProps = {
     accountMenu: string
     brandName: string
     mainPage: string
+    flights?: string
     signIn: string
     signOut: string
   }
   urls: {
     admin?: string
     home: string
+    flights?: string | null
     signIn: string
     signOut: string
   }

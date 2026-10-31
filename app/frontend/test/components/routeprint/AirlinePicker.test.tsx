@@ -54,6 +54,37 @@ afterEach(() => {
 })
 
 describe("AirlinePicker", () => {
+  it("keeps a selected pending carrier visibly labelled", () => {
+    render(
+      <AirlinePicker
+        copy={copy}
+        countries={[]}
+        onChange={() => {}}
+        searchUrl="/airlines/search"
+        submitUrl="/airlines"
+        value={choice}
+      />,
+    )
+    expect(screen.getByText("Unverified")).toBeVisible()
+    expect(screen.getByText("Inactive")).toBeVisible()
+  })
+  it("selects a searched airline using keyboard navigation", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ airlines: [choice] })),
+    )
+    const onChange = vi.fn()
+    const user = userEvent.setup()
+    renderPicker({ onChange })
+    await user.click(screen.getByRole("button", { name: "Choose airline" }))
+    await user.type(
+      screen.getByLabelText("Airline name or code"),
+      "Example{Enter}",
+    )
+    await screen.findByRole("option", { name: /Example Air/ })
+    await user.keyboard("{ArrowDown}{Enter}")
+    expect(onChange).toHaveBeenCalledWith(choice)
+  })
   it("searches and selects a clearly labelled candidate", async () => {
     const fetchMock = vi
       .fn()

@@ -186,7 +186,7 @@ en:
         title: Edit airport
       flash:
         deleted: Airport deleted.
-        delete_restricted: This airport cannot be deleted while import provenance references it.
+        delete_restricted: This airport cannot be deleted while imports or flight history reference it.
         updated: Airport updated.
       index:
         actions:
