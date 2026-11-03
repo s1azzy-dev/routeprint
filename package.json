@@ -18,8 +18,8 @@
     "frontend:verify": "npm run frontend:format && npm run frontend:lint && npm run frontend:typecheck && npm run frontend:test && npm run frontend:build && npm run frontend:audit"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "1.15.0",
-    "@inertiajs/vite": "3.9.1",
+    "@fission-ai/openspec": "1.16.0",
+    "@inertiajs/vite": "3.10.0",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
@@ -45,12 +45,12 @@
     "vitest": "5.0.5"
   },
   "dependencies": {
-    "@inertiajs/react": "3.9.1",
+    "@inertiajs/react": "3.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "embla-carousel-react": "^8.6.0",
-    "lucide-react": "1.64.0",
+    "lucide-react": "1.65.0",
     "maplibre-gl": "6.16.0",
     "radix-ui": "1.8.1",
     "react": "19.3.1",
