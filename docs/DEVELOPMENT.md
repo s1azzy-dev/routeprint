@@ -31,7 +31,7 @@ Use this short gate before loading task-specific context.
   and host-only harness checks.
 - Make/container: Rails, Ruby, Bundler, RSpec, RuboCop, frontend, security,
   dependency, migration, and import commands.
-- Prefer `make agent-*` or RTK-backed host commands for broad discovery and
+- Prefer `make agent-*` or direct host commands for broad discovery and
   compact feedback. Do not run raw host app toolchains.
 
 ### Approval stops
@@ -42,15 +42,8 @@ non-obvious constraints, destructive cleanup, publishing, or opening a PR.
 
 ### Permissions and tool governance
 
-Use `make agent-*` directly for routine iteration; these targets already wrap
-container commands with RTK where useful. Use `rtk make <approved non-agent
-target>` for ordinary Make checks such as `verify`, `security`, or
-`openspec-validate`. Use `rtk proxy make <approved non-agent target>` only when
-the full output of an already-approved check is needed; `rtk proxy` does not
-add permissions and is not an alternative for `make agent-*`. For host
-discovery, use read-only wrappers such as `rtk rg`,
-`rtk sed -n`, and `rtk git diff`. A broad raw container prefix is not an
-approved shortcut.
+Use `make agent-*` for routine iteration and direct `make` for project
+verification gates. Use `rg`, `sed`, and `git` for host discovery.
 
 Classify actions before running them:
 
@@ -389,8 +382,8 @@ the host toolchain and then fall back to the container after a failure.
 
 | Environment | Allowed command shape | Use for |
 | --- | --- | --- |
-| Host shell | `make agent-state`, `make agent-host-search`, `make agent-host-diff-*`, `make agent-host-log`, `make agent-host-docker-logs`, `make agent-host-rtk-*`, `rtk rg`, `rtk git ...`, `rtk docker ...`, raw `rg`, `sed`, git, file reads, `apply_patch`, documented host-only `make` targets | Repository inspection, editing, git inspection, Docker orchestration, project-local OpenSpec wrappers, and token-efficient output filtering |
-| Web container | `make ...` targets backed by `APP := docker compose run --rm web`; RTK-backed `make agent-*` targets; targeted `docker compose run --rm web ...` when no Make target fits | Rails, Ruby, Bundler, RSpec, RuboCop, Brakeman, bundler-audit, frontend install/build/test/audit, app dependency freshness, migrations, consoles, and import tasks |
+| Host shell | `make agent-state`, `make agent-host-search`, `make agent-host-diff-*`, `make agent-host-log`, `make agent-host-docker-logs`, `rg`, `sed`, git, file reads, `apply_patch`, documented host-only `make` targets | Repository inspection, editing, git inspection, Docker orchestration, project-local OpenSpec wrappers, and token-efficient output filtering |
+| Web container | `make ...` targets backed by `APP := docker compose run --rm web`; `make agent-*` targets; targeted `docker compose run --rm web ...` when no Make target fits | Rails, Ruby, Bundler, RSpec, RuboCop, Brakeman, bundler-audit, frontend install/build/test/audit, app dependency freshness, migrations, consoles, and import tasks |
 
 Host-side runtime commands are not the discovery path. Do not run raw `bundle`,
 `rails`, `rspec`, `rubocop`, `brakeman`, `bundler-audit`, `npm`, `npx`, `vite`,
@@ -448,46 +441,14 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 Use narrower `docker compose run --rm web ...` commands only when faster
 feedback is needed.
 
-### RTK Token-Efficient Workflow
-
-RTK is installed on the host and in the development web container. It is a
-token filter, not a source of truth. Prefer RTK when it preserves the evidence
-needed for the current decision; use raw commands when full context, exact
-formatting, or line-level proof matters.
+### Focused Agent Commands
 
 Host-side repository inspection:
 
-- Use `make agent-state` before repeated branch/status/diff orientation. It
-  prints branch, last commit, compact status, unstaged file names, and staged
-  file names without full patch output.
-- Use `make agent-host-search Q='pattern' SCOPE='path ...'` or `rtk rg ...`
-  for broad discovery and noisy cross-repository searches. Do not run
-  `rtk init` automatically; if host RTK prints a no-hook advisory, ignore it
-  when the compact output is still useful or switch to raw `rg` only after
-  narrowing.
-- Use raw `rg -n ...`, `rg --files`, and `sed -n ...` only after the search is
-  narrowed to exact files, line ranges, or source needed before editing. Do not
-  use broad `sed` output as discovery.
-- Use `make agent-host-diff-stat`, `make agent-host-diff-names`,
-  `make agent-host-log`, `rtk git diff`, `rtk git log`, `rtk git show`, and
-  RTK-backed `gh` commands for orientation. Use raw git output for patch
-  review, staging decisions, rebases, conflict resolution, and commit details
-  after the affected files are known.
-- Use `make agent-host-docker-logs`, `rtk docker ...`, or RTK-backed Docker
-  commands for container status or logs when compact output is enough; keep
-  Make as the entrypoint for app/runtime commands.
-- Use `make agent-host-rtk-gain`, `make agent-host-rtk-discover`, and
-  `make agent-host-rtk-session` to inspect host-side RTK savings and missed
-  opportunities. These are advisory, not verification gates.
-- Use `make agent-container-rtk-gain`, `make agent-container-rtk-gain-daily`,
-  and `make agent-container-rtk-gain-history` for container-side savings from
-  containerized `make agent-*` commands. Host RTK and container RTK read
-  different configurations and history databases.
-- If a command returns truncated output, an `Original token count` warning, or
-  more than a screen of unrelated matches, stop and narrow the next command.
-  Prefer path filters, `--glob`, `--max-count`, `--context 0`, exact filenames,
-  `make agent-host-diff-names`, or `make agent-host-diff-stat` before asking
-  for more raw output.
+- Use `make agent-state` for a compact branch, status, and diff snapshot.
+- Use `make agent-host-search Q='pattern' SCOPE='path ...'` or `rg` for
+  discovery. Narrow noisy output by path, glob, or match count.
+- Use the host diff, log, and Docker log targets for compact summaries.
 
 Container app/runtime commands:
 
@@ -510,20 +471,16 @@ Container app/runtime commands:
   corresponding check target before considering the change complete.
 - Use `make agent-verify-fast` while iterating with an agent when compact
   output is more useful than full logs.
-- RTK-backed RSpec agent targets set `ROUTEPRINT_SKIP_SIMPLECOV=1` so RTK can parse
-  clean RSpec JSON output. Use ordinary Make targets for coverage proof.
+- Agent RSpec targets skip the coverage gate so focused specs can run on their
+  own. Use ordinary Make targets for coverage proof.
 - Use `make agent-test` and `make agent-verify-fast` during agent iteration.
   Use ordinary `make test`, `make verify-fast`, `make verify`, and CI targets as
   final proof when a task requires the canonical project gate.
-- Default quality commands should keep output compact without relying on RTK:
+- Default quality commands should keep output compact:
   RSpec prints failures plus the final example summary, RuboCop uses its
   simple formatter unless a caller requests another format, frontend linting
   hides warnings by default, TypeScript disables pretty output, and Vitest uses
   the minimal reporter with summary coverage.
-
-Do not use RTK to hide required evidence. If an RTK summary is ambiguous,
-rerun the narrow raw command or read the saved tee output path that RTK prints
-on failure. Disable RTK for one host command with `RTK_DISABLED=1` when needed.
 
 ## Verification Matrix
 

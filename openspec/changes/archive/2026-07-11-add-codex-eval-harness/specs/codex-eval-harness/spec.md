@@ -54,7 +54,7 @@ combine those results into a run-level `grade.json`.
 ### Requirement: Experiment reporting SHALL expose human and mechanical metrics
 The harness SHALL define a CSV result schema and a report command that shows
 pass/fail, diff scope, human correction minutes, instruction violations,
-skipped required gates, execution time, tool calls, token metrics, RTK savings,
+skipped required gates, execution time, tool calls, token metrics,
 and harness hash when values are available.
 
 #### Scenario: Render a comparison report
@@ -64,7 +64,7 @@ and harness hash when values are available.
   and includes the comparison fields without requiring identical diffs
 
 #### Scenario: Preserve unmeasured values
-- **GIVEN** a trace does not expose token or RTK metrics
+- **GIVEN** a trace does not expose token metrics
 - **WHEN** a run is recorded
 - **THEN** those fields remain blank or `unknown` and the report does not
   invent a measurement

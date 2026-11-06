@@ -44,7 +44,7 @@ Do not copy Wild Waters business logic. Reuse patterns and harness only.
 - [x] Inventory Wild Waters runtime foundations:
       Rails, PostgreSQL/PostGIS, Inertia Rails, React, TypeScript, Vite,
       Tailwind, shadcn/ui, RSpec, Vitest, Pundit, Active Storage, Solid Queue,
-      Solid Cache, Mission Control Jobs, RTK-backed agent targets.
+      Solid Cache, Mission Control Jobs, agent targets.
 - [x] Inventory Wild Waters domain code that must not be copied:
       waterfalls, spots, regions, GeoNames, waterfall map payloads, waterfall UI,
       waterfall specs, product copy, locale copy, and nature design language.
@@ -65,7 +65,7 @@ Do not copy Wild Waters business logic. Reuse patterns and harness only.
 Copy or adapt these layers from Wild Waters:
 
 - [x] Agent control plane:
-      `AGENTS.md`, `.codex/`, `.agents/skills/`, RTK config, harness regression
+      `AGENTS.md`, `.codex/`, `.agents/skills/`, harness regression
       expectations.
 - [x] Workflow docs:
       `docs/CONTEXT_MAP.md`, `docs/DEVELOPMENT.md`, `docs/QUALITY_SECURITY.md`,
@@ -77,7 +77,7 @@ Copy or adapt these layers from Wild Waters:
       Dockerfiles, compose file, devcontainer, entrypoints, env examples.
 - [x] Makefile:
       setup, doctor, up/down/logs, bundle, frontend gates, test, security,
-      verify-fast, verify, RTK-backed agent targets, outdated checks.
+      verify-fast, verify, agent targets, outdated checks.
 - [x] CI and repository hygiene:
       GitHub workflow, Dependabot, CODEOWNERS if useful, PR template, hooks,
       editor/prettier/rubocop/rspec/gitignore/gitattributes config.
@@ -105,7 +105,7 @@ Copy or adapt these layers from Wild Waters:
       stats, exports, admin, frontend tooling.
 - [x] Rewrite `docs/DEVELOPMENT.md` for Routeprint:
       SDD levels, command contract, permission matrix, verification matrix,
-      RTK-backed commands, no raw host Rails/npm runtime work.
+      Make commands, no raw host Rails/npm runtime work.
 - [x] Rewrite `docs/QUALITY_SECURITY.md` for travel-data privacy:
       exact travel history, future trips, raw imports, booking references, seats,
       boarding passes, timestamps, private uploads.
@@ -173,7 +173,7 @@ Initialization is complete when:
       documented.
 - [x] The app serves a minimal Inertia React Routeprint page.
 - [x] Backend, frontend, TypeScript, Tailwind, shadcn, Docker, PostGIS, RSpec,
-      Vitest, security, OpenSpec, and RTK-backed Make targets are initialized.
+      Vitest, security, OpenSpec, and agent Make targets are initialized.
 - [x] Important Wild Waters documents and harness patterns are present and
       adapted.
 - [x] No Wild Waters business logic or product-specific UI/domain behavior has

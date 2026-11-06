@@ -1,13 +1,8 @@
-# Allow direct, non-mutating Routeprint agent targets. These targets already
-# wrap noisy container commands with RTK where useful.
+# Allow direct, non-mutating Routeprint agent targets.
 prefix_rule(
     pattern=[
         "make",
         [
-            "agent-container-rtk",
-            "agent-container-rtk-gain",
-            "agent-container-rtk-gain-daily",
-            "agent-container-rtk-gain-history",
             "agent-diff-names",
             "agent-diff-stat",
             "agent-docker-logs",
@@ -17,9 +12,6 @@ prefix_rule(
             "agent-host-diff-stat",
             "agent-host-docker-logs",
             "agent-host-log",
-            "agent-host-rtk-discover",
-            "agent-host-rtk-gain",
-            "agent-host-rtk-session",
             "agent-host-state",
             "agent-log",
             "agent-frontend-format",
@@ -27,12 +19,6 @@ prefix_rule(
             "agent-frontend-typecheck",
             "agent-frontend-test",
             "agent-rspec",
-            "agent-rtk",
-            "agent-rtk-discover",
-            "agent-rtk-gain",
-            "agent-rtk-gain-daily",
-            "agent-rtk-gain-history",
-            "agent-rtk-session",
             "agent-rubocop",
             "agent-ruby-test",
             "agent-search",
@@ -44,12 +30,9 @@ prefix_rule(
     justification="Direct Routeprint agent Make targets",
 )
 
-# Allow RTK-wrapped non-agent Make checks. Do not make this a broad
-# ["rtk", "make"] rule: that would also approve the redundant
-# `rtk make agent-*` form.
+# Allow direct non-agent Routeprint Make checks.
 prefix_rule(
     pattern=[
-        "rtk",
         "make",
         [
             "bundle-outdated",
@@ -78,64 +61,7 @@ prefix_rule(
         ],
     ],
     decision="allow",
-    justification="RTK-wrapped non-agent Routeprint Make commands",
-)
-
-# Allow RTK passthrough only for the same approved non-agent Make checks as
-# `rtk make`. Agent targets must use direct `make agent-*`.
-prefix_rule(
-    pattern=[
-        "rtk",
-        "proxy",
-        "make",
-        [
-            "bundle-outdated",
-            "ci",
-            "doctor",
-            "frontend-audit",
-            "frontend-build",
-            "frontend-check",
-            "frontend-format",
-            "frontend-lint",
-            "frontend-outdated",
-            "frontend-test",
-            "frontend-typecheck",
-            "frontend-verify",
-            "harness-check",
-            "lint",
-            "openspec-validate",
-            "outdated",
-            "rubocop",
-            "rubocop-check",
-            "ruby-test",
-            "security",
-            "test",
-            "verify",
-            "verify-fast",
-        ],
-    ],
-    decision="allow",
-    justification="RTK passthrough approved non-agent Routeprint Make targets",
-)
-
-# Allow common read-only RTK host wrappers without approving arbitrary RTK
-# subcommands such as `rtk git push`.
-prefix_rule(
-    pattern=["rtk", "rg"],
-    decision="allow",
-    justification="RTK-backed host search",
-)
-
-prefix_rule(
-    pattern=["rtk", "sed", "-n"],
-    decision="allow",
-    justification="RTK-backed read-only host file inspection",
-)
-
-prefix_rule(
-    pattern=["rtk", "git", ["status", "diff", "log", "show", "branch", "remote"]],
-    decision="allow",
-    justification="RTK-backed read-only Git inspection",
+    justification="Direct non-agent Routeprint Make commands",
 )
 
 # Keep the explicit, user-scoped frontend formatter mutation target separate.

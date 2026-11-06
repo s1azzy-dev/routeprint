@@ -43,14 +43,14 @@ RSpec.describe QualityOutputConfiguration do
     expect(rubocop).to include('arg.start_with?("--format=")')
   end
 
-  it "keeps agent feedback commands compact without relying only on RTK" do
+  it "keeps agent feedback commands compact" do
     makefile = root.join("Makefile").read
 
-    expect(makefile).to include("rtk prettier $(RTK_FRONTEND_FORMAT_ARGS)")
-    expect(makefile).to include("rtk eslint . --quiet")
-    expect(makefile).to include("rtk tsc --noEmit --pretty false")
-    expect(makefile).to include("rtk vitest run --coverage --reporter=minimal --passWithNoTests")
-    expect(makefile).to include("rtk rubocop --format simple --config /app/.rubocop.yml")
+    expect(makefile).to include("prettier $(AGENT_FRONTEND_FORMAT_ARGS)")
+    expect(makefile).to include("eslint . --quiet")
+    expect(makefile).to include("tsc --noEmit --pretty false")
+    expect(makefile).to include("vitest run --coverage --reporter=minimal --passWithNoTests")
+    expect(makefile).to include("bin/rubocop --format simple --config /app/.rubocop.yml")
   end
 
   it "keeps RuboCop checking separate from explicit autocorrection" do
@@ -74,9 +74,9 @@ RSpec.describe QualityOutputConfiguration do
 
     expect(makefile).to include(
       "agent-frontend-format:",
-      "rtk prettier $(RTK_FRONTEND_FORMAT_ARGS)",
+      "prettier $(AGENT_FRONTEND_FORMAT_ARGS)",
       "agent-frontend-format-fix:",
-      "rtk prettier --write --log-level warn $(FILES)"
+      "prettier --write --log-level warn $(FILES)"
     )
   end
 
