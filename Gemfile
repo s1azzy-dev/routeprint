@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby file: ".ruby-version"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.4"
+gem "rails", "~> 8.1.4", ">= 8.1.4.1"
 # Ruby 4 ships CSV as a separately bundled default gem.
 gem "csv", "~> 3.3", ">= 3.3.7"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]

@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-11-06
+
+- Resolved the Ruby advisory findings with Rails 8.1.4.1, Addressable 2.9.2,
+  Loofah 2.25.3, Nokogiri 1.19.7, and rails-html-sanitizer 1.7.2.
+- Updated the Inertia frontend packages, Tailwind, Vite and its React plugin,
+  Vitest and its coverage provider, jsdom, and Lucide. TypeScript 7 remains
+  outside the typescript-eslint peer range, and ESLint 10 remains outside the
+  eslint-plugin-react and eslint-plugin-jsx-a11y peer ranges.
+
 ## 2026-10-31
 
 - Kept flight models focused on persistence: manual-entry business validation
