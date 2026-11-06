@@ -34,7 +34,7 @@ bin/harness-eval review --run-dir tmp/harness-runs/<run-id> --reviewer alice \
 
 Use the same case, base ref, model settings, sandbox, and verification policy
 when comparing variants. Change one factor at a time, for example full SDD vs
-short SDD, skill vs no skill, RTK vs raw output, or reviewer vs single agent.
+short SDD, skill vs no skill, or reviewer vs single agent.
 
 ## Results and review
 

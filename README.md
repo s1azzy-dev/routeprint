@@ -81,7 +81,6 @@ The initialized project currently includes:
 - Brakeman and bundler-audit
 - OpenSpec 1.15.0
 - Debian 13 (Trixie) application containers, Docker Compose and devcontainer support
-- RTK 1.1.0 agent/verification commands
 - Authentication, sessions, registration, sign-in/sign-out, and password reset
 - Protected dashboard
 - Private manual flight history: date-only or optional local schedule entry,

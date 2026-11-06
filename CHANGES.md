@@ -2,6 +2,9 @@
 
 ## 2026-11-06
 
+- Removed RTK from development images and agent tooling. Make targets now run
+  the underlying commands directly.
+
 - Resolved the Ruby advisory findings with Rails 8.1.4.1, Addressable 2.9.2,
   Loofah 2.25.3, Nokogiri 1.19.7, and rails-html-sanitizer 1.7.2.
 - Updated the Inertia frontend packages, Tailwind, Vite and its React plugin,

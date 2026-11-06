@@ -46,7 +46,7 @@ docs unless explicitly requested.
 - For frontend formatting, use `make agent-frontend-format` for checks and
   `make agent-frontend-format-fix FILES='path/to/file.tsx ...'` for explicit
   fixes. Never run raw `prettier --write` commands.
-- Use RTK-backed host commands and `make agent-*` targets first for broad
+- Use `make agent-*` targets and direct host commands for broad
   search, logs, diffs, and diagnostics.
 - Keep `CHANGES.md` current for meaningful behavior, schema, dependency,
   process/harness, or user-facing changes; do not add entries for every typo or

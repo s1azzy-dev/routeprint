@@ -256,7 +256,7 @@ module HarnessRun
       run_id case_id variant base_ref status mechanical_pass workflow_pass behavior_pass
       task_success first_pass_verification human_correction_minutes unrelated_changed_files
       instruction_violations skipped_required_gates timeout_status wall_clock_seconds tool_calls
-      input_tokens cached_input_tokens output_tokens reasoning_output_tokens rtk_savings
+      input_tokens cached_input_tokens output_tokens reasoning_output_tokens
       harness_hash base_commit codex_version prompt_hash registry_hash source_hash changed_files
       gate_status diff_scope grade_path notes
     ]

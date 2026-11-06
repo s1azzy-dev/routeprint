@@ -64,7 +64,7 @@ allows later graders to be added without changing the runner protocol.
 `harness/experiments/results.csv` is a committed schema/header with no raw
 traces. A run can append one row after human review, including `harness_hash`,
 pass/fail, diff scope, correction minutes, required-gate status, tool calls,
-token metrics, RTK savings, and retry/compaction indicators. The report command
+token metrics and retry/compaction indicators. The report command
 renders these rows as Markdown and preserves blank values for metrics not
 available in a trace.
 

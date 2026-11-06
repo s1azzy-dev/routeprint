@@ -71,17 +71,17 @@ RSpec.describe FrontendFoundationConfiguration do
     expect(root.join("app/frontend/pages/Home/Show.tsx")).to exist
   end
 
-  it "provides RTK-backed agent commands for compact feedback" do
+  it "provides direct agent commands for compact feedback" do
     makefile = root.join("Makefile").read
 
     expect(makefile).to include(
       "agent-rspec:",
-      "ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test rtk rspec $(SPEC)",
+      "ROUTEPRINT_SKIP_SIMPLECOV=1 RAILS_ENV=test bundle exec rspec $(SPEC)",
       "agent-frontend-test:",
-      "rtk vitest run --coverage --reporter=minimal --passWithNoTests",
+      "vitest run --coverage --reporter=minimal --passWithNoTests",
       "agent-frontend-format-fix:",
       "FILES is required",
-      "rtk prettier --write --log-level warn $(FILES)",
+      "prettier --write --log-level warn $(FILES)",
       "agent-verify-fast: frontend-install",
     )
   end
