@@ -14,15 +14,15 @@ RSpec.describe FrontendFoundationConfiguration do
   it "pins the approved frontend runtime and build dependencies" do
     expect(package.fetch("name")).to eq("routeprint")
     expect(package.fetch("dependencies")).to include(
-      "@inertiajs/react" => "3.9.1",
+      "@inertiajs/react" => "3.11.0",
       "react" => "19.3.1",
       "react-dom" => "19.3.1",
     )
     expect(package.fetch("devDependencies")).to include(
-      "@tailwindcss/vite" => "4.3.3",
+      "@tailwindcss/vite" => "4.3.4",
       "typescript" => "6.0.3",
-      "vite" => "8.3.5",
-      "vitest" => "5.0.5",
+      "vite" => "8.3.6",
+      "vitest" => "5.1.0",
     )
   end
 

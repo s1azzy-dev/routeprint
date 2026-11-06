@@ -66,18 +66,18 @@ Default host ports:
 
 The initialized project currently includes:
 
-- Rails 8.1.4
+- Rails 8.1.4.1
 - Ruby 4.0.9 with RubyGems/Bundler 4.0.23
 - Node 26.13.0 LTS with npm 12.2.1
 - PostgreSQL 18.6 with PostGIS 3.6.4 (the same image digest in Compose and CI)
 - Inertia Rails
 - React 19.3.1
 - TypeScript 6.0.3
-- Vite 8.3.5
-- Tailwind 4.3.3
+- Vite 8.3.6
+- Tailwind 4.3.4
 - shadcn/ui primitives
 - RSpec, SimpleCov, RuboCop
-- Vitest 5.0.5 and React Testing Library
+- Vitest 5.1.0 and React Testing Library
 - Brakeman and bundler-audit
 - OpenSpec 1.15.0
 - Debian 13 (Trixie) application containers, Docker Compose and devcontainer support
