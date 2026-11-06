@@ -39,9 +39,11 @@ platform the default owner of the MVP map architecture.
 
 ### Data Delivery
 
-- MVP map data is delivered as compact GeoJSON over bounded HTTP requests.
-- Map requests must include a bounded viewport or equivalent server-approved
-  envelope before returning user travel geometry.
+- Server-delivered travel geometry uses compact GeoJSON and requires a bounded
+  viewport or equivalent server-approved envelope.
+- The personal flight overview receives compact JSON for the owner's complete
+  history grouped by airport pair. The browser derives its display geometry as
+  described in [ADR 0010](0010-flight-route-geometry.md).
 - List and map views should share one query model whenever they represent the
   same filter state, so visible records and visible geometry do not diverge.
 - Rails responses should select only the fields needed by the map surface.

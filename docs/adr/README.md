@@ -40,6 +40,7 @@ code and RSpec.
 - [ADR 0007: Airport Reference Catalog Boundary](0007-airport-reference-catalog-boundary.md)
 - [ADR 0008: Country Reference Catalog And Boundary Delivery](0008-country-reference-catalog-and-boundary-delivery.md)
 - [ADR 0009: Airline Reference Identity And Moderation](0009-airline-reference-identity-and-moderation.md)
+- [ADR 0010: Flight Route Geometry](0010-flight-route-geometry.md)
 
 ## Header Format
 
