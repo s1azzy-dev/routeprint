@@ -181,11 +181,12 @@ allowed.
 
 - PostgreSQL 18 and PostGIS 3.6 are first-class dependencies.
 - Store geographic source-of-truth data in WGS84/SRID 4326.
-- Airport coordinate lookup, map filtering, and route geometry belong in
-  database-backed queries/services, not controllers.
+- Airport coordinate lookup and map filtering belong in database-backed
+  queries or services. The flight overview derives display geometry in the
+  browser as described in [ADR 0010](adr/0010-flight-route-geometry.md).
 - Add spatial indexes for spatial columns.
 - Test PostGIS behavior against the real database.
-- Use compact, user-scoped, filterable, privacy-safe GeoJSON payloads.
+- Use compact, user-scoped, privacy-safe JSON or GeoJSON for map payloads.
 - Generate great-circle-like route lines from airport coordinates for MVP.
 - Handle antimeridian crossing explicitly when route geometry is implemented.
 - Do not introduce vector tiles, PMTiles, real aircraft tracks, external flight
