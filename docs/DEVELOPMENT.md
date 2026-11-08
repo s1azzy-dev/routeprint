@@ -173,19 +173,64 @@ For Level 2 or 3, use `$routeprint-spec-driven-change`:
 2. Summarize the recommended direction and obtain user confirmation.
 3. Create an OpenSpec change with proposal, behavioral specs, design, and tasks.
 4. Review those artifacts with the user before implementation.
+   Use `bin/openspec show <change> --diff` to review requirement changes beside
+   the proposal, design, and tasks.
 5. Apply tasks through the normal permission matrix and red-green execution
    loops.
-6. If implementation disproves an assumption, pause and update the affected
-   OpenSpec artifacts. Obtain approval before continuing with changed intent or
-   architecture.
+6. If implementation disproves an assumption, use `$openspec-update-change` to
+   reconcile the affected planning artifacts before continuing. Confirm proposed
+   revisions before writing, reusing explicit authorization already given for
+   those edits. Obtain approval for changed intent or architecture.
 7. Verify the implementation against the artifacts and project gates, then
-   archive the change.
+   archive the change. Normal completion requires every delta to be reflected
+   in baseline specs and strict spec validation to pass before moving the change.
 
 OpenSpec owns current feature intent and observable behavior. ADRs own durable
 architecture decisions promoted from a Level 3 change, including selected
 technologies, system boundaries, persistence or execution models, and
 design-system foundations. Current code, RSpec, and Make gates remain
 implementation proof; OpenSpec does not replace the existing harness.
+
+### Revising A Change
+
+Use `$openspec-update-change` when the goal is still the same and discoveries
+refine execution, narrow scope, or correct assumptions. It reconciles existing
+planning artifacts in both directions, including proposal, specs, design, and
+tasks. It hands implementation back to `$openspec-apply-change`.
+
+Start a new change when the goal fundamentally changes, the scope becomes a
+different task, or the additional work can be accepted and shipped independently.
+Keep pending and completed task checkboxes consistent with the revised plan.
+For a partially implemented revision, record tests that must be rerun.
+
+Exploration is useful when requirements are unclear. An explicit request with
+an already confirmed scope can proceed to proposal without another discovery
+round. Keep the artifact review, project permission matrix, red/green loop, and
+mechanical verification gates.
+
+### OpenSpec Skill Maintenance
+
+OpenSpec is pinned in `package.json` and `package-lock.json`. Its generated
+skills are adapted into compact Routeprint wrappers and lazy-loaded references.
+The custom profile in `config/openspec/config.json` includes core workflows plus
+`verify`. Add expanded workflows only when the task needs them.
+
+1. Update the pinned dependency and lockfile, then run `make openspec-install`.
+2. Run `make openspec-update` to preview changes as JSON. It writes no files.
+3. Run `make openspec-generate` to generate the selected workflows in a fresh
+   temporary directory. Review those copies against the current wrappers and
+   the upstream sections of their references.
+4. Refresh each reference's `Upstream workflow` section from its generated
+   skill body, preserving its Routeprint preamble. Adapt CLI examples to
+   `bin/openspec` and update version metadata. Carry essential safeguards into
+   the compact wrapper, keeping detailed guidance in its reference.
+5. Run `make openspec-validate`, `make harness-check`, the tooling specs, and
+   `git diff --check`. Run `make verify` before publishing the PR.
+
+Run regeneration through these targets. A direct `bin/openspec update --force`
+in this checkout replaces compact wrappers with upstream templates.
+The CLI refresh command `bin/openspec update` maintains integrations, while
+`$openspec-update-change` revises one change's planning artifacts.
 
 ## Baseline Specs And Existing Code
 
@@ -412,7 +457,8 @@ editing, and OpenSpec wrapper targets (`make openspec-install`,
 | Compact workspace snapshot | `make agent-state` | Host git inspection |
 | Check toolchain | `make doctor` | Mixed: host wrapper/Docker checks plus container Rails checks |
 | Install Node/OpenSpec dependencies | `make openspec-install` | Host OpenSpec wrapper |
-| Refresh generated OpenSpec adapters | `make openspec-update` | Host OpenSpec wrapper |
+| Preview generated OpenSpec adapter changes | `make openspec-update` | Host OpenSpec wrapper |
+| Generate upstream adapters for review | `make openspec-generate` | Host OpenSpec wrapper, temporary directory |
 | Validate all OpenSpec artifacts | `make openspec-validate` | Host OpenSpec wrapper |
 | Check agent harness contracts | `make harness-check` | Host harness tooling |
 | Install locked frontend dependencies | `make frontend-install` | Web container |

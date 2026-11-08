@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.15.0"
+  generatedBy: "1.16.0"
 ---
 
 # OpenSpec Apply Change
@@ -32,10 +32,13 @@ Apply tasks from an approved OpenSpec change.
 3. Run `bin/openspec instructions apply --change "<name>" --json`.
 4. Read every path in `contextFiles`.
 5. Show schema and compact task progress.
-6. Implement pending tasks one at a time, keeping edits focused.
-7. Mark each completed task checkbox immediately.
-8. Pause if a task is unclear, a design assumption fails, approval is required,
-   or a blocker appears.
+6. Review instruction warnings before implementation. Missing delta specs need
+   specs or a deliberate, justified schema-supported skip.
+7. Implement pending tasks one at a time. Before marking each task complete,
+   check its returned `sourcePath` and `line` still identify the expected task.
+   Refresh instructions if the location changed.
+8. Pause if a task is unclear, approval is required, or a blocker appears. When
+   assumptions fail, use `$openspec-update-change` to reconcile the plan first.
 
 ## Output
 

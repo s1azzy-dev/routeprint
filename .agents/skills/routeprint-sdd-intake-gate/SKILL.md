@@ -80,8 +80,9 @@ Done condition:
 - Add a domain skill only when the context map routes one; do not layer generic
   planning or delivery skills onto ordinary Routeprint work.
 
-If implementation disproves approved intent, update the affected OpenSpec or
-ADR and obtain approval before continuing with divergent behavior.
+If implementation disproves an assumption, use `$openspec-update-change` to
+reconcile planning artifacts. Obtain approval for changed architecture, and use
+a new change when intent changes or added work can ship independently.
 
 ## Approval
 

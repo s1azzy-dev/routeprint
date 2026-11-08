@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.15.0"
+  generatedBy: "1.16.0"
 ---
 
 # OpenSpec Propose
@@ -16,8 +16,8 @@ Create a confirmed OpenSpec change and its required artifacts.
 ## Routeprint Rules
 
 - Run OpenSpec through `bin/openspec ...`; never use bare `openspec`.
-- Use only after the user confirms the explored direction for Level 2 or 3
-  work.
+- Use after the user confirms direction for Level 2 or 3 work. An explicit
+  artifact request with an already confirmed scope needs no extra explore round.
 - Keep `context` and `rules` from OpenSpec instructions as constraints for the
   agent, not text copied into artifacts.
 - For ambiguous, high-risk, first-time, or generator-drift cases, read
@@ -35,7 +35,8 @@ Create a confirmed OpenSpec change and its required artifacts.
    using the returned template and Routeprint context.
 7. Re-run status after each artifact until all `applyRequires` artifacts are
    done.
-8. Show final status and ask for review before implementation.
+8. Validate the change with `bin/openspec validate "<name>" --strict` and show
+   `bin/openspec show <name> --diff`. Present artifacts for implementation review.
 
 ## Output
 

@@ -120,6 +120,11 @@ Level 2 and 3 flow:
 explore -> confirm -> propose -> review -> apply -> verify -> archive
 ```
 
+Use `$openspec-update-change` to revise an existing change's plan and reconcile
+its artifacts before resuming apply. Use a new change when the goal changes or
+the additional work can ship independently. Review the requirement diff with
+`bin/openspec show <change> --diff` before implementation.
+
 OpenSpec records current observable behavior and pending behavior changes. ADRs
 record durable technology choices, system boundaries, execution and persistence
 models, and design-system foundations. The ADR index lives in
@@ -134,7 +139,13 @@ bin/openspec list
 bin/openspec list --specs
 make openspec-validate
 make openspec-update
+make openspec-generate
 ```
+
+`make openspec-update` previews upstream skill changes. `make openspec-generate`
+writes upstream skills to a temporary directory for review. Follow
+[`OpenSpec skill maintenance`](docs/DEVELOPMENT.md)
+to refresh references while preserving Routeprint's compact wrappers.
 
 ## First Product Slices
 

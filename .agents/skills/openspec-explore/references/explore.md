@@ -49,11 +49,10 @@ conversation instead of relying on memory.
 End with problem, recommendation, risks, open question, and whether the idea is
 ready for proposal.
 
-## Upstream workflow (OpenSpec 1.15.0)
+## Upstream workflow (OpenSpec 1.16.0)
 
 The Routeprint rules above take precedence over upstream examples. Use the
 project permission matrix, source map, and Make/container verification.
-
 
 Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.
 

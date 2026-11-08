@@ -47,11 +47,10 @@ Proposal explains what and why. Specs contain observable behavior and scenarios.
 Design captures implementation approach and tradeoffs. Tasks are concrete,
 ordered, and verifiable. Ask for review before implementation.
 
-## Upstream workflow (OpenSpec 1.15.0)
+## Upstream workflow (OpenSpec 1.16.0)
 
 The Routeprint rules above take precedence over upstream examples. Use the
 project permission matrix, source map, and Make/container verification.
-
 
 Propose a new change - create the change and generate all artifacts in one step.
 

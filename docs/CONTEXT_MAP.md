@@ -55,6 +55,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | --- | --- | --- | --- |
 | Unclear level/risk, likely Level 2–3 scope, or compaction handoff | `$routeprint-sdd-intake-gate` | `AGENTS.md`, `docs/DEVELOPMENT.md` headings `Fast Path`, `Adaptive SDD Routing`, `Permission Matrix`, `Verification Matrix`, relevant row here | Gate-selected check |
 | Level 2–3 feature discovery, OpenSpec, or ADR decision | `$routeprint-spec-driven-change` | Relevant capability spec, active changes, selected app/spec slice | `bin/openspec validate --all --strict` plus project gate |
+| Revise an existing change's plan or reconcile its artifacts | `$openspec-update-change` | Selected change status and concrete artifact paths | Strict change validation, requirement diff, and named tests to rerun |
 | Resume, publish, review, or orient branch state | `$routeprint-workspace-state` | Git status, branch, last commit, compact diff names when needed | Reuse or rerun gate by freshness |
 | Auth, sessions, admin, uploads, privacy, or user-owned data | `$routeprint-authz-security-flow` | `docs/QUALITY_SECURITY.md`, active route/controller/policy/spec slice | Narrow security specs, then `make security` when required |
 | Airports, routes, map payloads, PostGIS, or geospatial performance | `$routeprint-postgis-map-query` | `docs/FOUNDATIONS.md`, geospatial ADR when behavior changes, target query/model/spec | Narrow spec, then `make agent-verify-fast`; canonical proof uses `make verify-fast` |
