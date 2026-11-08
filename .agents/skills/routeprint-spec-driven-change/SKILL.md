@@ -40,7 +40,8 @@ update `CHANGES.md` when the process or agent harness changes, and run
    treat TODO text as acceptance criteria.
 3. Run `bin/openspec list --json` to find related active changes.
 4. Use `$openspec-explore` as the thinking stance.
-5. Ask one focused question at a time. Do not create artifacts yet.
+5. Ask focused questions only for unresolved decisions. An explicit artifact
+   request with an already confirmed scope can proceed to proposal.
 6. Challenge assumptions. Identify scope, non-goals, unknowns, and applicable
    data, authorization/privacy, migration, retry/idempotency, PostGIS/
    performance, operational, observability, and rollback risks.
@@ -57,15 +58,17 @@ After confirmation:
 1. Invoke `$openspec-propose`. Use `bin/openspec` in place of bare `openspec` in
    every generated skill command.
 2. Review proposal, specs, design, and tasks with the user before implementation.
+   Use `bin/openspec show <change> --diff` for requirement changes.
 3. For Level 3, create an ADR only for the confirmed durable architecture
    decision. Keep feature behavior and task detail in OpenSpec.
 4. Invoke `$openspec-apply-change`.
 5. Preserve the project permission matrix, domain skills, red/green loop, and
    verification matrix while applying tasks.
 
-If implementation disproves an assumption, pause. Update the relevant proposal,
-spec, design, or tasks and obtain approval for changed intent or architecture
-before divergent implementation continues.
+If implementation disproves an assumption, use `$openspec-update-change` to
+reconcile planning artifacts before resuming apply. Reuse explicit authorization
+for requested edits and obtain approval for additional revisions or changed
+architecture. Start a new change when intent changes or work can ship separately.
 
 ## Finish
 

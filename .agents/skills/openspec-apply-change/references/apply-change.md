@@ -49,8 +49,11 @@ edit roots. Do not infer repo-local paths.
 - Work one pending task at a time.
 - Keep each task minimal and scoped.
 - Mark `- [ ]` to `- [x]` immediately after the task is complete.
-- If implementation disproves an artifact assumption, pause and update the
-  affected artifact before divergent coding continues.
+- Use each task's returned `sourcePath` and `line` to check its checkbox before
+  marking it complete. Refresh instructions when task locations drift.
+- Review instruction warnings, including missing delta specs, before coding.
+- If implementation disproves an artifact assumption, use
+  `$openspec-update-change` before divergent coding continues.
 - If approval is required by Routeprint permissions, stop before mutation.
 
 ## Completion
@@ -59,11 +62,10 @@ Report completed tasks, total progress, remaining tasks, verification already
 run, and next safe action. Suggest archive only after all tasks and required
 mechanical checks are complete.
 
-## Upstream workflow (OpenSpec 1.15.0)
+## Upstream workflow (OpenSpec 1.16.0)
 
 The Routeprint rules above take precedence over upstream examples. Use the
 project permission matrix, source map, and Make/container verification.
-
 
 Implement tasks from an OpenSpec change.
 

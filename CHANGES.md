@@ -1,5 +1,15 @@
 # Changes
 
+## 2026-11-09
+
+- Updated OpenSpec to 1.16.0 and refreshed workflow references while retaining
+  compact Routeprint skills. Added the update-change workflow to reconcile
+  planning artifacts, requirement-diff review, and guidance on revising versus
+  splitting changes.
+- Made OpenSpec skill updates preview-only and added isolated upstream
+  generation for review. Require successful baseline synchronization and
+  validation before normal change archival.
+
 ## 2026-11-06
 
 - Removed RTK from development images and agent tooling. Make targets now run

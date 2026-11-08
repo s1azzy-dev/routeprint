@@ -56,11 +56,10 @@ Coherence:
 
 Every finding needs a concrete recommendation and file reference when possible.
 
-## Upstream workflow (OpenSpec 1.15.0)
+## Upstream workflow (OpenSpec 1.16.0)
 
 The Routeprint rules above take precedence over upstream examples. Use the
 project permission matrix, source map, and Make/container verification.
-
 
 Verify that an implementation matches the change artifacts (specs, tasks, design).
 

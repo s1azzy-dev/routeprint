@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.15.0"
+  generatedBy: "1.16.0"
 ---
 
 # OpenSpec Verify Change
@@ -29,7 +29,9 @@ Verify that implementation matches OpenSpec artifacts.
 2. Run `bin/openspec status --change "<name>" --json`.
 3. Run `bin/openspec instructions apply --change "<name>" --json`.
 4. Read every artifact path in `contextFiles`.
-5. Check completeness: task checkboxes, requirements, scenarios.
+5. Check completeness, treating explicit skipped artifacts as not applicable.
+   Report unperformed checks as not verified. For REMOVED and RENAMED deltas,
+   inspect the baseline and verify the intended removal or preserved behavior.
 6. Map requirements and scenarios to code/spec evidence with targeted search.
 7. Check design coherence and project pattern fit.
 8. Record required mechanical proof:

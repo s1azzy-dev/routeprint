@@ -19,7 +19,7 @@ RSpec.describe OpenSpecConfiguration do
 
     expect(root.join(".tool-versions").read).to include("nodejs 26.13.0")
     expect(package.dig("engines", "node")).to eq("26.13.0")
-    expect(package.dig("devDependencies", "@fission-ai/openspec")).to eq("1.15.0")
+    expect(package.dig("devDependencies", "@fission-ai/openspec")).to eq("1.16.0")
   end
 
   it "layers feature specifications over the repository harness" do
@@ -50,6 +50,8 @@ RSpec.describe OpenSpecConfiguration do
     expect(makefile).to include("openspec-install:", "openspec-validate:")
     expect(makefile).to include("bin/openspec validate --all --strict")
     expect(workflow).to include("make openspec-validate")
+    expect(makefile).to include("bin/openspec update --force --dry-run --json")
+    expect(makefile).to include('bin/openspec init "$$stage_dir" --tools agents --no-animation')
   end
 
   it "tracks the OpenSpec command delivery profile" do
@@ -59,6 +61,7 @@ RSpec.describe OpenSpecConfiguration do
       "propose",
       "explore",
       "apply",
+      "update",
       "sync",
       "archive",
       "verify"

@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.15.0"
+  generatedBy: "1.16.0"
 ---
 
 # OpenSpec Sync Specs
@@ -28,15 +28,17 @@ Sync delta specs from an active change into main specs.
    `bin/openspec list --json` and ask the user to choose.
 2. Run `bin/openspec status --change "<name>" --json`.
 3. Use `artifactPaths.specs.existingOutputPaths` as the delta spec list.
-4. For each delta spec, read the delta and matching main spec at
-   `openspec/specs/<capability>/spec.md`.
+4. For each delta spec, read the delta and matching main spec under
+   `planningHome.root`, preserving its full capability path.
 5. Write a compact merge plan per requirement before editing:
    ADDED, MODIFIED, REMOVED, or RENAMED; before state; after state; preserved
    scenarios.
 6. Apply only the intended requirement/scenario changes.
 7. Re-read the main spec and verify the same delta would make no second-pass
    changes.
-8. Summarize updated capabilities and idempotency.
+8. Run `bin/openspec validate --specs --strict`. Report success only after
+   validation and the second-pass comparison pass; otherwise report the blocker.
+9. Summarize updated capabilities, validation, and idempotency.
 
 ## Output
 

@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.15.0"
+  generatedBy: "1.16.0"
 ---
 
 # OpenSpec Explore

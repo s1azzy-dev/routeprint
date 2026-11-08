@@ -16,11 +16,18 @@ setup: openspec-install
 	$(COMPOSE) up --build -d
 
 # Host OpenSpec wrapper targets.
+.PHONY: openspec-generate
+
 openspec-install:
 	bin/npm ci
 
 openspec-update:
-	bin/openspec update --force
+	bin/openspec update --force --dry-run --json
+
+openspec-generate:
+	@set -e; stage_dir="$$(mktemp -d "$${TMPDIR:-/tmp}/routeprint-openspec.XXXXXX")"; \
+	bin/openspec init "$$stage_dir" --tools agents --no-animation; \
+	printf '\nUpstream skills for review: %s/.agents/skills\n' "$$stage_dir"
 
 openspec-validate:
 	bin/openspec validate --all --strict

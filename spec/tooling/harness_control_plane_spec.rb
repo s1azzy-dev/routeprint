@@ -130,7 +130,7 @@ RSpec.describe HarnessControlPlane do
     references = root.join(".agents/skills").glob("openspec-*/references/*.md")
     reference_text = references.map(&:read).join("\n")
 
-    expect(references.size).to eq(6)
+    expect(references.size).to eq(7)
     expect(reference_text).to include(
       "resolvedOutputPath",
       "Idempotency: no second-pass changes",

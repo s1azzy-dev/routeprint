@@ -6,7 +6,7 @@ compatibility: Requires openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
-  generatedBy: "1.15.0"
+  generatedBy: "1.16.0"
 ---
 
 # OpenSpec Archive Change
@@ -28,12 +28,17 @@ Archive a completed OpenSpec change.
    `bin/openspec list --json` and ask the user to choose.
 2. Run `bin/openspec status --change "<name>" --json`.
 3. Warn and confirm before proceeding with incomplete artifacts or tasks.
-4. If delta specs exist, compare them with main specs and offer to sync before
-   archiving.
-5. Create the archive directory under `planningHome.changesDir`.
-6. Move `changeRoot` to `archive/YYYY-MM-DD-<change-name>` only if that target
-   does not already exist.
-7. Summarize archive path, sync decision, warnings, and verification evidence.
+4. If delta specs exist, read `references/archive-change.md` and assess every
+   delta against its main spec under `planningHome.root`. For normal completion,
+   require all deltas to be already reflected or sync them inline using
+   `$openspec-sync-specs`. Stop on a sync blocker or any remaining difference.
+5. Run `bin/openspec validate --specs --strict` after sync. A failed sync or
+   validation blocks archival. Explicitly report any user-authorized exception
+   to normal completion, including unsynced specs.
+6. Create the archive directory under `planningHome.changesDir`. Move
+   `changeRoot` to `archive/YYYY-MM-DD-<change-name>` only if that target does
+   not already exist and synchronization has finished successfully.
+7. Summarize archive path, baseline synchronization, warnings, and proof.
 
 ## Output
 

@@ -47,11 +47,10 @@ After editing, re-read the main spec and mentally re-apply the same delta. If a
 second pass would change anything, fix the merge before moving on. Summaries
 must include `Idempotency: no second-pass changes`.
 
-## Upstream workflow (OpenSpec 1.15.0)
+## Upstream workflow (OpenSpec 1.16.0)
 
 The Routeprint rules above take precedence over upstream examples. Use the
 project permission matrix, source map, and Make/container verification.
-
 
 Sync delta specs from a change to main specs.
 

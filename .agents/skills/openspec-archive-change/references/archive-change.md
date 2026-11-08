@@ -38,9 +38,16 @@ Use status JSON for `schemaName`, `planningHome`, `changeRoot`,
 
 - Use `artifactPaths.specs.existingOutputPaths` for delta specs.
 - If none exist, archive without sync.
-- If they exist, compare each delta with its main spec.
-- Summarize adds, modifications, removals, and renames before prompting.
-- If sync is chosen, use `$openspec-sync-specs` before archiving.
+- If they exist, compare every delta with its main spec under `planningHome.root`.
+- Summarize adds, modifications, removals, renames, and preserved scenarios.
+- Normal completion requires every delta to be reflected in baseline. If any
+  remain unapplied, run `$openspec-sync-specs` inline and wait for it to finish.
+- Stop on a failed or blocked sync. Recheck every capability, including retired
+  and new ones, and require no remaining delta before moving `changeRoot`.
+- Run `bin/openspec validate --specs --strict` after sync. Stop if it fails.
+- An explicit user-authorized closure without sync is an exception. Report
+  unsynced capabilities and the reason instead of claiming normal completion.
+  The upstream skip-sync choices below do not grant that exception.
 
 ## Archive Operation
 
@@ -48,11 +55,10 @@ Archive to `planningHome.changesDir/archive/YYYY-MM-DD-<change-name>`.
 Create the archive directory if needed. Do not overwrite an existing archive
 target; stop and report the conflict.
 
-## Upstream workflow (OpenSpec 1.15.0)
+## Upstream workflow (OpenSpec 1.16.0)
 
 The Routeprint rules above take precedence over upstream examples. Use the
 project permission matrix, source map, and Make/container verification.
-
 
 Archive a completed change in the experimental workflow.
 
