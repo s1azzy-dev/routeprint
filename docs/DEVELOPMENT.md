@@ -445,7 +445,7 @@ The intentional host exceptions are Docker lifecycle and diagnostics
 (`make setup`, `make up`, `make down`, `make logs`, host portions of
 `make doctor`), git hook setup (`make install-hooks`), repository inspection,
 editing, and OpenSpec wrapper targets (`make openspec-install`,
-`make openspec-update`, `make openspec-validate`).
+`make openspec-update`, `make openspec-generate`, `make openspec-validate`).
 
 | Need | Command | Environment |
 | --- | --- | --- |

@@ -79,7 +79,7 @@ The initialized project currently includes:
 - RSpec, SimpleCov, RuboCop
 - Vitest 5.1.0 and React Testing Library
 - Brakeman and bundler-audit
-- OpenSpec 1.15.0
+- OpenSpec 1.16.0
 - Debian 13 (Trixie) application containers, Docker Compose and devcontainer support
 - Authentication, sessions, registration, sign-in/sign-out, and password reset
 - Protected dashboard
