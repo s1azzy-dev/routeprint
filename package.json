@@ -18,9 +18,9 @@
     "frontend:verify": "npm run frontend:format && npm run frontend:lint && npm run frontend:typecheck && npm run frontend:test && npm run frontend:build && npm run frontend:audit"
   },
   "devDependencies": {
-    "@fission-ai/openspec": "1.16.0",
+    "@fission-ai/openspec": "1.16.1",
     "@inertiajs/vite": "3.11.0",
-    "@tailwindcss/vite": "4.3.4",
+    "@tailwindcss/vite": "4.3.5",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "14.6.8",
@@ -37,7 +37,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "jsdom": "31.0.0",
     "prettier": "3.9.10",
-    "tailwindcss": "4.3.4",
+    "tailwindcss": "4.3.5",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
     "vite": "8.3.6",
