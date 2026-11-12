@@ -1,5 +1,7 @@
 class HomeController < ApplicationController
   def show
-    render inertia: "Home/Show"
+    no_store
+    routes = authenticated? ? Flights::RoutePairsQuery.call(scope: policy_scope(TravelSegment)) : []
+    render inertia: "Home/Show", props: { flightRoutes: routes }
   end
 end

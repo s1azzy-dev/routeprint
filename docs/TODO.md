@@ -13,7 +13,7 @@ Before starting an item:
 
 ## P1: Flight History MVP
 
-2. Add travel map with route lines and statistics.
+2. Add travel statistics to the flight map.
 3. Add CSV import with preview, validation, duplicate candidates, and apply
    flow.
 4. Add App in the Air import from sanitized sample export files.

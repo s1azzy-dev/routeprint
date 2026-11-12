@@ -10,7 +10,7 @@ vi.mock("../../../components/routeprint/route-map", () => ({
 
 describe("HomeShow", () => {
   it("renders through the Inertia test harness", () => {
-    renderInertiaPage(HomeShow, {})
+    renderInertiaPage(HomeShow, { flightRoutes: [] })
 
     expect(screen.getByTestId("route-map")).toBeVisible()
   })
