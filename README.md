@@ -89,14 +89,14 @@ The initialized project currently includes:
 - Place and airport reference foundation with PostGIS points and localized names
 - Admin-only airport catalog with pagination, editing, and safe deletion
 - Admin-only OurAirports airport import history with a guarded start action
-- Initial MapLibre home map shell with an OpenFreeMap vector basemap and reset
-  control
+- MapLibre home map with an OpenFreeMap vector basemap, private great-circle
+  routes from flight history, and counts for repeated airport pairs
 
 The current product surface includes authentication, password reset, a protected
 dashboard, the airport reference foundation, the admin airport catalog, and the
 admin reference-import operations screen. Private manual flight history is
-implemented. User flight-history import, map overlays, statistics, export, and
-broader admin product behavior remain future
+implemented and shown on the home map. User flight-history import, travel
+statistics, export, and broader admin product behavior remain future
 SDD/OpenSpec slices. Airline moderation UI remains part of its active catalog
 change; this slice supplies only the flight-side relinking boundary.
 

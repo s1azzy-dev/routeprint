@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-11-12
+
+- Show private flight routes on the home map with great-circle arcs, a count
+  for repeated airport pairs, and a fitted overview. Routes cross the
+  antimeridian across world copies and leave gaps beyond the Mercator limits.
+
 ## 2026-11-09
 
 - Updated OpenSpec to 1.16.0 and refreshed workflow references while retaining

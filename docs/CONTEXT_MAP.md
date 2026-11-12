@@ -87,7 +87,7 @@ workflow. Load only the routed skill plus the rows named by this map.
 | Inertia page or layout | `app/views/layouts/inertia.html.erb`, relevant page in `app/frontend/pages/` | Rails controller/request spec, page prop types, React Testing Library test, routing/system coverage |
 | Auth screens | Relevant page in `app/frontend/pages/Auth/` or `app/frontend/pages/PasswordResets/` | Auth controller/request specs, React page tests, locale files |
 | Flight pages | `app/frontend/pages/Flights/`, including the shared form, airport picker, history and detail | Flight controller, flight presenter/query, request/system specs |
-| Travel map UI | Relevant page in `app/frontend/pages/Map/` and MapLibre helper once present | Map/GeoJSON controller, MapLibre ADR, map system/request specs, local MapLibre assets |
+| Travel map UI | `app/frontend/pages/Home/Show.tsx`, `app/frontend/components/routeprint/route-map.tsx`, ADR 0010 | Home controller, flight route pairs query, frontend geometry and map tests, Home request spec |
 | UI components | `docs/frontend/DESIGN_GUIDE.md`, relevant `app/frontend/components/*` TypeScript files | Matching React component/page tests, neighboring component APIs, ADR 0002 and ADR 0004 when shared patterns change |
 | Styles/design tokens | `app/frontend/styles/design_tokens.css`, `app/frontend/entrypoints/application.css`, `docs/frontend/DESIGN_GUIDE.md` | Relevant React page/component, component/system specs, production Vite manifest |
 | Frontend tooling | `package.json`, `vite.config.ts`, `config/vite.json`, `eslint.config.mjs`, `tsconfig.json` | `spec/tooling/frontend_foundation_configuration_spec.rb`, `Makefile`, CI and Docker build files |
